@@ -50,25 +50,25 @@
             <input type="text" id="searchInput" class="search-input" placeholder="Zoeken..." onkeyup="filterItems()">
         </div>
         <button class="btn-pdf" onclick="exportToPDF()">
-            <span>📄</span> PDF
+            <span>📄</span> PDF Export
         </button>
     </div>
 
     <div class="app-card">
         <h2 class="section-title">
-            <span>Bestellingenlijst</span>
+            <span>Liste des commandes LIVE</span>
             <span id="orderCount" class="counter-badge">0</span>
         </h2>
-        <div id="loadingText" style="text-align:center; color:#70757a; padding: 10px;">Lijst ophalen uit database...</div>
+        <div id="loadingText" style="text-align:center; color:#70757a; padding: 10px;">Récupération de la liste depuis la base de données...</div>
         <ul id="itemsList" class="list-container"></ul>
     </div>
 </div>
 
 <div class="bottom-nav">
-    <a href="index.html" class="nav-item">📝<br><span>BESTELLEN</span></a>
-    <a href="list.html" class="nav-item active">📊<br><span>LIJST</span></a>
-    <a href="listcommand.html" class="nav-item">📋<br><span>PDF lijst</span></a>
-    <a href="infoapp.html" class="nav-item"ℹ️<br><span>INFO</span></a>
+    <a href="index.html" class="nav-item active">📝<br><span>Commande ajoutée</span></a>
+    <a href="list.html" class="nav-item">📊<br><span>Liste</span></a>
+    <a href="listcommand.html" class="nav-item">📋<br><span>Liste PDF</span></a>
+    <a href="infoapp.html" class="nav-item">ℹ️<br><span>INFO</span></a>
 </div>
 
 <script>
