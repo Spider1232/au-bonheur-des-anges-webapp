@@ -49,9 +49,6 @@
             <span>🔍</span>
             <input type="text" id="searchInput" class="search-input" placeholder="Rechercher par nom ou commande..." onkeyup="filterItems()">
         </div>
-<button onclick="window.print();" class="noPrint">
-Print Me
-</button>
     </div>
 
     <div class="app-card">
@@ -207,16 +204,6 @@ Print Me
             loadItems();
         }
     }
-     function printDiv(divName) {
-     var printContents = document.getElementById(divName).innerHTML;
-     var originalContents = document.body.innerHTML;
-
-     document.body.innerHTML = printContents;
-
-     window.print();
-
-     document.body.innerHTML = originalContents;
-}
     
 
 </script>
