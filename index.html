@@ -47,7 +47,7 @@
         
         <div class="form-field">
             <label for="newName">Nom</label>
-            <input type="text" id="newName" placeholder="Bijv.: Mathieu" maxlength="10" required>
+            <input type="text" id="newName" placeholder="Par exemple.: Mathieu" maxlength="10" required>
         </div>
         
         <div class="form-field">
@@ -62,7 +62,7 @@
         
         <div class="form-field">
             <label for="newText">Commande</label>
-            <input type="text" id="newText" placeholder="Voer de details in..." required>
+            <input type="text" id="newText" placeholder="Saisissez les détails..." required>
         </div>
         
         <div class="form-field">
@@ -119,11 +119,12 @@
             .insert([{ naam, aantal, prijs, text, betaald, terugbetaald, datum }]);
 
         if (error) {
-            alert("Fout bij opslaan: " + error.message);
+            alert("
+Erreur lors de l'enregistrement : " + error.message);
             document.getElementById("saveBtn").disabled = false;
-            document.getElementById("saveBtn").textContent = "Bestelling toevoegen";
+            document.getElementById("saveBtn").textContent = "Ajouter une commande";
         } else {
-            alert("Bestelling succesvol online opgeslagen!");
+            alert("Commande enregistrée avec succès en ligne !");
             window.location.href = "list.html";
         }
     }
