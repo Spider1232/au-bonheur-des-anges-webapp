@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="nl-BE">
+<html lang="fr-BE">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Au bonheur des Anges - Bestelbon</title>
+    <title>Au bonheur des Anges - Bon de commande</title>
     <link rel="icon" href="logo.jpg">
-    <!-- Supabase Bibliotheek inladen -->
+    <!-- Chargement de la bibliothèque Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background-color: #fbeef7; color: #202124; margin: 0; padding-bottom: 70px; display: flex; flex-direction: column; align-items: center; }
@@ -43,11 +43,11 @@
             <img src="logo.jpg" alt="Logo" width="185" height="164">
         </div>
         
-        <h2 class="section-title">Formulaire de commande</h2>
+        <h2 class="section-title">Bon de commande</h2>
         
         <div class="form-field">
             <label for="newName">Nom</label>
-            <input type="text" id="newName" placeholder="Par exemple.: Mathieu" maxlength="10" required>
+            <input type="text" id="newName" placeholder="Ex. : Mathieu" maxlength="10" required>
         </div>
         
         <div class="form-field">
@@ -62,7 +62,7 @@
         
         <div class="form-field">
             <label for="newText">Commande</label>
-            <input type="text" id="newText" placeholder="Saisissez les détails..." required>
+            <input type="text" id="newText" placeholder="Entrez les détails de la commande..." required>
         </div>
         
         <div class="form-field">
@@ -81,14 +81,14 @@
             </div>
         </div>
         
-        <button class="btn-save" id="saveBtn" onclick="addItem()">Commande ajoutée à la liste </button>
+        <button class="btn-save" id="saveBtn" onclick="addItem()">Ajouter la commande</button>
     </div>
 </div>
 
 <div class="bottom-nav">
-    <a href="index.html" class="nav-item active">📝<br><span>Commande ajoutée</span></a>
-    <a href="list.html" class="nav-item">📊<br><span>Liste</span></a>
-    <a href="listcommand.html" class="nav-item">📋<br><span>Liste PDF</span></a>
+    <a href="index.html" class="nav-item active">📝<br><span>COMMANDER</span></a>
+    <a href="list.html" class="nav-item">📊<br><span>LISTE</span></a>
+    <a href="listcommand.html" class="nav-item">📋<br><span>LISTE PDF</span></a>
     <a href="infoapp.html" class="nav-item">ℹ️<br><span>INFO</span></a>
 </div>
 
@@ -96,6 +96,7 @@
     const SUPABASE_URL = "https://szvfvmloybxptvwcwulu.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6dmZ2bWxveWJ4cHR2d2N3dWx1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzExMDcsImV4cCI6MjA5OTk0NzEwN30.Iz1yyC6id1gMUmgRPPQWVB0Bd8jW7uUb3I5_idsNTyQ";
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 
     async function addItem() {
         const naam = document.getElementById("newName").value;
@@ -107,22 +108,21 @@
         const terugbetaald = document.getElementById("newTerugbetaald").checked;
 
         if (!naam || !text || aantal <= 0) {
-            alert("Vul aanzienlijk de naam, het aantal en de bestelling in.");
+            alert("Veuillez remplir correctement le nom, la quantité et la commande.");
             return;
         }
 
         document.getElementById("saveBtn").disabled = true;
-        document.getElementById("saveBtn").textContent = "Opslaan...";
+        document.getElementById("saveBtn").textContent = "Enregistrement en cours...";
 
         const { error } = await _supabase
             .from('items')
             .insert([{ naam, aantal, prijs, text, betaald, terugbetaald, datum }]);
 
         if (error) {
-            alert("
-Erreur lors de l'enregistrement : " + error.message);
+            alert("Erreur lors de l'enregistrement : " + error.message + "\n\nAstuce : Si vous voyez 'Failed to fetch', vérifiez que votre clé API Supabase (anon/public) est correcte.");
             document.getElementById("saveBtn").disabled = false;
-            document.getElementById("saveBtn").textContent = "Ajouter une commande";
+            document.getElementById("saveBtn").textContent = "Ajouter la commande";
         } else {
             alert("Commande enregistrée avec succès en ligne !");
             window.location.href = "list.html";
