@@ -207,42 +207,10 @@
             loadItems();
         }
     }
-
-    function exportToPDF() { window.print(); }
-    window.onload = loadItems;
-
-        // Nouvelle fonction d'export PDF ultra-fiable
     function exportToPDF() {
-        const element = document.getElementById('pdfContent');
-        const button = document.getElementById('pdfBtn');
-        
-        button.textContent = "Génération...";
-        button.disabled = true;
-
-        // On cache temporairement les boutons Modifier/Supprimer pour le PDF
-        element.classList.add('pdf-hide-actions');
-
-        const options = {
-            margin:       10,
-            filename:     'Au_bonheur_des_Anges_Commandes.pdf',
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-
-        // Génération du PDF
-        html2pdf().set(options).from(element).save().then(() => {
-            // On réaffiche les boutons après la génération
-            element.classList.remove('pdf-hide-actions');
-            button.innerHTML = "<span>📄</span> PDF";
-            button.disabled = false;
-        }).catch((err) => {
-            alert("Erreur lors de la création du PDF : " + err);
-            element.classList.remove('pdf-hide-actions');
-            button.innerHTML = "<span>📄</span> PDF";
-            button.disabled = false;
-        });
+        window.print();
     }
+
 </script>
 </body>
 </html>
