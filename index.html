@@ -43,52 +43,52 @@
             <img src="logo.jpg" alt="Logo" width="185" height="164">
         </div>
         
-        <h2 class="section-title">Bestelbon</h2>
+        <h2 class="section-title">Formulaire de commande</h2>
         
         <div class="form-field">
-            <label for="newName">Naam</label>
+            <label for="newName">Nom</label>
             <input type="text" id="newName" placeholder="Bijv.: Mathieu" maxlength="10" required>
         </div>
         
         <div class="form-field">
-            <label for="newAantal">Aantal</label>
+            <label for="newAantal">Quantité</label>
             <input type="number" id="newAantal" placeholder="0" min="1" required>
         </div>
 
         <div class="form-field">
-            <label for="newPrijs">Prijs per stuk (€)</label>
+            <label for="newPrijs">Prix unitaire (€)</label>
             <input type="number" id="newPrijs" placeholder="0.00" step="0.01" min="0" required>
         </div>
         
         <div class="form-field">
-            <label for="newText">Bestelling</label>
+            <label for="newText">Commande</label>
             <input type="text" id="newText" placeholder="Voer de details in..." required>
         </div>
         
         <div class="form-field">
-            <label for="newDatum">Datum</label>
+            <label for="newDatum">Date</label>
             <input type="date" id="newDatum">
         </div>
         
         <div class="checkbox-group">
             <div class="form-field-checkbox">
-                <label for="newBetaald">Betaald</label>
+                <label for="newBetaald">Payé</label>
                 <input type="checkbox" id="newBetaald">
             </div>
             <div class="form-field-checkbox">
-                <label for="newTerugbetaald">Terugbetaald</label>
+                <label for="newTerugbetaald">Remboursé</label>
                 <input type="checkbox" id="newTerugbetaald">
             </div>
         </div>
         
-        <button class="btn-save" id="saveBtn" onclick="addItem()">Bestelling toevoegen</button>
+        <button class="btn-save" id="saveBtn" onclick="addItem()">Commande ajoutée à la liste </button>
     </div>
 </div>
 
 <div class="bottom-nav">
-    <a href="index.html" class="nav-item active">📝<br><span>BESTELLEN</span></a>
-    <a href="list.html" class="nav-item">📊<br><span>LIJST</span></a>
-    <a href="listcommand.html" class="nav-item">📋<br><span>PDF lijst</span></a>
+    <a href="index.html" class="nav-item active">📝<br><span>Commande ajoutée</span></a>
+    <a href="list.html" class="nav-item">📊<br><span>Liste</span></a>
+    <a href="listcommand.html" class="nav-item">📋<br><span>Liste PDF</span></a>
     <a href="infoapp.html" class="nav-item">ℹ️<br><span>INFO</span></a>
 </div>
 
