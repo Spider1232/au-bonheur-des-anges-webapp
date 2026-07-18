@@ -1,0 +1,85 @@
+    * {
+       margin: 5;
+       padding: 5;
+    }
+    body {
+       background-image: url("background.png");
+         font-size: 100%;
+    }
+    h3 {
+         font-family: Cursive;
+         color: black;
+         text-align: center;
+         font-size: 17px;
+    }
+    p {
+      font-family: Cursive;
+      font-size: 15px;
+      text-align: center;
+    }
+    nav {
+      text-align: center;
+      font-size: 13px;
+
+    }
+    h1 {
+         color: black;
+         text-align: center;
+         font-size: 11px;
+    }
+
+input[type=text], select {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+
+}
+
+input[type=submit] {
+  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+input[type=checkbox], select {
+  width: 9%;
+  padding: 12px 20px;
+  margin: 10px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+input[type=submit]:hover {
+  background-color: #45a049;
+}
+
+div {
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  padding: 20px;
+}
+
+ul {
+  border-radius: 5px;
+  list-style-type: none;
+  list-style-position: outside;
+  padding: 0;
+  list-style-image: none;
+  font-size: 14px;
+  background-color: #f1ddf5;Comic Sans MS
+  font-family: Comic Sans MS;
+}
+@media (max-width: 768px) {
+    #itemsList {
+        display: block;
+    }
+}

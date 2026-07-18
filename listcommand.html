@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr-BE">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Au bonheur des Anges - Liste Rose</title>
+    <link rel="icon" href="logo.jpg">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #fbeef7;
+            color: #202124;
+            margin: 0;
+            padding: 0;
+            padding-bottom: 70px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .app-header {
+            background-color: #ffffff;
+            width: 100%;
+            text-align: center;
+            padding: 12px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .app-header h1 {
+            font-size: 16px;
+            margin: 0;
+            color: #9b59b6;
+            font-weight: 600;
+        }
+        .app-view {
+            width: 100%;
+            max-width: 480px;
+            box-sizing: border-box;
+            padding: 16px;
+        }
+        .actions-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            width: 100%;
+        }
+        .search-card {
+            background: #ffffff;
+            border: 1px solid #f3d6ed;
+            border-radius: 8px;
+            padding: 12px 16px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+        .search-input {
+            width: 100%;
+            border: none;
+            font-size: 15px;
+            color: #202124;
+            outline: none;
+            background: transparent;
+        }
+        .btn-pdf {
+            background-color: #9b59b6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 1px 2px rgba(155, 89, 182, 0.2);
+            transition: background 0.2s;
+        }
+        .btn-pdf:hover {
+            background-color: #8e44ad;
+        }
+        .app-card {
+            background: #ffffff;
+            border: 1px solid #f3d6ed;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(155, 89, 182, 0.05);
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .section-title {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #7d7f82;
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-weight: 700;
+            border-bottom: 1px solid #fbeef7;
+            padding-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .counter-badge {
+            background-color: #fbeef7;
+            color: #9b59b6;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        .list-container {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+        .list-item {
+            background: #ffffff;
+            border-bottom: 1px solid #fbeef7;
+            padding: 14px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .list-item:last-child {
+            border-bottom: none;
+        }
+        .item-main {
+            flex: 1;
+        }
+        .item-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #202124;
+            margin-bottom: 3px;
+        }
+        .item-details {
+            font-size: 13px;
+            color: #5f6368;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .status-paid { background-color: #e6f4ea; color: #137333; }
+        .status-unpaid { background-color: #fce8e6; color: #c5221f; }
+        .status-refund { background-color: #e8f0fe; color: #1a73e8; }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            color: #9b59b6;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 6px;
+        }
+        .btn-icon-delete { color: #d93025; }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            border-top: 1px solid #dadce0;
+            z-index: 1000;
+        }
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 12px 0;
+            color: #5f6368;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        .nav-item.active {
+            color: #9b59b6;
+            font-weight: 600;
+        }
+
+        @media print {
+            body {
+                background-color: #fbeef7 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                padding-bottom: 0;
+            }
+            .app-view { max-width: 100%; width: 100%; padding: 0; }
+            .app-card { border: none; box-shadow: none; }
+            .actions-bar, .item-actions, .bottom-nav { display: none !important; }
+            .list-item { border-bottom: 1px solid #e8bada; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-header">
+    <h1>Au bonheur des Anges</h1>
+</div>
+
+<embed src="Prix boutique Au bonheur des Anges.  2026.pdf" type="application/pdf" height="650px" width="100%">
+
+<div class="bottom-nav">
+    <a href="command.html" class="nav-item">📝<br><span>COMMAND</span></a>
+    <a href="list.html" class="nav-item">📊<br><span>LIST</span></a>
+    <a href="listcommand.html" class="nav-item active">ℹ️<br><span>PDF list</span></a>
+    <a href="infoapp.html" class="nav-item">ℹ️<br><span>INFO</span></a>
+
+</div>
+</body>
+</html>
