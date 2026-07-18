@@ -49,9 +49,9 @@
             <span>🔍</span>
             <input type="text" id="searchInput" class="search-input" placeholder="Rechercher par nom ou commande..." onkeyup="filterItems()">
         </div>
-        <button class="btn-pdf" onclick="exportToPDF()">
-            <span>📄</span> PDF
-        </button>
+<button onclick="window.print();" class="noPrint">
+Print Me
+</button>
     </div>
 
     <div class="app-card">
@@ -207,9 +207,17 @@
             loadItems();
         }
     }
-    function exportToPDF() {
-        window.print();
-    }
+     function printDiv(divName) {
+     var printContents = document.getElementById(divName).innerHTML;
+     var originalContents = document.body.innerHTML;
+
+     document.body.innerHTML = printContents;
+
+     window.print();
+
+     document.body.innerHTML = originalContents;
+}
+    
 
 </script>
 </body>
