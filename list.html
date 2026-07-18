@@ -7,6 +7,8 @@
     <link rel="icon" href="logo.jpg">
     <!-- Chargement de la bibliothèque Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Script pour la génération native et fiable de PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background-color: #fbeef7; color: #202124; margin: 0; padding-bottom: 70px; display: flex; flex-direction: column; align-items: center; }
         .app-header { background-color: #ffffff; width: 100%; text-align: center; padding: 12px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
@@ -34,7 +36,9 @@
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #ffffff; display: flex; justify-content: space-around; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); border-top: 1px solid #dadce0; z-index: 1000; }
         .nav-item { flex: 1; text-align: center; padding: 12px 0; color: #5f6368; text-decoration: none; font-size: 12px; font-weight: 500; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-item.active { color: #9b59b6; font-weight: 600; }
-        @media print { body { background-color: #fbeef7 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; padding-bottom: 0; } .app-view { max-width: 100%; width: 100%; padding: 0; } .app-card { border: none; box-shadow: none; } .actions-bar, .item-actions, .bottom-nav { display: none !important; } .list-item { border-bottom: 1px solid #e8bada; } }
+        
+        /* Masquer les boutons de modification pour le rendu du fichier PDF */
+        .pdf-hide-actions .item-actions { display: none !important; }
     </style>
 </head>
 <body>
@@ -49,9 +53,12 @@
             <span>🔍</span>
             <input type="text" id="searchInput" class="search-input" placeholder="Rechercher par nom ou commande..." onkeyup="filterItems()">
         </div>
+        <button class="btn-pdf" id="pdfBtn" onclick="exportToPDF()">
+            <span>📄</span> PDF
+        </button>
     </div>
 
-    <div class="app-card">
+    <div class="app-card" id="pdfContent">
         <h2 class="section-title">
             <span>Liste des commandes</span>
             <span id="orderCount" class="counter-badge">0</span>
@@ -72,7 +79,6 @@
     const SUPABASE_URL = "https://szvfvmloybxptvwcwulu.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6dmZ2bWxveWJ4cHR2d2N3dWx1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzExMDcsImV4cCI6MjA5OTk0NzEwN30.Iz1yyC6id1gMUmgRPPQWVB0Bd8jW7uUb3I5_idsNTyQ";
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
 
     let allItems = [];
 
@@ -204,8 +210,39 @@
             loadItems();
         }
     }
-    
 
+    // Fonction d'exportation PDF via html2pdf
+    function exportToPDF() {
+        const element = document.getElementById('pdfContent');
+        const button = document.getElementById('pdfBtn');
+        
+        button.textContent = "Génération...";
+        button.disabled = true;
+
+        // Cacher temporairement les boutons d'édition pour le PDF
+        element.classList.add('pdf-hide-actions');
+
+        const options = {
+            margin:       10,
+            filename:     'Au_bonheur_des_Anges_Commandes.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(options).from(element).save().then(() => {
+            element.classList.remove('pdf-hide-actions');
+            button.innerHTML = "<span>📄</span> PDF";
+            button.disabled = false;
+        }).catch((err) => {
+            alert("Erreur lors de la création du PDF : " + err);
+            element.classList.remove('pdf-hide-actions');
+            button.innerHTML = "<span>📄</span> PDF";
+            button.disabled = false;
+        });
+    }
+
+    window.onload = loadItems;
 </script>
 </body>
 </html>
