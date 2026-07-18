@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="nl-BE">
+<html lang="fr-BE">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Au bonheur des Anges - Live Liste</title>
+    <title>Au bonheur des Anges - Liste en direct</title>
     <link rel="icon" href="logo.jpg">
-    <!-- Supabase Bibliotheek inladen -->
+    <!-- Chargement de la bibliothèque Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background-color: #fbeef7; color: #202124; margin: 0; padding-bottom: 70px; display: flex; flex-direction: column; align-items: center; }
@@ -47,27 +47,27 @@
     <div class="actions-bar">
         <div class="search-card">
             <span>🔍</span>
-            <input type="text" id="searchInput" class="search-input" placeholder="Zoeken..." onkeyup="filterItems()">
+            <input type="text" id="searchInput" class="search-input" placeholder="Rechercher par nom ou commande..." onkeyup="filterItems()">
         </div>
         <button class="btn-pdf" onclick="exportToPDF()">
-            <span>📄</span> PDF Export
+            <span>📄</span> PDF
         </button>
     </div>
 
     <div class="app-card">
         <h2 class="section-title">
-            <span>Liste des commandes LIVE</span>
+            <span>Liste des commandes</span>
             <span id="orderCount" class="counter-badge">0</span>
         </h2>
-        <div id="loadingText" style="text-align:center; color:#70757a; padding: 10px;">Récupération de la liste depuis la base de données...</div>
+        <div id="loadingText" style="text-align:center; color:#70757a; padding: 10px;">Récupération des données depuis la base de données...</div>
         <ul id="itemsList" class="list-container"></ul>
     </div>
 </div>
 
 <div class="bottom-nav">
-    <a href="index.html" class="nav-item ">📝<br><span>Commande ajoutée</span></a>
-    <a href="list.html" class="nav-item active">📊<br><span>Liste</span></a>
-    <a href="listcommand.html" class="nav-item">📋<br><span>Liste PDF</span></a>
+    <a href="index.html" class="nav-item">📝<br><span>COMMANDER</span></a>
+    <a href="list.html" class="nav-item active">📊<br><span>LISTE</span></a>
+    <a href="listcommand.html" class="nav-item">📋<br><span>LISTE PDF</span></a>
     <a href="infoapp.html" class="nav-item">ℹ️<br><span>INFO</span></a>
 </div>
 
@@ -75,6 +75,7 @@
     const SUPABASE_URL = "https://szvfvmloybxptvwcwulu.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6dmZ2bWxveWJ4cHR2d2N3dWx1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzExMDcsImV4cCI6MjA5OTk0NzEwN30.Iz1yyC6id1gMUmgRPPQWVB0Bd8jW7uUb3I5_idsNTyQ";
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 
     let allItems = [];
 
@@ -89,7 +90,7 @@
         document.getElementById("loadingText").style.display = "none";
 
         if (error) {
-            alert("Erreur lors de la récupération de la base de données : " + error.message);
+            alert("Erreur lors de la récupération : " + error.message + "\n\nAstuce : Si vous voyez 'Failed to fetch', récupérez la clé officielle 'anon/public' depuis votre tableau de bord Supabase.");
             return;
         }
 
@@ -115,7 +116,7 @@
             li.className = 'list-item';
             
             const paidClass = item.betaald ? 'status-paid' : 'status-unpaid';
-            const paidText = item.betaald ? 'Paye' : 'Pas Paye';
+            const paidText = item.betaald ? 'Payé' : 'Non Payé';
             
             const prijsPerStuk = parseFloat(item.prijs) || 0;
             const totaalBedrag = ((parseInt(item.aantal) || 0) * prijsPerStuk).toFixed(2);
@@ -129,17 +130,17 @@
                 <div class="item-main">
                     <div class="item-title">${item.naam || 'Inconnu'}</div>
                     <div class="item-details">
-                        <span><strong>${item.text || 'Aucune description'}</strong></span>
+                        <span><strong>${item.text || 'Pas de description'}</strong></span>
                         <span>(${item.aantal || 0}x &bull; €${prijsPerStuk.toFixed(2)})</span>
-                        <span style="color: #9b59b6; font-weight: bold;">Total: €${totaalBedrag}</span>
-                        <span>&bull; ${item.datum || 'N/V'}</span>
+                        <span style="color: #9b59b6; font-weight: bold;">Total : €${totaalBedrag}</span>
+                        <span>&bull; ${item.datum || 'N/A'}</span>
                         <span class="status-badge ${paidClass}">${paidText}</span>
                         ${refundBadge}
                     </div>
                 </div>
                 <div class="item-actions">
                     <button class="btn-icon" onclick="editItem(${item.id})">Modifier</button>
-                    <button class="btn-icon btn-icon-delete" onclick="deleteItem(${item.id})">À supprimer</button>
+                    <button class="btn-icon btn-icon-delete" onclick="deleteItem(${item.id})">Supprimer</button>
                 </div>
             `;
             list.appendChild(li);
@@ -156,7 +157,7 @@
     }
 
     async function deleteItem(id) {
-        if (confirm("Supprimer définitivement cette commande du cloud ?")) {
+        if (confirm("Voulez-vous vraiment supprimer définitivement cette commande du cloud ?")) {
             const { error } = await _supabase.from('items').delete().eq('id', id);
             if (error) {
                 alert("Erreur lors de la suppression : " + error.message);
@@ -170,23 +171,23 @@
         const item = allItems.find(i => i.id === id);
         if (!item) return;
         
-        const resName = prompt("Nom:", item.naam);
+        const resName = prompt("Nom :", item.naam);
         const newName = (resName === null || resName.trim() === "") ? item.naam : resName;
         
-        const resAantal = prompt("Quantité:", item.aantal);
+        const resAantal = prompt("Quantité :", item.aantal);
         const newAantal = (resAantal === null || resAantal.trim() === "") ? item.aantal : resAantal;
         
-        const resPrijs = prompt("Prix unitaire (€):", item.prijs);
+        const resPrijs = prompt("Prix unitaire (€) :", item.prijs);
         const newPrijs = (resPrijs === null || resPrijs.trim() === "") ? item.prijs : resPrijs;
         
-        const resText = prompt("Commande:", item.text);
+        const resText = prompt("Commande :", item.text);
         const newText = (resText === null || resText.trim() === "") ? item.text : resText;
         
-        const resDatum = prompt("Date:", item.datum);
+        const resDatum = prompt("Date (AAAA-MM-JJ) :", item.datum);
         const newDatum = (resDatum === null || resDatum.trim() === "") ? item.datum : resDatum;
         
-        const newBetaald = confirm("Payé ? (OK = Oui, Annuler = Non)");
-        const newTerugbetaald = confirm("Remboursé ? (OK = Oui, Annuler = Non)");
+        const newBetaald = confirm("Marquer comme payée ? (Ok = Oui, Annuler = Non)");
+        const newTerugbetaald = confirm("Marquer comme remboursée ? (Ok = Oui, Annuler = Non)");
 
         const updatedData = { 
             naam: newName, 
