@@ -89,7 +89,7 @@
         document.getElementById("loadingText").style.display = "none";
 
         if (error) {
-            alert("Fout bij ophalen database: " + error.message);
+            alert("Erreur lors de la récupération de la base de données : " + error.message);
             return;
         }
 
@@ -106,7 +106,7 @@
         countBadge.textContent = items.length;
 
         if (items.length === 0) {
-            list.innerHTML = '<li style="color: #70757a; font-size: 14px; text-align: center; padding: 20px 0;">Geen bestellingen gevonden</li>';
+            list.innerHTML = '<li style="color: #70757a; font-size: 14px; text-align: center; padding: 20px 0;">Aucune commande trouvée</li>';
             return;
         }
 
@@ -115,31 +115,31 @@
             li.className = 'list-item';
             
             const paidClass = item.betaald ? 'status-paid' : 'status-unpaid';
-            const paidText = item.betaald ? 'Betaald' : 'Niet Betaald';
+            const paidText = item.betaald ? 'Paye' : 'Pas Paye';
             
             const prijsPerStuk = parseFloat(item.prijs) || 0;
             const totaalBedrag = ((parseInt(item.aantal) || 0) * prijsPerStuk).toFixed(2);
 
             let refundBadge = '';
             if (item.terugbetaald) {
-                refundBadge = `<span class="status-badge status-refund">Terugbetaald</span>`;
+                refundBadge = `<span class="status-badge status-refund">Remboursé</span>`;
             }
 
             li.innerHTML = `
                 <div class="item-main">
-                    <div class="item-title">${item.naam || 'Onbekend'}</div>
+                    <div class="item-title">${item.naam || 'Inconnu'}</div>
                     <div class="item-details">
-                        <span><strong>${item.text || 'Geen omschrijving'}</strong></span>
+                        <span><strong>${item.text || 'Aucune description'}</strong></span>
                         <span>(${item.aantal || 0}x &bull; €${prijsPerStuk.toFixed(2)})</span>
-                        <span style="color: #9b59b6; font-weight: bold;">Totaal: €${totaalBedrag}</span>
+                        <span style="color: #9b59b6; font-weight: bold;">Total: €${totaalBedrag}</span>
                         <span>&bull; ${item.datum || 'N/V'}</span>
                         <span class="status-badge ${paidClass}">${paidText}</span>
                         ${refundBadge}
                     </div>
                 </div>
                 <div class="item-actions">
-                    <button class="btn-icon" onclick="editItem(${item.id})">Wijzigen</button>
-                    <button class="btn-icon btn-icon-delete" onclick="deleteItem(${item.id})">Verwijderen</button>
+                    <button class="btn-icon" onclick="editItem(${item.id})">Modifier</button>
+                    <button class="btn-icon btn-icon-delete" onclick="deleteItem(${item.id})">À supprimer</button>
                 </div>
             `;
             list.appendChild(li);
@@ -156,10 +156,10 @@
     }
 
     async function deleteItem(id) {
-        if (confirm("Deze bestelling definitief verwijderen uit de cloud?")) {
+        if (confirm("Supprimer définitivement cette commande du cloud ?")) {
             const { error } = await _supabase.from('items').delete().eq('id', id);
             if (error) {
-                alert("Fout bij verwijderen: " + error.message);
+                alert("Erreur lors de la suppression : " + error.message);
             } else {
                 loadItems();
             }
@@ -170,23 +170,23 @@
         const item = allItems.find(i => i.id === id);
         if (!item) return;
         
-        const resName = prompt("Naam:", item.naam);
+        const resName = prompt("Nom:", item.naam);
         const newName = (resName === null || resName.trim() === "") ? item.naam : resName;
         
-        const resAantal = prompt("Aantal:", item.aantal);
+        const resAantal = prompt("Quantité:", item.aantal);
         const newAantal = (resAantal === null || resAantal.trim() === "") ? item.aantal : resAantal;
         
-        const resPrijs = prompt("Prijs (€):", item.prijs);
+        const resPrijs = prompt("Prix unitaire (€):", item.prijs);
         const newPrijs = (resPrijs === null || resPrijs.trim() === "") ? item.prijs : resPrijs;
         
-        const resText = prompt("Bestelling:", item.text);
+        const resText = prompt("Commande:", item.text);
         const newText = (resText === null || resText.trim() === "") ? item.text : resText;
         
-        const resDatum = prompt("Datum:", item.datum);
+        const resDatum = prompt("Date:", item.datum);
         const newDatum = (resDatum === null || resDatum.trim() === "") ? item.datum : resDatum;
         
-        const newBetaald = confirm("Betaald? (Ok = Ja, Annuleren = Nee)");
-        const newTerugbetaald = confirm("Terugbetaald? (Ok = Ja, Annuleren = Nee)");
+        const newBetaald = confirm("Payé ? (OK = Oui, Annuler = Non)");
+        const newTerugbetaald = confirm("Remboursé ? (OK = Oui, Annuler = Non)");
 
         const updatedData = { 
             naam: newName, 
@@ -201,7 +201,7 @@
         const { error } = await _supabase.from('items').update(updatedData).eq('id', id);
         
         if (error) {
-            alert("Fout bij updaten: " + error.message);
+            alert("Erreur lors de la mise à jour : " + error.message);
         } else {
             loadItems();
         }
