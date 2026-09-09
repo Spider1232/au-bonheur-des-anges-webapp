@@ -52,6 +52,30 @@
         .btn-edit { background-color: #f39c12; color: white; margin-right: 4px; }
         .btn-delete { background-color: #e74c3c; color: white; }
 
+        /* Bouton Fermer / Retour (X) */
+        .btn-close-top {
+            position: fixed;
+            top: 10px;
+            right: 15px;
+            width: 32px;
+            height: 32px;
+            background-color: #ffffff;
+            border: 1px solid #f3d6ed;
+            border-radius: 50%;
+            color: #9b59b6;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 1001;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        .btn-close-top:hover { background-color: #fbeef7; }
+        .btn-close-top:active { transform: scale(0.95); }
+
         /* Bottom Nav */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #ffffff; display: flex; justify-content: space-around; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); border-top: 1px solid #dadce0; z-index: 1000; }
         .nav-item { flex: 1; text-align: center; padding: 10px 0; color: #5f6368; text-decoration: none; font-size: 11px; font-weight: 500; display: flex; flex-direction: column; align-items: center; gap: 2px; }
@@ -65,13 +89,7 @@
 </head>
 <body>
 
-<div class="app-header">
-    <h1>Au bonheur des Anges</h1>
-    <div class="db-status-container">
-        <span id="statusDot" class="status-dot offline"></span>
-        <span id="statusText" style="color: #e74c3c;">Offline</span>
-    </div>
-</div>
+<a href="index.html" class="btn-close-top" title="Retour vers commande">&times;</a>
 
 <div class="app-view">
     <div id="alertSuccess" class="alert-success">
@@ -202,14 +220,16 @@
         const statusDot = document.getElementById("statusDot");
         const statusText = document.getElementById("statusText");
 
-        if (snap.val() === true) {
-            statusDot.className = "status-dot online";
-            statusText.textContent = "Online";
-            statusText.style.color = "#2ecc71";
-        } else {
-            statusDot.className = "status-dot offline";
-            statusText.textContent = "Offline";
-            statusText.style.color = "#e74c3c";
+        if (statusDot && statusText) {
+            if (snap.val() === true) {
+                statusDot.className = "status-dot online";
+                statusText.textContent = "Online";
+                statusText.style.color = "#2ecc71";
+            } else {
+                statusDot.className = "status-dot offline";
+                statusText.textContent = "Offline";
+                statusText.style.color = "#e74c3c";
+            }
         }
     });
 
