@@ -7,18 +7,19 @@
     <link rel="icon" href="logo.jpg">
     <style>
         :root {
-            --primary: #9b59b6;
-            --primary-dark: #8e44ad;
-            --bg-color: #fbeef7;
-            --card-bg: #ffffff;
+            --primary: #8e44ad;
+            --primary-dark: #6c3483;
+            /* Transparantie ingesteld op 20% (0.20 dekkend) */
+            --glass-bg: rgba(255, 255, 255, 0.20);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --glass-blur: 16px;
             --text-main: #2c3e50;
             --text-muted: #7f8c8d;
-            --border-color: #f3d6ed;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            background-color: #fbeef7;
             color: var(--text-main);
             margin: 0;
             padding: 0;
@@ -29,14 +30,17 @@
         }
 
         .app-header {
-            background-color: var(--card-bg);
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
             width: 100%;
             text-align: center;
             padding: 14px 0;
-            box-shadow: 0 2px 4px rgba(155, 89, 182, 0.08);
+            border-bottom: 1px solid var(--glass-border);
             position: sticky;
             top: 0;
             z-index: 100;
+            transition: background 0.3s;
         }
 
         .app-header h1 {
@@ -66,24 +70,27 @@
         }
 
         .logo-img {
-            width: 120px;
-            height: 120px;
+            width: 110px;
+            height: 110px;
             object-fit: cover;
             border-radius: 50%;
-            background: #ffffff;
-            padding: 6px;
-            box-shadow: 0 4px 15px rgba(155, 89, 182, 0.15);
-            border: 2px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.8);
+            padding: 4px;
+            box-shadow: 0 4px 15px rgba(142, 68, 173, 0.15);
+            border: 1px solid var(--glass-border);
         }
 
         .info-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
             padding: 20px;
             width: 100%;
             box-sizing: border-box;
-            box-shadow: 0 4px 12px rgba(155, 89, 182, 0.06);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.12);
+            transition: background 0.3s;
         }
 
         .info-card.text-center {
@@ -92,8 +99,8 @@
 
         .badge {
             display: inline-block;
-            background-color: #f4d8ef;
-            color: var(--primary-dark);
+            background-color: rgba(142, 68, 173, 0.15);
+            color: var(--primary);
             font-size: 11px;
             font-weight: 700;
             padding: 4px 12px;
@@ -119,12 +126,11 @@
 
         .divider {
             height: 1px;
-            background-color: var(--bg-color);
+            background-color: rgba(142, 68, 173, 0.15);
             margin: 14px 0;
             border: none;
         }
 
-        /* Feature List */
         .feature-list {
             list-style: none;
             padding: 0;
@@ -144,13 +150,14 @@
 
         .feature-icon {
             font-size: 18px;
-            background: #fbeef7;
+            background: rgba(255, 255, 255, 0.5);
             padding: 8px;
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            border: 1px solid var(--glass-border);
         }
 
         .feature-text strong {
@@ -163,25 +170,23 @@
             color: var(--text-muted);
         }
 
-        /* Meta footer inside card */
         .meta-group {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-top: 14px;
             padding-top: 10px;
-            border-top: 1px dashed var(--border-color);
+            border-top: 1px dashed rgba(142, 68, 173, 0.2);
             font-size: 12px;
             color: var(--text-muted);
         }
 
-        /* Status Pills */
         .status-pill {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background-color: #e6f4ea;
-            color: #137333;
+            background-color: rgba(46, 204, 113, 0.2);
+            color: #1e8449;
             font-weight: 700;
             font-size: 11px;
             padding: 4px 10px;
@@ -191,29 +196,30 @@
         .status-dot {
             width: 7px;
             height: 7px;
-            background-color: #137333;
+            background-color: #2ecc71;
             border-radius: 50%;
         }
 
-        /* Navigation */
         .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
-            background-color: var(--card-bg);
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
             display: flex;
             justify-content: space-around;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-            border-top: 1px solid #dadce0;
+            border-top: 1px solid var(--glass-border);
             z-index: 1000;
+            transition: background 0.3s;
         }
 
         .nav-item {
             flex: 1;
             text-align: center;
             padding: 10px 0;
-            color: #5f6368;
+            color: #7f8c8d;
             text-decoration: none;
             font-size: 11px;
             font-weight: 500;
@@ -225,7 +231,7 @@
 
         .nav-item.active {
             color: var(--primary);
-            font-weight: 600;
+            font-weight: 700;
         }
 
         @media print {
@@ -236,25 +242,22 @@
                 padding-bottom: 0; 
             }
             .app-view { max-width: 100%; padding: 0; }
-            .info-card { border: none; box-shadow: none; }
+            .info-card { border: none; box-shadow: none; background: #fff; }
             .bottom-nav { display: none !important; }
         }
     </style>
 </head>
 <body>
 
-<header class="app-header">
+<div class="app-header">
     <h1>Au bonheur des Anges</h1>
-</header>
+</div>
 
 <main class="app-view">
-    
-    <!-- Header Logo Section -->
     <div class="brand-section">
         <img src="logo.jpg" alt="Logo Au bonheur des Anges" class="logo-img">
     </div>
 
-    <!-- Main App Information Card -->
     <div class="info-card text-center">
         <span class="badge">Application</span>
         <h2>Gestion des Commandes</h2>
@@ -267,7 +270,6 @@
         </p>
     </div>
 
-    <!-- Features Overview Card -->
     <div class="info-card">
         <h2>Guide des fonctionnalités</h2>
         <hr class="divider">
@@ -295,16 +297,15 @@
                 </div>
             </li>
             <li class="feature-item">
-                <div class="feature-icon">📄</div>
+                <div class="feature-icon">⚙️</div>
                 <div class="feature-text">
-                    <strong>Nouveauté</strong>
-                    <span>Adres - Button ajoute + Ajoutez des éléments à la liste ou retirez-les-en des fenêtre</span>
+                    <strong>Personnalisation iOS</strong>
+                    <span>Changez l'arrière-plan et ajustez la transparence des cartes en temps réel.</span>
                 </div>
             </li>
         </ul>
     </div>
 
-    <!-- System Info Card -->
     <div class="info-card">
         <h2>Informations système</h2>
         <hr class="divider">
@@ -319,7 +320,6 @@
             <span>Version 26.2</span>
         </div>
     </div>
-
 </main>
 
 <nav class="bottom-nav">
@@ -328,6 +328,22 @@
     <a href="listcommand.html" class="nav-item">📋<br><span>LISTE PDF</span></a>
     <a href="infoapp.html" class="nav-item active">ℹ️<br><span>INFO</span></a>
 </nav>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const savedBg = localStorage.getItem("customAppBackground");
+        if (savedBg) {
+            document.body.style.backgroundImage = `url('${savedBg}')`;
+            document.body.style.backgroundSize = "cover";
+            document.body.style.backgroundPosition = "center";
+            document.body.style.backgroundAttachment = "fixed";
+            document.body.style.backgroundRepeat = "no-repeat";
+        }
+
+        const savedOpacity = localStorage.getItem("appGlassOpacity") || "0.20";
+        document.documentElement.style.setProperty('--glass-bg', `rgba(255, 255, 255, ${savedOpacity})`);
+    });
+</script>
 
 </body>
 </html>
