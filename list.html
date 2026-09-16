@@ -55,6 +55,7 @@
         .item-title { font-size: 16px; font-weight: 700; color: #202124; margin: 0; line-height: 1.3; }
         .item-price { font-size: 16px; font-weight: 800; color: #9b59b6; white-space: nowrap; }
 
+        .item-address { font-size: 13px; color: #8e44ad; font-weight: 500; margin: 0; display: flex; align-items: center; gap: 4px; }
         .item-description { font-size: 14px; color: #4a4d51; font-weight: 500; margin: 2px 0; }
 
         .item-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12px; }
@@ -178,11 +179,12 @@
         if (loadingText) loadingText.textContent = "Erreur : " + error.message;
     });
 
-    // Zoekfilter op naam en bestelling
+    // Zoekfilter op naam, adres en bestelling
     window.filterItems = function() {
         const query = document.getElementById("searchInput").value.toLowerCase();
         currentFilteredItems = allItems.filter(item => {
             return (item.naam || '').toLowerCase().includes(query) || 
+                   (item.adres || '').toLowerCase().includes(query) || 
                    (item.text || '').toLowerCase().includes(query);
         });
         renderList(currentFilteredItems);
@@ -220,6 +222,11 @@
                 refundBadge = `<span class="badge status-refund">Remboursé</span>`;
             }
 
+            // Toon adres enkel als het ingevuld is
+            const adresHTML = item.adres && item.adres.trim() !== '' 
+                ? `<div class="item-address">📍 ${escapeHtml(item.adres)}</div>` 
+                : '';
+
             li.innerHTML = `
                 <div class="item-header">
                     <div class="title-container">
@@ -228,6 +235,8 @@
                     </div>
                     <div class="item-price">€${totaalBedrag}</div>
                 </div>
+
+                ${adresHTML}
 
                 <div class="item-description">
                     ${escapeHtml(item.text || 'Pas de description')}
@@ -312,24 +321,27 @@
         }
     };
 
-    // Bestelling bewerken
+    // Bestelling bewerken (inclusief adres)
     window.editItem = async function(id) {
         const item = allItems.find(i => i.id === id);
         if (!item) return;
 
-        const resName = prompt("Nom :", item.naam);
-        const newName = (resName === null || resName.trim() === "") ? item.naam : resName;
+        const resName = prompt("Nom :", item.naam || "");
+        const newName = (resName === null) ? item.naam : resName.trim();
 
-        const resAantal = prompt("Quantité :", item.aantal);
+        const resAdres = prompt("Adresse (Optionnel) :", item.adres || "");
+        const newAdres = (resAdres === null) ? (item.adres || "") : resAdres.trim();
+
+        const resAantal = prompt("Quantité :", item.aantal || 1);
         const newAantal = (resAantal === null || resAantal.trim() === "") ? item.aantal : resAantal;
 
-        const resPrijs = prompt("Prix unitaire (€) :", item.prijs);
+        const resPrijs = prompt("Prix unitaire (€) :", item.prijs || 0);
         const newPrijs = (resPrijs === null || resPrijs.trim() === "") ? item.prijs : resPrijs;
 
-        const resText = prompt("Commande :", item.text);
+        const resText = prompt("Commande :", item.text || "");
         const newText = (resText === null || resText.trim() === "") ? item.text : resText;
 
-        const resDatum = prompt("Date (AAAA-MM-JJ) :", item.datum);
+        const resDatum = prompt("Date (AAAA-MM-JJ) :", item.datum || "");
         const newDatum = (resDatum === null || resDatum.trim() === "") ? item.datum : resDatum;
 
         const newBetaald = confirm("Marquer comme payée ? (Ok = Oui, Annuler = Non)");
@@ -337,6 +349,7 @@
 
         const updatedData = {
             naam: newName,
+            adres: newAdres,
             aantal: parseInt(newAantal) || 0,
             prijs: parseFloat(newPrijs) || 0,
             text: newText,

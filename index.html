@@ -47,62 +47,22 @@
         .status-dot.online { background-color: #2ecc71; box-shadow: 0 0 8px #2ecc71; }
         .status-dot.offline { background-color: #e74c3c; box-shadow: 0 0 8px #e74c3c; }
 
-        /* MODAL (INSTELLINGEN VENSTER) STYLES */
+        /* MODAL STYLES */
         .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            padding: 16px;
-            box-sizing: border-box;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); display: none;
+            justify-content: center; align-items: center; z-index: 2000; padding: 16px; box-sizing: border-box;
         }
         .modal-container {
-            background-color: #ffffff;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 480px;
-            height: 85vh;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            background-color: #ffffff; border-radius: 12px; width: 100%; max-width: 480px;
+            height: 85vh; box-shadow: 0 4px 15px rgba(0,0,0,0.2); position: relative;
+            overflow: hidden; display: flex; flex-direction: column;
         }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 16px;
-            background-color: #ffffff;
-            border-bottom: 1px solid #f3d6ed;
-        }
-        .modal-header h3 {
-            margin: 0;
-            color: #9b59b6;
-            font-size: 15px;
-            font-weight: 700;
-        }
-        .btn-close-modal {
-            background: none;
-            border: none;
-            font-size: 24px;
-            font-weight: bold;
-            color: #7f8c8d;
-            cursor: pointer;
-            line-height: 1;
-        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background-color: #ffffff; border-bottom: 1px solid #f3d6ed; }
+        .modal-header h3 { margin: 0; color: #9b59b6; font-size: 15px; font-weight: 700; }
+        .btn-close-modal { background: none; border: none; font-size: 24px; font-weight: bold; color: #7f8c8d; cursor: pointer; line-height: 1; }
         .btn-close-modal:hover { color: #e74c3c; }
-        #productFrame {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
+        #productFrame { width: 100%; height: 100%; border: none; }
     </style>
 </head>
 <body>
@@ -127,9 +87,16 @@
     <div class="app-card">
         <h2 class="section-title">Nouvelle Commande</h2>
         <form id="orderForm">
+            <!-- Nom du client (Obligatoire) -->
             <div class="form-group">
-                <label for="naam">Nom du client - Adres (pas obligatoire)*</label>
-                <input type="text" id="naam" class="form-control" placeholder="ex: Marie Dupont - Adres (pas obligatoire)" required>
+                <label for="naam">Nom du client *</label>
+                <input type="text" id="naam" class="form-control" placeholder="ex: Marie Dupont" required>
+            </div>
+
+            <!-- Adresse de livraison (Optionnel) -->
+            <div class="form-group">
+                <label for="adres">Adresse de livraison (Optionnel)</label>
+                <input type="text" id="adres" class="form-control" placeholder="ex: Rue de la Paix 10, Bruxelles">
             </div>
 
             <div class="form-group">
@@ -173,10 +140,8 @@
             <button type="button" class="btn-reset" onclick="window.clearFormDraft()">
                 🗑️ Effacer le brouillon
             </button>
-            <h2>
-            </h2>
-            <h2>
-            </h2>
+<h2>
+</h2>
 
             <button type="button" class="btn-product-toggle" onclick="window.openProductModal()">
                 + Ajoutez des éléments à la liste ou retirez-les-en
@@ -258,11 +223,12 @@
     });
 
     // --- LOCALSTORAGE ---
-    const formFieldIds = ['naam', 'text', 'aantal', 'prijs', 'datum', 'betaald'];
+    const formFieldIds = ['naam', 'adres', 'text', 'aantal', 'prijs', 'datum', 'betaald'];
 
     function saveDraft() {
         const draft = {
             naam: document.getElementById('naam').value,
+            adres: document.getElementById('adres').value,
             text: document.getElementById('text').value,
             aantal: document.getElementById('aantal').value,
             prijs: document.getElementById('prijs').value,
@@ -281,6 +247,7 @@
             let restored = false;
 
             if (draft.naam) { document.getElementById('naam').value = draft.naam; restored = true; }
+            if (draft.adres) { document.getElementById('adres').value = draft.adres; restored = true; }
             if (draft.aantal) { document.getElementById('aantal').value = draft.aantal; restored = true; }
             if (draft.prijs) { document.getElementById('prijs').value = draft.prijs; restored = true; }
             if (draft.datum) { document.getElementById('datum').value = draft.datum; restored = true; }
@@ -408,6 +375,7 @@
         submitBtn.textContent = "Enregistrement...";
 
         const naam = document.getElementById("naam").value.trim();
+        const adres = document.getElementById("adres").value.trim();
         const aantal = parseInt(document.getElementById("aantal").value) || 1;
         const prijs = parseFloat(document.getElementById("prijs").value) || 0;
         const datum = document.getElementById("datum").value;
@@ -415,6 +383,7 @@
 
         const newOrder = {
             naam: naam,
+            adres: adres, // Opgeslagen in Firebase (mag leeg zijn)
             text: text,
             aantal: aantal,
             prijs: prijs,
