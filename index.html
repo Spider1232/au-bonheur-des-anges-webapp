@@ -11,10 +11,14 @@
 
     <style>
         :root {
-            /* Standaard transparantie (0.65 = 65% dekkend) */
-            --glass-bg: rgba(255, 255, 255, 0.65);
+            /* Standaard transparantie ingesteld op 20% (0.20) */
+            --glass-bg: rgba(255, 255, 255, 0.20);
             --glass-border: rgba(255, 255, 255, 0.4);
             --glass-blur: 16px;
+        }
+
+        *, *:before, *:after {
+            box-sizing: border-box;
         }
 
         body { 
@@ -61,7 +65,6 @@
             transition: background 0.3s;
         }
 
-        /* Header acties in de kaart */
         .card-header-actions {
             display: flex;
             justify-content: space-between;
@@ -85,7 +88,6 @@
             font-weight: 700; 
         }
 
-        /* Kleine subtiele instellingenknop */
         .btn-settings-icon {
             background: rgba(255, 255, 255, 0.5);
             border: 1px solid var(--glass-border);
@@ -107,11 +109,12 @@
             background: rgba(255, 255, 255, 0.8);
         }
         
-        .form-group { margin-bottom: 16px; display: flex; flex-direction: column; }
+        .form-group { margin-bottom: 16px; display: flex; flex-direction: column; width: 100%; }
         .form-group label { font-size: 13px; font-weight: 600; color: #4a4a4a; margin-bottom: 6px; }
         
-        /* Transparante Input velden */
         .form-control { 
+            width: 100%;
+            box-sizing: border-box;
             border: 1px solid var(--glass-border); 
             border-radius: 10px; 
             padding: 12px; 
@@ -127,8 +130,16 @@
             background: rgba(255, 255, 255, 0.85); 
         }
 
-        .form-row { display: flex; gap: 12px; }
-        .form-row .form-group { flex: 1; }
+        .form-row { 
+            display: flex; 
+            gap: 12px; 
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .form-row .form-group { 
+            flex: 1; 
+            min-width: 0;
+        }
 
         .checkbox-group { display: flex; align-items: center; gap: 10px; margin-top: 8px; cursor: pointer; user-select: none; }
         .checkbox-group input { width: 18px; height: 18px; accent-color: #8e44ad; cursor: pointer; }
@@ -145,9 +156,10 @@
             color: #8e44ad; 
             margin-top: 8px; 
             margin-bottom: 16px; 
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        /* Buttons */
         .btn-submit { background-color: #8e44ad; color: white; border: none; border-radius: 12px; padding: 14px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; box-shadow: 0 4px 12px rgba(142, 68, 173, 0.3); transition: all 0.2s; }
         .btn-submit:active { transform: scale(0.98); opacity: 0.9; }
 
@@ -158,7 +170,6 @@
         .alert-success { background-color: rgba(46, 204, 113, 0.85); color: white; border-radius: 10px; padding: 12px; font-size: 14px; text-align: center; margin-bottom: 16px; display: none; backdrop-filter: blur(5px); }
         .alert-info { background-color: rgba(52, 152, 219, 0.85); color: white; border-radius: 10px; padding: 10px; font-size: 12px; text-align: center; margin-bottom: 16px; display: none; backdrop-filter: blur(5px); }
 
-        /* iOS Navigatiebalk onderaan */
         .bottom-nav { 
             position: fixed; 
             bottom: 0; 
@@ -181,7 +192,6 @@
         .status-dot.online { background-color: #2ecc71; box-shadow: 0 0 8px #2ecc71; }
         .status-dot.offline { background-color: #e74c3c; box-shadow: 0 0 8px #e74c3c; }
 
-        /* Modals met Glassmorphism */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.3); 
@@ -203,9 +213,15 @@
         .btn-close-modal { background: none; border: none; font-size: 24px; color: #7f8c8d; cursor: pointer; }
         #productFrame { width: 100%; height: 80vh; border: none; }
 
-        /* Slider Styling */
         .slider-container { margin-top: 15px; }
         .slider-container input { width: 100%; accent-color: #8e44ad; cursor: pointer; }
+
+        @media (max-width: 360px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -229,7 +245,6 @@
     </div>
 
     <div class="app-card">
-        <!-- Header met titel en kleine instellingenknop -->
         <div class="card-header-actions">
             <h2 class="section-title">Nouvelle Commande</h2>
             <button type="button" class="btn-settings-icon" onclick="document.getElementById('settingsModal').style.display='flex'" title="Réglages">
@@ -305,13 +320,13 @@
             <button class="btn-close-modal" onclick="document.getElementById('settingsModal').style.display='none'">&times;</button>
         </div>
         
-        <!-- Transparantie Slider -->
+        <!-- Transparantie Slider ingesteld op 20% (0.20) -->
         <div class="slider-container">
             <label style="font-size: 13px; font-weight: 600; color: #4a4a4a; display: flex; justify-content: space-between;">
                 <span>Transparence des cartes:</span>
-                <span id="opacityVal">65%</span>
+                <span id="opacityVal">20%</span>
             </label>
-            <input type="range" id="opacitySlider" min="0.1" max="0.95" step="0.05" value="0.65" oninput="window.updateOpacity(this.value)">
+            <input type="range" id="opacitySlider" min="0.05" max="0.95" step="0.05" value="0.20" oninput="window.updateOpacity(this.value)">
         </div>
 
         <hr style="border: none; border-top: 1px solid rgba(0,0,0,0.1); margin: 15px 0;">
@@ -380,11 +395,10 @@
         const savedBg = localStorage.getItem("customAppBackground");
         if (savedBg) applyBackground(savedBg);
 
-        const savedOpacity = localStorage.getItem("appGlassOpacity");
-        if (savedOpacity) {
-            document.getElementById("opacitySlider").value = savedOpacity;
-            window.updateOpacity(savedOpacity);
-        }
+        // Laadt opgeslagen transparantie of valt terug op 20% (0.20)
+        const savedOpacity = localStorage.getItem("appGlassOpacity") || "0.20";
+        document.getElementById("opacitySlider").value = savedOpacity;
+        window.updateOpacity(savedOpacity);
     });
 
     document.getElementById("bgInput").addEventListener("change", async function(e) {
