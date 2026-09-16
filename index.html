@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Commander |</title>
+    <title>Commander | Au bonheur des Anges |</title>
     <link rel="icon" href="logo.jpg">
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background-color: #fbeef7; color: #202124; margin: 0; padding-bottom: 80px; display: flex; flex-direction: column; align-items: center; }
@@ -33,6 +33,8 @@
         .btn-reset { background-color: #e74c3c; color: white; border: none; border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; transition: background-color 0.2s; }
         .btn-reset:hover { background-color: #c0392b; }
 
+        .btn-product-toggle { background-color: #8e44ad; color: white; border: none; border-radius: 8px; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 15px; box-shadow: 0 2px 4px rgba(142, 68, 173, 0.3); }
+
         .alert-success { background-color: #e6f4ea; color: #137333; border: 1px solid #ceead6; padding: 12px; border-radius: 8px; font-size: 14px; text-align: center; margin-bottom: 16px; display: none; }
         .alert-info { background-color: #e8f0fe; color: #1a73e8; border: 1px solid #d2e3fc; padding: 10px; border-radius: 8px; font-size: 12px; text-align: center; margin-bottom: 16px; display: none; }
 
@@ -44,6 +46,63 @@
         .status-dot { width: 10px; height: 10px; border-radius: 50%; transition: background-color 0.3s, box-shadow 0.3s; }
         .status-dot.online { background-color: #2ecc71; box-shadow: 0 0 8px #2ecc71; }
         .status-dot.offline { background-color: #e74c3c; box-shadow: 0 0 8px #e74c3c; }
+
+        /* MODAL (INSTELLINGEN VENSTER) STYLES */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 16px;
+            box-sizing: border-box;
+        }
+        .modal-container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 480px;
+            height: 85vh;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background-color: #ffffff;
+            border-bottom: 1px solid #f3d6ed;
+        }
+        .modal-header h3 {
+            margin: 0;
+            color: #9b59b6;
+            font-size: 15px;
+            font-weight: 700;
+        }
+        .btn-close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            font-weight: bold;
+            color: #7f8c8d;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .btn-close-modal:hover { color: #e74c3c; }
+        #productFrame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
     </style>
 </head>
 <body>
@@ -69,8 +128,8 @@
         <h2 class="section-title">Nouvelle Commande</h2>
         <form id="orderForm">
             <div class="form-group">
-                <label for="naam">Nom du client *</label>
-                <input type="text" id="naam" class="form-control" placeholder="ex: Marie Dupont" required>
+                <label for="naam">Nom du client - Adres (pas obligatoire)*</label>
+                <input type="text" id="naam" class="form-control" placeholder="ex: Marie Dupont - Adres (pas obligatoire)" required>
             </div>
 
             <div class="form-group">
@@ -114,10 +173,26 @@
             <button type="button" class="btn-reset" onclick="window.clearFormDraft()">
                 🗑️ Effacer le brouillon
             </button>
+            <h2>
+            </h2>
+            <h2>
+            </h2>
 
-            <p></p>
-            <a href="add_product.html" class="nav-item">➕<br><span>Ajoutez des éléments à la liste ou retirez-les-en.</span></a>
+            <button type="button" class="btn-product-toggle" onclick="window.openProductModal()">
+                + Ajoutez des éléments à la liste ou retirez-les-en
+            </button>
         </form>
+    </div>
+</div>
+
+<!-- INSTELLINGEN VENSTER (MODAL OVERLAY) -->
+<div id="productModal" class="modal-overlay" onclick="window.handleOverlayClick(event)">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3>Gestion des Produits</h3>
+            <button class="btn-close-modal" onclick="window.closeProductModal()">&times;</button>
+        </div>
+        <iframe id="productFrame" src=""></iframe>
     </div>
 </div>
 
@@ -146,6 +221,25 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
+    // --- MODAL / INSTELLINGEN VENSTER FUNCTIES ---
+    window.openProductModal = function() {
+        const frame = document.getElementById("productFrame");
+        if (!frame.src || frame.src === "" || frame.src.endsWith("index.html")) {
+            frame.src = "add_product.html";
+        }
+        document.getElementById("productModal").style.display = "flex";
+    };
+
+    window.closeProductModal = function() {
+        document.getElementById("productModal").style.display = "none";
+    };
+
+    window.handleOverlayClick = function(e) {
+        if (e.target.id === "productModal") {
+            window.closeProductModal();
+        }
+    };
+
     // --- DATABASE STATUS LISTENER ---
     const connectedRef = ref(db, ".info/connected");
     onValue(connectedRef, (snap) => {
@@ -163,7 +257,7 @@
         }
     });
 
-    // --- LOCALSTORAGE (AUTOMATISCH OPSLAAN & HERSTELLEN) ---
+    // --- LOCALSTORAGE ---
     const formFieldIds = ['naam', 'text', 'aantal', 'prijs', 'datum', 'betaald'];
 
     function saveDraft() {
@@ -192,7 +286,6 @@
             if (draft.datum) { document.getElementById('datum').value = draft.datum; restored = true; }
             if (draft.betaald !== undefined) { document.getElementById('betaald').checked = draft.betaald; }
 
-            // Selectie instellen nadat producten zijn geladen
             if (draft.text) {
                 const selectElement = document.getElementById('text');
                 selectElement.value = draft.text;
@@ -217,7 +310,6 @@
         document.getElementById("totalAmount").textContent = "0.00";
     };
 
-    // Luister naar wijzigingen in de velden om op te slaan
     formFieldIds.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
@@ -230,7 +322,6 @@
     const productsRef = ref(db, 'products');
     onValue(productsRef, (snapshot) => {
         const selectMenu = document.getElementById("text");
-        const currentSelection = selectMenu.value;
         selectMenu.innerHTML = '<option value="" data-price="">-- Sélectionner un produit --</option>';
 
         if (snapshot.exists()) {
@@ -262,14 +353,12 @@
                 selectMenu.appendChild(optGroup);
             });
 
-            // Herstel conceptdata na het vullen van de lijst
             restoreDraft();
         } else {
             selectMenu.innerHTML = '<option value="" data-price="">-- Aucun produit trouvé. Importez-les via PRODUIT --</option>';
         }
     });
 
-    // Standaard datum op vandaag instellen als er geen concept is
     document.addEventListener("DOMContentLoaded", () => {
         if (!localStorage.getItem('orderFormDraft')) {
             const today = new Date().toISOString().split('T')[0];
@@ -277,7 +366,6 @@
         }
     });
 
-    // Vul automatisch de prijs in bij selectie
     window.updateDefaultPrice = function() {
         const selectElement = document.getElementById("text");
         const selectedOption = selectElement.options[selectElement.selectedIndex];
@@ -290,7 +378,6 @@
         saveDraft();
     };
 
-    // Live totaalberekening
     window.calculateTotal = function() {
         const aantal = parseInt(document.getElementById("aantal").value) || 0;
         const prijs = parseFloat(document.getElementById("prijs").value) || 0;
@@ -298,7 +385,6 @@
         document.getElementById("totalAmount").textContent = total;
     };
 
-    // Checkbox interactie fix
     window.toggleCheckbox = function(e, id) {
         const checkbox = document.getElementById(id);
         if (e && e.target !== checkbox) {
@@ -307,7 +393,6 @@
         saveDraft();
     };
 
-    // Formulier verzenden
     const form = document.getElementById("orderForm");
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -348,7 +433,6 @@
             alertBox.style.display = "block";
             setTimeout(() => { alertBox.style.display = "none"; }, 4000);
 
-            // Brouillon wissen na succesvol versturen
             window.clearFormDraft();
 
         } catch (error) {

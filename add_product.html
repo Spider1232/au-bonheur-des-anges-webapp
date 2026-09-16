@@ -18,6 +18,11 @@
         .form-control { border: 1px solid #f3d6ed; border-radius: 8px; padding: 12px; font-size: 15px; outline: none; transition: border-color 0.2s; background: #fafafa; }
         .form-control:focus { border-color: #9b59b6; background: #ffffff; }
 
+        .cat-input-group { display: flex; gap: 8px; }
+        .cat-input-group select { flex: 1; }
+        .btn-add-cat { background-color: #8e44ad; color: white; border: none; border-radius: 8px; padding: 0 12px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background-color 0.2s; }
+        .btn-add-cat:hover { background-color: #7d3c98; }
+
         .btn-submit { background-color: #9b59b6; color: white; border: none; border-radius: 8px; padding: 14px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; box-shadow: 0 2px 4px rgba(155, 89, 182, 0.3); transition: background-color 0.2s; }
         .btn-submit:active { background-color: #8e44ad; }
         
@@ -89,7 +94,7 @@
 </head>
 <body>
 
-<a href="index.html" class="btn-close-top" title="Retour vers commande">&times;</a>
+
 
 <div class="app-view">
     <div id="alertSuccess" class="alert-success">
@@ -97,7 +102,7 @@
     </div>
     
     <div>
-    <h2 class="section-title" id="formTitle">Ajoutez des éléments à la liste ou retirez-les-en.</h2>
+    <h2 class="section-title">Ajoutez des éléments à la liste ou retirez-les-en.</h2>
     </div>
 
     <!-- Form Card -->
@@ -108,13 +113,16 @@
 
             <div class="form-group">
                 <label for="categorie">Catégorie *</label>
-                <select id="categorie" class="form-control" required>
-                    <option value="Sublimation">Sublimation</option>
-                    <option value="Créations 3D">Créations 3D</option>
-                    <option value="Déco pour Noël">Déco pour Noël</option>
-                    <option value="Photo Design">Photo Design</option>
-                    <option value="Autre">Autre</option>
-                </select>
+                <div class="cat-input-group">
+                    <select id="categorie" class="form-control" required>
+                        <!-- Standaard categorieën -->
+                        <option value="Sublimation">Sublimation</option>
+                        <option value="Créations 3D">Créations 3D</option>
+                        <option value="Déco pour Noël">Déco pour Noël</option>
+                        <option value="Photo Design">Photo Design</option>
+                        <option value="Autre">Autre</option>
+                    </select>
+                                   </div>
             </div>
 
             <div class="form-group">
@@ -190,11 +198,6 @@
     </div>
 </div>
 
-<div class="bottom-nav">
-    <a href="index.html" class="nav-item">📝<br><span>Retour vers commande</span></a>
-</div>
-
-<!-- Firebase Module Script -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getDatabase, ref, push, set, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -213,6 +216,66 @@
     const db = getDatabase(app);
 
     let allProductsData = {};
+
+    // 0. BEHEER VAN EXTRA CATEGORIEËN (LOCALSTORAGE)
+    window.loadCustomCategories = function() {
+        const customCats = JSON.parse(localStorage.getItem("customCategories") || "[]");
+        const catSelect = document.getElementById("categorie");
+        const filterSelect = document.getElementById("filterCategory");
+
+        customCats.forEach(cat => {
+            // Check of de optie al bestaat in de select
+            if (!catSelect.querySelector(`option[value="${cat}"]`)) {
+                const option1 = new Option(cat, cat);
+                catSelect.add(option1);
+
+                const option2 = new Option(cat, cat);
+                filterSelect.add(option2);
+            }
+        });
+    };
+
+    window.addNewCategory = function() {
+        const newCat = prompt("Entrez le nom de la nouvelle catégorie :");
+        if (!newCat || newCat.trim() === "") return;
+
+        const cleanCat = newCat.trim();
+        const catSelect = document.getElementById("categorie");
+        const filterSelect = document.getElementById("filterCategory");
+
+        // Controleren of de categorie al bestaat
+        let exists = false;
+        for (let i = 0; i < catSelect.options.length; i++) {
+            if (catSelect.options[i].value.toLowerCase() === cleanCat.toLowerCase()) {
+                exists = true;
+                break;
+            }
+        }
+
+        if (exists) {
+            alert("Cette catégorie existe déjà !");
+            catSelect.value = cleanCat;
+            return;
+        }
+
+        // Toevoegen aan keuzelijsten
+        const option1 = new Option(cleanCat, cleanCat);
+        catSelect.add(option1);
+        catSelect.value = cleanCat; // Direct selecteren
+
+        const option2 = new Option(cleanCat, cleanCat);
+        filterSelect.add(option2);
+
+        // Opslaan in LocalStorage
+        const customCats = JSON.parse(localStorage.getItem("customCategories") || "[]");
+        customCats.push(cleanCat);
+        localStorage.setItem("customCategories", JSON.stringify(customCats));
+
+        showMessage("Nouvelle catégorie ajoutée !");
+    };
+
+    // Laad opgeslagen categorieën bij het starten
+    window.loadCustomCategories();
 
     // 1. DATABASE STATUS LISTENER
     const connectedRef = ref(db, ".info/connected");
@@ -238,6 +301,18 @@
     onValue(productsRef, (snapshot) => {
         if (snapshot.exists()) {
             allProductsData = snapshot.val();
+            
+            // Automatisch categorieën toevoegen aan de lijst als ze uit Firebase komen
+            Object.values(allProductsData).forEach(item => {
+                if (item.categorie) {
+                    const catSelect = document.getElementById("categorie");
+                    const filterSelect = document.getElementById("filterCategory");
+                    if (!catSelect.querySelector(`option[value="${item.categorie}"]`)) {
+                        catSelect.add(new Option(item.categorie, item.categorie));
+                        filterSelect.add(new Option(item.categorie, item.categorie));
+                    }
+                }
+            });
         } else {
             allProductsData = {};
         }
@@ -297,7 +372,6 @@
                 </td>
             `;
 
-            // Attach event listeners safely without string escaping issues in HTML attributes
             tr.querySelector('.btn-edit').addEventListener('click', () => {
                 window.editProduct(id, naam, prijs, categorie);
             });
@@ -442,7 +516,15 @@
     // 7. EDIT PRODUCT
     window.editProduct = function(id, naam, prijs, categorie) {
         document.getElementById("editProductId").value = id;
-        document.getElementById("categorie").value = categorie;
+        
+        const catSelect = document.getElementById("categorie");
+        if (!catSelect.querySelector(`option[value="${categorie}"]`)) {
+            const filterSelect = document.getElementById("filterCategory");
+            catSelect.add(new Option(categorie, categorie));
+            filterSelect.add(new Option(categorie, categorie));
+        }
+        
+        catSelect.value = categorie;
         document.getElementById("productNaam").value = naam;
         document.getElementById("productPrijs").value = prijs;
 
