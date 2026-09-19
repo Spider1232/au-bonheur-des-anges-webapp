@@ -9,12 +9,16 @@
         :root {
             --primary: #8e44ad;
             --primary-dark: #6c3483;
-            /* Transparantie ingesteld op 20% (0.20 dekkend) */
+            /* Standaard hele lichte transparantie (20% dekkend) gelijk aan index.html */
             --glass-bg: rgba(255, 255, 255, 0.20);
-            --glass-border: rgba(255, 255, 255, 0.3);
+            --glass-border: rgba(255, 255, 255, 0.4);
             --glass-blur: 16px;
             --text-main: #2c3e50;
             --text-muted: #7f8c8d;
+        }
+
+        *, *:before, *:after {
+            box-sizing: border-box;
         }
 
         body {
@@ -23,10 +27,11 @@
             color: var(--text-main);
             margin: 0;
             padding: 0;
-            padding-bottom: 90px;
+            padding-bottom: 110px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-height: 100vh;
         }
 
         .app-header {
@@ -74,12 +79,13 @@
             height: 110px;
             object-fit: cover;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.4);
             padding: 4px;
             box-shadow: 0 4px 15px rgba(142, 68, 173, 0.15);
             border: 1px solid var(--glass-border);
         }
 
+        /* Gelijkgetrokken kaarten */
         .info-card {
             background: var(--glass-bg);
             backdrop-filter: blur(var(--glass-blur));
@@ -89,7 +95,7 @@
             padding: 20px;
             width: 100%;
             box-sizing: border-box;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.12);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);
             transition: background 0.3s;
         }
 
@@ -150,7 +156,7 @@
 
         .feature-icon {
             font-size: 18px;
-            background: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.25);
             padding: 8px;
             border-radius: 10px;
             display: flex;
@@ -200,39 +206,60 @@
             border-radius: 50%;
         }
 
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: var(--glass-bg);
-            backdrop-filter: blur(var(--glass-blur));
-            -webkit-backdrop-filter: blur(var(--glass-blur));
-            display: flex;
-            justify-content: space-around;
-            border-top: 1px solid var(--glass-border);
-            z-index: 1000;
-            transition: background 0.3s;
-        }
-
-        .nav-item {
-            flex: 1;
-            text-align: center;
-            padding: 10px 0;
-            color: #7f8c8d;
-            text-decoration: none;
-            font-size: 11px;
-            font-weight: 500;
-            display: flex;
-            flex-direction: column;
+        /* Witte Floating iOS Navigatiebalk */
+        .bottom-nav { 
+            position: fixed; 
+            bottom: 12px; 
+            left: 50%; 
+            transform: translateX(-50%);
+            width: calc(100% - 24px); 
+            max-width: 450px; 
+            background: rgba(255, 255, 255, 0.88); 
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex; 
+            justify-content: space-around; 
             align-items: center;
-            gap: 3px;
+            border: 1px solid rgba(255, 255, 255, 0.6); 
+            border-radius: 28px;
+            padding: 6px 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.05);
+            z-index: 1000; 
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        .nav-item.active {
-            color: var(--primary);
-            font-weight: 700;
+        .nav-item { 
+            flex: 1; 
+            text-align: center; 
+            padding: 8px 4px; 
+            color: #555555; 
+            text-decoration: none; 
+            font-size: 10px; 
+            font-weight: 600; 
+            letter-spacing: 0.3px;
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 4px; 
+            border-radius: 18px;
+            transition: all 0.2s ease;
         }
+
+        .nav-item svg {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), fill 0.2s;
+        }
+
+        .nav-item.active { 
+            color: #8e44ad; 
+            font-weight: 700; 
+            background: rgba(142, 68, 173, 0.12);
+        }
+
+        .nav-item.active svg { transform: scale(1.1); }
+        .nav-item:active { transform: scale(0.92); opacity: 0.8; }
 
         @media print {
             body { 
@@ -323,10 +350,22 @@
 </main>
 
 <nav class="bottom-nav">
-    <a href="index.html" class="nav-item">📝<br><span>COMMANDER</span></a>
-    <a href="list.html" class="nav-item">📊<br><span>LISTE</span></a>
-    <a href="listcommand.html" class="nav-item">📋<br><span>LISTE PDF</span></a>
-    <a href="infoapp.html" class="nav-item active">ℹ️<br><span>INFO</span></a>
+    <a href="index.html" class="nav-item">
+        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+        <span>COMMANDER</span>
+    </a>
+    <a href="list.html" class="nav-item">
+        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+        <span>LISTE COMMAND</span>
+    </a>
+    <a href="listcommand.html" class="nav-item">
+        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 9h-2V5h2v6zm0 4h-2v-2h2v2z"/></svg>
+        <span>LISTE PDF</span>
+    </a>
+    <a href="infoapp.html" class="nav-item active">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+        <span>INFO</span>
+    </a>
 </nav>
 
 <script>
