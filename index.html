@@ -219,7 +219,7 @@
         .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid rgba(0,0,0,0.08); }
         .modal-header h3 { margin: 0; color: #8e44ad; font-size: 16px; font-weight: 700; }
         .btn-close-modal { background: none; border: none; font-size: 24px; color: #7f8c8d; cursor: pointer; }
-        #productFrame { width: 100%; height: 80vh; border: none; }
+        #productFrame, #notebookFrame { width: 100%; height: 80vh; border: none; }
 
         .slider-container { margin-top: 15px; }
         .slider-container input { width: 100%; accent-color: #8e44ad; cursor: pointer; }
@@ -256,7 +256,8 @@
         <div class="card-header-actions">
             <h2 class="section-title">Nouvelle Commande</h2>
             <div class="header-buttons">
-                <a href="notebook.html" class="btn-header-icon" title="Bloc-notes">📝</a>
+                <!-- Knop om notebook.html direct als venster te openen -->
+                <button type="button" class="btn-header-icon" onclick="window.openNotebookModal()" title="Bloc-notes">📝</button>
                 <button type="button" class="btn-header-icon" onclick="document.getElementById('settingsModal').style.display='flex'" title="Réglages">⚙️</button>
             </div>
         </div>
@@ -367,6 +368,17 @@
     </div>
 </div>
 
+<!-- NOTEBOOK MODAL (ZEVEND VENSTER) -->
+<div id="notebookModal" class="modal-overlay" onclick="window.handleNotebookOverlayClick(event)">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3>Bloc-notes (Notebook)</h3>
+            <button class="btn-close-modal" onclick="window.closeNotebookModal()">&times;</button>
+        </div>
+        <iframe id="notebookFrame" src=""></iframe>
+    </div>
+</div>
+
 <div class="bottom-nav">
     <a href="index.html" class="nav-item active">📝<br><span>BON DE COMMANDE</span></a>
     <a href="list.html" class="nav-item">📊<br><span>LISTE COMMANDE</span></a>
@@ -466,7 +478,7 @@
         document.getElementById('settingsModal').style.display = 'none';
     };
 
-    // --- MODALS ---
+    // --- PRODUCT MODAL ---
     window.openProductModal = function() {
         const frame = document.getElementById("productFrame");
         if (!frame.src || frame.src === "" || frame.src.endsWith("index.html")) {
@@ -481,6 +493,23 @@
 
     window.handleOverlayClick = function(e) {
         if (e.target.id === "productModal") window.closeProductModal();
+    };
+
+    // --- NOTEBOOK MODAL ---
+    window.openNotebookModal = function() {
+        const frame = document.getElementById("notebookFrame");
+        if (!frame.src || frame.src === "" || frame.src.endsWith("index.html")) {
+            frame.src = "notebook.html";
+        }
+        document.getElementById("notebookModal").style.display = "flex";
+    };
+
+    window.closeNotebookModal = function() {
+        document.getElementById("notebookModal").style.display = "none";
+    };
+
+    window.handleNotebookOverlayClick = function(e) {
+        if (e.target.id === "notebookModal") window.closeNotebookModal();
     };
 
     // --- DATABASE STATUS LISTENER ---
