@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Au bonheur des Anges - Mes Idées & Notes</title>
     <link rel="icon" href="logo.jpg">
+    <!-- Script pour la génération PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; 
@@ -20,7 +22,7 @@
             background-color: #ffffff; 
             width: 100%; 
             text-align: center; 
-            padding: 12px 0; 
+            padding: 14px 0; 
             box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
             position: sticky; 
             top: 0; 
@@ -85,6 +87,8 @@
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
+            flex-wrap: wrap;
+            gap: 8px;
         }
         
         .form-group { 
@@ -160,6 +164,49 @@
             display: none; 
         }
 
+        /* Toolbar / Actions de la liste */
+        .list-toolbar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+        .btn-tool {
+            background-color: #fbeef7;
+            color: #9b59b6;
+            border: 1px solid #f3d6ed;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .btn-tool:hover {
+            background-color: #9b59b6;
+            color: #ffffff;
+        }
+        .btn-delete-selected {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+        }
+        .btn-delete-selected:hover {
+            background-color: #c0392b;
+        }
+        .btn-pdf {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            margin-left: auto;
+        }
+        .btn-pdf:hover {
+            background-color: #219150;
+        }
+
         /* Ideas Grid */
         .ideas-grid {
             display: flex;
@@ -180,6 +227,17 @@
             align-items: flex-start;
             margin-bottom: 8px;
         }
+        .idea-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .select-checkbox {
+            width: 18px;
+            height: 18px;
+            accent-color: #9b59b6;
+            cursor: pointer;
+        }
         .idea-title {
             font-size: 15px;
             font-weight: 700;
@@ -196,6 +254,7 @@
             white-space: pre-wrap;
             margin-bottom: 10px;
             line-height: 1.4;
+            padding-left: 28px;
         }
         .idea-actions {
             display: flex;
@@ -213,29 +272,50 @@
         .btn-edit { background-color: #f39c12; color: white; }
         .btn-delete { background-color: #e74c3c; color: white; }
 
-        .db-status-container { 
-            display: inline-flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 6px; 
-            font-size: 13px; 
-            font-weight: 600; 
-            margin-top: 6px; 
+        /* Template PDF caché pour l'export */
+        #pdfExportTemplate {
+            display: none;
+            background: white;
+            padding: 30px;
+            font-family: Arial, sans-serif;
+            color: #333;
         }
-        .status-dot { 
-            width: 10px; 
-            height: 10px; 
-            border-radius: 50%; 
-            transition: background-color 0.3s, box-shadow 0.3s; 
+        #pdfExportTemplate h2 {
+            color: #9b59b6;
+            border-bottom: 2px solid #9b59b6;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
         }
-        .status-dot.online { background-color: #2ecc71; box-shadow: 0 0 8px #2ecc71; }
-        .status-dot.offline { background-color: #e74c3c; box-shadow: 0 0 8px #e74c3c; }
+        .pdf-item {
+            margin-bottom: 16px;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-left: 4px solid #9b59b6;
+            border-radius: 6px;
+        }
+        .pdf-item-title {
+            font-weight: bold;
+            font-size: 14px;
+            color: #2c3e50;
+        }
+        .pdf-item-date {
+            font-size: 10px;
+            color: #7f8c8d;
+            margin-bottom: 6px;
+        }
+        .pdf-item-desc {
+            font-size: 12px;
+            white-space: pre-wrap;
+            color: #444;
+        }
     </style>
 </head>
 <body>
 
-
+<header class="app-header">
     <a href="index.html" class="btn-close-app" title="Retour à l'accueil">&times;</a>
+    <h1>Au bonheur des Anges - Idées & Notes</h1>
+</header>
 
 <div class="app-view">
     <div id="alertSuccess" class="alert-success">
@@ -273,10 +353,29 @@
             <span>Mes Idées Enregistrées</span>
         </h2>
 
+        <!-- Barre d'outils Sélection, Suppression & PDF -->
+        <div class="list-toolbar">
+            <button class="btn-tool" onclick="window.toggleSelectAll()" id="btnToggleSelect">
+                ☑️ Tout sélectionner
+            </button>
+            <button class="btn-tool btn-delete-selected" onclick="window.deleteSelected()">
+                🗑️ Supprimer la sélection
+            </button>
+            <button class="btn-tool btn-pdf" onclick="window.exportSelectedToPDF()">
+                📄 Exporter en PDF
+            </button>
+        </div>
+
         <div id="ideasContainer" class="ideas-grid">
             <div style="text-align: center; color: #7f8c8d; padding: 15px;">Chargement des idées...</div>
         </div>
     </div>
+</div>
+
+<!-- Div cachée servant de modèle pour la génération du PDF -->
+<div id="pdfExportTemplate">
+    <h2>Au bonheur des Anges - Mes Idées</h2>
+    <div id="pdfContent"></div>
 </div>
 
 <script type="module">
@@ -297,27 +396,9 @@
     const db = getDatabase(app);
 
     let allIdeasData = {};
+    let allSelected = false;
 
-    // 1. DATABASE STATUS LISTENER
-    const connectedRef = ref(db, ".info/connected");
-    onValue(connectedRef, (snap) => {
-        const statusDot = document.getElementById("statusDot");
-        const statusText = document.getElementById("statusText");
-
-        if (statusDot && statusText) {
-            if (snap.val() === true) {
-                statusDot.className = "status-dot online";
-                statusText.textContent = "Online";
-                statusText.style.color = "#2ecc71";
-            } else {
-                statusDot.className = "status-dot offline";
-                statusText.textContent = "Offline";
-                statusText.style.color = "#e74c3c";
-            }
-        }
-    });
-
-    // 2. LIVE IDEAS LISTENER FROM FIREBASE
+    // 1. LIVE IDEAS LISTENER FROM FIREBASE
     const ideasRef = ref(db, 'ideas');
     onValue(ideasRef, (snapshot) => {
         if (snapshot.exists()) {
@@ -328,7 +409,7 @@
         window.renderIdeas();
     });
 
-    // 3. RENDER IDEAS LIST
+    // 2. RENDER IDEAS LIST
     window.renderIdeas = function() {
         const container = document.getElementById("ideasContainer");
         container.innerHTML = "";
@@ -353,7 +434,10 @@
 
             div.innerHTML = `
                 <div class="idea-header">
-                    <h3 class="idea-title">${escapeHtml(titre)}</h3>
+                    <div class="idea-title-wrapper">
+                        <input type="checkbox" class="select-checkbox" data-id="${id}">
+                        <h3 class="idea-title">${escapeHtml(titre)}</h3>
+                    </div>
                     <span class="idea-date">${dateStr}</span>
                 </div>
                 ${description ? `<div class="idea-content">${escapeHtml(description)}</div>` : ''}
@@ -374,7 +458,102 @@
         });
     };
 
-    // 4. FORM SUBMIT (ADD OR UPDATE)
+    // 3. TOUT SÉLECTIONNER / DESÉLECTIONNER
+    window.toggleSelectAll = function() {
+        const checkboxes = document.querySelectorAll('.select-checkbox');
+        allSelected = !allSelected;
+        
+        checkboxes.forEach(cb => cb.checked = allSelected);
+        
+        const btn = document.getElementById('btnToggleSelect');
+        btn.textContent = allSelected ? '⏹️ Tout désélectionner' : '☑️ Tout sélectionner';
+    };
+
+    // 4. SUPPRIMER LA SÉLECTION
+    window.deleteSelected = async function() {
+        const checkboxes = document.querySelectorAll('.select-checkbox:checked');
+        const selectedIds = Array.from(checkboxes).map(cb => cb.getAttribute('data-id'));
+
+        if (selectedIds.length === 0) {
+            alert("Veuillez sélectionner au moins une idée à supprimer.");
+            return;
+        }
+
+        if (confirm(`Voulez-vous vraiment supprimer les ${selectedIds.length} élément(s) sélectionné(s) ?`)) {
+            try {
+                const deletePromises = selectedIds.map(id => remove(ref(db, `ideas/${id}`)));
+                await Promise.all(deletePromises);
+                
+                allSelected = false;
+                document.getElementById('btnToggleSelect').textContent = '☑️ Tout sélectionner';
+                showMessage(`${selectedIds.length} idée(s) supprimée(s) !`);
+            } catch (error) {
+                alert("Erreur lors de la suppression: " + error.message);
+            }
+        }
+    };
+
+    // 5. EXPORT EN PDF (Sélection ou Tout)
+    window.exportSelectedToPDF = function() {
+        const checkboxes = document.querySelectorAll('.select-checkbox:checked');
+        const selectedIds = Array.from(checkboxes).map(cb => cb.getAttribute('data-id'));
+
+        let idsToExport = selectedIds;
+
+        if (idsToExport.length === 0) {
+            const exportAll = confirm("Aucune idée n'est cochée. Voulez-vous exporter TOUTES les idées en PDF ?");
+            if (!exportAll) return;
+            idsToExport = Object.keys(allIdeasData);
+        }
+
+        if (idsToExport.length === 0) {
+            alert("Aucune idée à exporter.");
+            return;
+        }
+
+        idsToExport.sort((a, b) => (allIdeasData[b].timestamp || 0) - (allIdeasData[a].timestamp || 0));
+
+        const pdfContent = document.getElementById("pdfContent");
+        pdfContent.innerHTML = "";
+
+        idsToExport.forEach(id => {
+            const item = allIdeasData[id];
+            if (!item) return;
+
+            const titre = item.titre || "Sans titre";
+            const description = item.description || "";
+            const dateStr = item.timestamp ? new Date(item.timestamp).toLocaleDateString('fr-BE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+
+            const itemDiv = document.createElement("div");
+            itemDiv.className = "pdf-item";
+            itemDiv.innerHTML = `
+                <div class="pdf-item-title">${escapeHtml(titre)}</div>
+                <div class="pdf-item-date">${dateStr}</div>
+                ${description ? `<div class="pdf-item-desc">${escapeHtml(description)}</div>` : ''}
+            `;
+            pdfContent.appendChild(itemDiv);
+        });
+
+        const element = document.getElementById('pdfExportTemplate');
+        element.style.display = 'block';
+
+        const opt = {
+            margin:       10,
+            filename:     'Au_bonheur_des_anges_Idees.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(element).save().then(() => {
+            element.style.display = 'none';
+        }).catch(err => {
+            console.error("Erreur PDF:", err);
+            element.style.display = 'none';
+        });
+    };
+
+    // 6. FORM SUBMIT (ADD OR UPDATE)
     const form = document.getElementById("ideaForm");
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -412,7 +591,7 @@
         }
     });
 
-    // 5. EDIT IDEA
+    // 7. EDIT IDEA
     window.editIdea = function(id, titre, description) {
         document.getElementById("editIdeaId").value = id;
         document.getElementById("ideaTitre").value = titre;
@@ -425,7 +604,7 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    // 6. DELETE IDEA
+    // 8. DELETE SINGLE IDEA
     window.deleteIdea = async function(id) {
         if (confirm("Voulez-vous vraiment supprimer cette idée ?")) {
             try {
@@ -438,7 +617,7 @@
         }
     };
 
-    // 7. RESET FORM
+    // 9. RESET FORM
     window.resetForm = function() {
         form.reset();
         document.getElementById("editIdeaId").value = "";
