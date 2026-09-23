@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="fr-BE">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Au bonheur des Anges - Mes Idées & Notes</title>
+    <link rel="icon" href="logo.jpg">
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; 
+            background-color: #fbeef7; 
+            color: #202124; 
+            margin: 0; 
+            padding-bottom: 90px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+        }
+        .app-header { 
+            background-color: #ffffff; 
+            width: 100%; 
+            text-align: center; 
+            padding: 12px 0; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+        }
+        .app-header h1 { 
+            font-size: 16px; 
+            margin: 0; 
+            color: #9b59b6; 
+            font-weight: 600; 
+        }
+        .app-view { 
+            width: 100%; 
+            max-width: 600px; 
+            box-sizing: border-box; 
+            padding: 16px; 
+        }
+        .app-card { 
+            background: #ffffff; 
+            border: 1px solid #f3d6ed; 
+            border-radius: 12px; 
+            padding: 20px; 
+            box-shadow: 0 2px 8px rgba(155, 89, 182, 0.05); 
+            width: 100%; 
+            box-sizing: border-box; 
+            margin-bottom: 16px; 
+        }
+        .section-title { 
+            font-size: 16px; 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px; 
+            color: #9b59b6; 
+            margin: 0 0 16px 0; 
+            font-weight: 700; 
+            border-bottom: 2px solid #fbeef7; 
+            padding-bottom: 8px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        
+        .form-group { 
+            margin-bottom: 16px; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        .form-group label { 
+            font-size: 13px; 
+            font-weight: 600; 
+            color: #5f6368; 
+            margin-bottom: 6px; 
+        }
+        .form-control { 
+            border: 1px solid #f3d6ed; 
+            border-radius: 8px; 
+            padding: 12px; 
+            font-size: 15px; 
+            outline: none; 
+            transition: border-color 0.2s; 
+            background: #fafafa; 
+            font-family: inherit;
+        }
+        .form-control:focus { 
+            border-color: #9b59b6; 
+            background: #ffffff; 
+        }
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn-submit { 
+            background-color: #9b59b6; 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            padding: 14px; 
+            font-size: 16px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            width: 100%; 
+            box-shadow: 0 2px 4px rgba(155, 89, 182, 0.3); 
+            transition: background-color 0.2s; 
+        }
+        .btn-submit:active { 
+            background-color: #8e44ad; 
+        }
+        
+        .btn-cancel { 
+            background-color: #95a5a6; 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            padding: 10px; 
+            font-size: 14px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            width: 100%; 
+            margin-top: 8px; 
+            display: none; 
+        }
+
+        .alert-success { 
+            background-color: #e6f4ea; 
+            color: #137333; 
+            border: 1px solid #ceead6; 
+            padding: 12px; 
+            border-radius: 8px; 
+            font-size: 14px; 
+            text-align: center; 
+            margin-bottom: 16px; 
+            display: none; 
+        }
+
+        /* Ideas Grid */
+        .ideas-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .idea-card {
+            background-color: #fafafa;
+            border: 1px solid #f3d6ed;
+            border-left: 4px solid #9b59b6;
+            border-radius: 8px;
+            padding: 14px;
+            position: relative;
+        }
+        .idea-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+        .idea-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #202124;
+            margin: 0;
+        }
+        .idea-date {
+            font-size: 11px;
+            color: #7f8c8d;
+        }
+        .idea-content {
+            font-size: 13px;
+            color: #5f6368;
+            white-space: pre-wrap;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        .idea-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 6px;
+        }
+        .btn-action { 
+            border: none; 
+            padding: 6px 10px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 12px; 
+            font-weight: 600; 
+        }
+        .btn-edit { background-color: #f39c12; color: white; }
+        .btn-delete { background-color: #e74c3c; color: white; }
+
+        .db-status-container { 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 6px; 
+            font-size: 13px; 
+            font-weight: 600; 
+            margin-top: 8px; 
+        }
+        .status-dot { 
+            width: 10px; 
+            height: 10px; 
+            border-radius: 50%; 
+            transition: background-color 0.3s, box-shadow 0.3s; 
+        }
+        .status-dot.online { background-color: #2ecc71; box-shadow: 0 0 8px #2ecc71; }
+        .status-dot.offline { background-color: #e74c3c; box-shadow: 0 0 8px #e74c3c; }
+    </style>
+</head>
+<body>
+
+<header class="app-header">
+    <h1>Au bonheur des Anges - Idées & Notes</h1>
+    <div class="db-status-container">
+        <span id="statusDot" class="status-dot offline"></span>
+        <span id="statusText">Connexion...</span>
+    </div>
+</header>
+
+<div class="app-view">
+    <div id="alertSuccess" class="alert-success">
+        &check; Opération réussie !
+    </div>
+
+    <!-- Form Card -->
+    <div class="app-card">
+        <h2 class="section-title" id="formTitle">Nouvelle Idée</h2>
+        <form id="ideaForm">
+            <input type="hidden" id="editIdeaId" value="">
+
+            <div class="form-group">
+                <label for="ideaTitre">Titre de l'idée *</label>
+                <input type="text" id="ideaTitre" class="form-control" placeholder="ex: Nouveau design mug Noël" required>
+            </div>
+
+            <div class="form-group">
+                <label for="ideaDescription">Description / Notes</label>
+                <textarea id="ideaDescription" class="form-control" placeholder="Détails de l'idée, matériaux, couleurs..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit" id="submitBtn">
+                Enregistrer l'idée
+            </button>
+            <button type="button" class="btn-cancel" id="cancelBtn" onclick="window.resetForm()">
+                Annuler la modification
+            </button>
+        </form>
+    </div>
+
+    <!-- Ideas List Card -->
+    <div class="app-card">
+        <h2 class="section-title">
+            <span>Mes Idées Enregistrées</span>
+        </h2>
+
+        <div id="ideasContainer" class="ideas-grid">
+            <div style="text-align: center; color: #7f8c8d; padding: 15px;">Chargement des idées...</div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, push, set, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "JOUW_API_KEY", 
+        authDomain: "cloudstockage-b1580.firebaseapp.com",
+        databaseURL: "https://cloudstockage-b1580-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "cloudstockage-b1580",
+        storageBucket: "cloudstockage-b1580.appspot.com",
+        messagingSenderId: "524333606775",
+        appId: "JOUW_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let allIdeasData = {};
+
+    // 1. DATABASE STATUS LISTENER
+    const connectedRef = ref(db, ".info/connected");
+    onValue(connectedRef, (snap) => {
+        const statusDot = document.getElementById("statusDot");
+        const statusText = document.getElementById("statusText");
+
+        if (statusDot && statusText) {
+            if (snap.val() === true) {
+                statusDot.className = "status-dot online";
+                statusText.textContent = "Online";
+                statusText.style.color = "#2ecc71";
+            } else {
+                statusDot.className = "status-dot offline";
+                statusText.textContent = "Offline";
+                statusText.style.color = "#e74c3c";
+            }
+        }
+    });
+
+    // 2. LIVE IDEAS LISTENER FROM FIREBASE
+    const ideasRef = ref(db, 'ideas');
+    onValue(ideasRef, (snapshot) => {
+        if (snapshot.exists()) {
+            allIdeasData = snapshot.val();
+        } else {
+            allIdeasData = {};
+        }
+        window.renderIdeas();
+    });
+
+    // 3. RENDER IDEAS LIST
+    window.renderIdeas = function() {
+        const container = document.getElementById("ideasContainer");
+        container.innerHTML = "";
+
+        const ideaKeys = Object.keys(allIdeasData);
+
+        if (ideaKeys.length === 0) {
+            container.innerHTML = `<div style="text-align: center; color: #7f8c8d; padding: 15px;">Aucune idée enregistrée pour le moment.</div>`;
+            return;
+        }
+
+        // Sorteren op nieuwste datum eerst
+        ideaKeys.sort((a, b) => (allIdeasData[b].timestamp || 0) - (allIdeasData[a].timestamp || 0));
+
+        ideaKeys.forEach(id => {
+            const item = allIdeasData[id];
+            const div = document.createElement("div");
+            div.className = "idea-card";
+
+            const titre = item.titre || "Sans titre";
+            const description = item.description || "";
+            const dateStr = item.timestamp ? new Date(item.timestamp).toLocaleDateString('fr-BE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+
+            div.innerHTML = `
+                <div class="idea-header">
+                    <h3 class="idea-title">${escapeHtml(titre)}</h3>
+                    <span class="idea-date">${dateStr}</span>
+                </div>
+                ${description ? `<div class="idea-content">${escapeHtml(description)}</div>` : ''}
+                <div class="idea-actions">
+                    <button class="btn-action btn-edit" data-id="${id}">✏️ Modifier</button>
+                    <button class="btn-action btn-delete" data-id="${id}">🗑️ Supprimer</button>
+                </div>
+            `;
+
+            div.querySelector('.btn-edit').addEventListener('click', () => {
+                window.editIdea(id, titre, description);
+            });
+            div.querySelector('.btn-delete').addEventListener('click', () => {
+                window.deleteIdea(id);
+            });
+
+            container.appendChild(div);
+        });
+    };
+
+    // 4. FORM SUBMIT (ADD OR UPDATE)
+    const form = document.getElementById("ideaForm");
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const editId = document.getElementById("editIdeaId").value;
+        const titre = document.getElementById("ideaTitre").value.trim();
+        const description = document.getElementById("ideaDescription").value.trim();
+
+        const submitBtn = document.getElementById("submitBtn");
+        submitBtn.disabled = true;
+
+        try {
+            if (editId) {
+                const itemRef = ref(db, `ideas/${editId}`);
+                await update(itemRef, {
+                    titre: titre,
+                    description: description
+                });
+                showMessage("Idée mise à jour avec succès !");
+            } else {
+                const newRef = push(ideasRef);
+                await set(newRef, {
+                    titre: titre,
+                    description: description,
+                    timestamp: Date.now()
+                });
+                showMessage("Nouvelle idée ajoutée !");
+            }
+
+            window.resetForm();
+        } catch (error) {
+            alert("Erreur: " + error.message);
+        } finally {
+            submitBtn.disabled = false;
+        }
+    });
+
+    // 5. EDIT IDEA
+    window.editIdea = function(id, titre, description) {
+        document.getElementById("editIdeaId").value = id;
+        document.getElementById("ideaTitre").value = titre;
+        document.getElementById("ideaDescription").value = description;
+
+        document.getElementById("formTitle").textContent = "Modifier l'Idée";
+        document.getElementById("submitBtn").textContent = "Mettre à jour l'idée";
+        document.getElementById("cancelBtn").style.display = "block";
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // 6. DELETE IDEA
+    window.deleteIdea = async function(id) {
+        if (confirm("Voulez-vous vraiment supprimer cette idée ?")) {
+            try {
+                const itemRef = ref(db, `ideas/${id}`);
+                await remove(itemRef);
+                showMessage("Idée supprimée !");
+            } catch (error) {
+                alert("Erreur lors de la suppression: " + error.message);
+            }
+        }
+    };
+
+    // 7. RESET FORM
+    window.resetForm = function() {
+        form.reset();
+        document.getElementById("editIdeaId").value = "";
+        document.getElementById("formTitle").textContent = "Nouvelle Idée";
+        document.getElementById("submitBtn").textContent = "Enregistrer l'idée";
+        document.getElementById("cancelBtn").style.display = "none";
+    };
+
+    function showMessage(text) {
+        const alertBox = document.getElementById("alertSuccess");
+        alertBox.textContent = "✓ " + text;
+        alertBox.style.display = "block";
+        setTimeout(() => { alertBox.style.display = "none"; }, 3500);
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+</script>
+</body>
+</html>
