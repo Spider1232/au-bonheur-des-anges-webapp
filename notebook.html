@@ -220,6 +220,12 @@
             border-radius: 8px;
             padding: 14px;
             position: relative;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .idea-card.confirmed {
+            background-color: #f0fdf4;
+            border-left-color: #2ecc71;
+            border-color: #c6f6d5;
         }
         .idea-header {
             display: flex;
@@ -269,6 +275,16 @@
             font-size: 12px; 
             font-weight: 600; 
         }
+        .btn-confirm {
+            background-color: #e6f4ea;
+            color: #27ae60;
+            border: 1px solid #27ae60;
+        }
+        .btn-confirm.active {
+            background-color: #2ecc71;
+            color: white;
+            border-color: #2ecc71;
+        }
         .btn-edit { background-color: #f39c12; color: white; }
         .btn-delete { background-color: #e74c3c; color: white; }
 
@@ -292,6 +308,10 @@
             border: 1px solid #e0e0e0;
             border-left: 4px solid #9b59b6;
             border-radius: 6px;
+        }
+        .pdf-item.confirmed {
+            border-left-color: #2ecc71;
+            background-color: #f0fdf4;
         }
         .pdf-item-title {
             font-weight: bold;
@@ -426,7 +446,9 @@
         ideaKeys.forEach(id => {
             const item = allIdeasData[id];
             const div = document.createElement("div");
-            div.className = "idea-card";
+            const isConfirmed = item.confirmed || false;
+            
+            div.className = `idea-card ${isConfirmed ? 'confirmed' : ''}`;
 
             const titre = item.titre || "Sans titre";
             const description = item.description || "";
@@ -442,11 +464,17 @@
                 </div>
                 ${description ? `<div class="idea-content">${escapeHtml(description)}</div>` : ''}
                 <div class="idea-actions">
+                    <button class="btn-action btn-confirm ${isConfirmed ? 'active' : ''}" data-id="${id}">
+                        ${isConfirmed ? '✓ Confirmé' : '✓ Confirmer'}
+                    </button>
                     <button class="btn-action btn-edit" data-id="${id}">✏️ Modifier</button>
                     <button class="btn-action btn-delete" data-id="${id}">🗑️ Supprimer</button>
                 </div>
             `;
 
+            div.querySelector('.btn-confirm').addEventListener('click', () => {
+                window.toggleConfirm(id, !isConfirmed);
+            });
             div.querySelector('.btn-edit').addEventListener('click', () => {
                 window.editIdea(id, titre, description);
             });
@@ -458,7 +486,18 @@
         });
     };
 
-    // 3. TOUT SÉLECTIONNER / DESÉLECTIONNER
+    // 3. TOGGLE CONFIRMATION (BEVESTIGEN / GROENE VINK)
+    window.toggleConfirm = async function(id, status) {
+        try {
+            const itemRef = ref(db, `ideas/${id}`);
+            await update(itemRef, { confirmed: status });
+            showMessage(status ? "Idée confirmée !" : "Confirmation retirée.");
+        } catch (error) {
+            alert("Erreur: " + error.message);
+        }
+    };
+
+    // 4. TOUT SÉLECTIONNER / DESÉLECTIONNER
     window.toggleSelectAll = function() {
         const checkboxes = document.querySelectorAll('.select-checkbox');
         allSelected = !allSelected;
@@ -469,7 +508,7 @@
         btn.textContent = allSelected ? '⏹️ Tout désélectionner' : '☑️ Tout sélectionner';
     };
 
-    // 4. SUPPRIMER LA SÉLECTION
+    // 5. SUPPRIMER LA SÉLECTION
     window.deleteSelected = async function() {
         const checkboxes = document.querySelectorAll('.select-checkbox:checked');
         const selectedIds = Array.from(checkboxes).map(cb => cb.getAttribute('data-id'));
@@ -493,7 +532,7 @@
         }
     };
 
-    // 5. EXPORT EN PDF (Sélection ou Tout)
+    // 6. EXPORT EN PDF (Sélection ou Tout)
     window.exportSelectedToPDF = function() {
         const checkboxes = document.querySelectorAll('.select-checkbox:checked');
         const selectedIds = Array.from(checkboxes).map(cb => cb.getAttribute('data-id'));
@@ -522,12 +561,13 @@
 
             const titre = item.titre || "Sans titre";
             const description = item.description || "";
+            const isConfirmed = item.confirmed || false;
             const dateStr = item.timestamp ? new Date(item.timestamp).toLocaleDateString('fr-BE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
 
             const itemDiv = document.createElement("div");
-            itemDiv.className = "pdf-item";
+            itemDiv.className = `pdf-item ${isConfirmed ? 'confirmed' : ''}`;
             itemDiv.innerHTML = `
-                <div class="pdf-item-title">${escapeHtml(titre)}</div>
+                <div class="pdf-item-title">${isConfirmed ? '✓ ' : ''}${escapeHtml(titre)}</div>
                 <div class="pdf-item-date">${dateStr}</div>
                 ${description ? `<div class="pdf-item-desc">${escapeHtml(description)}</div>` : ''}
             `;
@@ -553,7 +593,7 @@
         });
     };
 
-    // 6. FORM SUBMIT (ADD OR UPDATE)
+    // 7. FORM SUBMIT (ADD OR UPDATE)
     const form = document.getElementById("ideaForm");
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -578,6 +618,7 @@
                 await set(newRef, {
                     titre: titre,
                     description: description,
+                    confirmed: false,
                     timestamp: Date.now()
                 });
                 showMessage("Nouvelle idée ajoutée !");
@@ -591,7 +632,7 @@
         }
     });
 
-    // 7. EDIT IDEA
+    // 8. EDIT IDEA
     window.editIdea = function(id, titre, description) {
         document.getElementById("editIdeaId").value = id;
         document.getElementById("ideaTitre").value = titre;
@@ -604,7 +645,7 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    // 8. DELETE SINGLE IDEA
+    // 9. DELETE SINGLE IDEA
     window.deleteIdea = async function(id) {
         if (confirm("Voulez-vous vraiment supprimer cette idée ?")) {
             try {
@@ -617,7 +658,7 @@
         }
     };
 
-    // 9. RESET FORM
+    // 10. RESET FORM
     window.resetForm = function() {
         form.reset();
         document.getElementById("editIdeaId").value = "";
