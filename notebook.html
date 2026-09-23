@@ -32,6 +32,31 @@
             color: #9b59b6; 
             font-weight: 600; 
         }
+
+        /* Bouton Fermer (X) vers index.html */
+        .btn-close-app {
+            position: absolute;
+            top: 8px;
+            right: 14px;
+            text-decoration: none;
+            color: #9b59b6;
+            font-size: 22px;
+            font-weight: bold;
+            line-height: 1;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: #fbeef7;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .btn-close-app:hover, .btn-close-app:active {
+            background-color: #9b59b6;
+            color: #ffffff;
+        }
+
         .app-view { 
             width: 100%; 
             max-width: 600px; 
@@ -195,7 +220,7 @@
             gap: 6px; 
             font-size: 13px; 
             font-weight: 600; 
-            margin-top: 8px; 
+            margin-top: 6px; 
         }
         .status-dot { 
             width: 10px; 
@@ -210,6 +235,7 @@
 <body>
 
 <header class="app-header">
+    <a href="index.html" class="btn-close-app" title="Retour à l'accueil">&times;</a>
     <h1>Au bonheur des Anges - Idées & Notes</h1>
     <div class="db-status-container">
         <span id="statusDot" class="status-dot offline"></span>
@@ -320,7 +346,6 @@
             return;
         }
 
-        // Sorteren op nieuwste datum eerst
         ideaKeys.sort((a, b) => (allIdeasData[b].timestamp || 0) - (allIdeasData[a].timestamp || 0));
 
         ideaKeys.forEach(id => {
