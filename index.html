@@ -94,27 +94,35 @@
             font-weight: 700; 
         }
 
+        /* MODERNE HEADER ICOON KNOPPEN */
         .btn-header-icon {
-            background: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.6);
             border: 1px solid var(--glass-border);
             border-radius: 50%;
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 15px;
+            font-size: 16px;
             cursor: pointer;
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             text-decoration: none;
             color: inherit;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-header-icon:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .btn-header-icon:active {
-            transform: scale(0.9);
-            background: rgba(255, 255, 255, 0.8);
+            transform: scale(0.92);
+            background: rgba(255, 255, 255, 0.7);
         }
         
         .form-group { margin-bottom: 16px; display: flex; flex-direction: column; width: 100%; }
@@ -124,8 +132,8 @@
             width: 100%;
             box-sizing: border-box;
             border: 1px solid var(--glass-border); 
-            border-radius: 10px; 
-            padding: 12px; 
+            border-radius: 12px; 
+            padding: 12px 14px; 
             font-size: 15px; 
             outline: none; 
             transition: all 0.2s; 
@@ -136,6 +144,7 @@
         .form-control:focus { 
             border-color: #8e44ad; 
             background: rgba(255, 255, 255, 0.85); 
+            box-shadow: 0 0 0 3px rgba(142, 68, 173, 0.15);
         }
 
         .form-row { 
@@ -156,7 +165,7 @@
         .total-display { 
             background: rgba(142, 68, 173, 0.12); 
             border: 1px solid rgba(142, 68, 173, 0.2);
-            border-radius: 10px; 
+            border-radius: 12px; 
             padding: 12px; 
             text-align: right; 
             font-size: 15px; 
@@ -168,12 +177,104 @@
             box-sizing: border-box;
         }
 
-        .btn-submit { background-color: #8e44ad; color: white; border: none; border-radius: 12px; padding: 14px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; box-shadow: 0 4px 12px rgba(142, 68, 173, 0.3); transition: all 0.2s; }
-        .btn-submit:active { transform: scale(0.98); opacity: 0.9; }
+        /* MODERNE HOOFDKNOP (SUBMIT) */
+        .btn-submit { 
+            background: linear-gradient(135deg, #9b51e0 0%, #8e44ad 100%); 
+            color: white; 
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            border-radius: 14px; 
+            padding: 15px; 
+            font-size: 16px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            width: 100%; 
+            box-shadow: 0 6px 18px rgba(142, 68, 173, 0.35); 
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
+            letter-spacing: 0.3px;
+        }
+        .btn-submit:hover {
+            background: linear-gradient(135deg, #a55eea 0%, #7d3c98 100%);
+            box-shadow: 0 8px 22px rgba(142, 68, 173, 0.45);
+            transform: translateY(-1px);
+        }
+        .btn-submit:active { 
+            transform: scale(0.98); 
+            box-shadow: 0 3px 10px rgba(142, 68, 173, 0.25);
+        }
 
-        .btn-reset { background-color: rgba(231, 76, 60, 0.85); color: white; border: none; border-radius: 10px; padding: 10px 12px; font-size: 12px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; transition: background-color 0.2s; }
+        /* MODERNE RESET/VERWIJDER KNOP */
+        .btn-reset { 
+            background: rgba(231, 76, 60, 0.88); 
+            color: white; 
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            border-radius: 12px; 
+            padding: 11px 14px; 
+            font-size: 13px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            width: 100%; 
+            margin-top: 10px; 
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            box-shadow: 0 3px 10px rgba(231, 76, 60, 0.2);
+        }
+        .btn-reset:hover {
+            background: rgba(217, 30, 24, 0.95);
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+        }
+        .btn-reset:active {
+            transform: scale(0.98);
+        }
 
-        .btn-product-toggle { background-color: rgba(142, 68, 173, 0.85); color: white; border: none; border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 15px; }
+        /* ELEGANTE & MODERNE PRODUCT BEHEER KNOP */
+        .btn-product-toggle { 
+            background: rgba(142, 68, 173, 0.12); 
+            color: #8e44ad; 
+            border: 1.5px dashed rgba(142, 68, 173, 0.4); 
+            border-radius: 14px; 
+            padding: 13px 16px; 
+            font-size: 13.5px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            width: 100%; 
+            margin-top: 14px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(142, 68, 173, 0.05);
+        }
+
+        .btn-product-toggle:hover {
+            background: rgba(142, 68, 173, 0.2);
+            border-color: rgba(142, 68, 173, 0.7);
+            border-style: solid;
+            transform: translateY(-1.5px);
+            box-shadow: 0 4px 15px rgba(142, 68, 173, 0.18);
+            color: #6c3483;
+        }
+
+        .btn-product-toggle:active {
+            transform: scale(0.98);
+            background: rgba(142, 68, 173, 0.25);
+            box-shadow: 0 2px 6px rgba(142, 68, 173, 0.1);
+        }
+
+        .btn-product-toggle .btn-icon-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            background: rgba(142, 68, 173, 0.2);
+            border-radius: 50%;
+            font-size: 13px;
+            line-height: 1;
+        }
 
         .alert-success { background-color: rgba(46, 204, 113, 0.85); color: white; border-radius: 10px; padding: 12px; font-size: 14px; text-align: center; margin-bottom: 16px; display: none; backdrop-filter: blur(5px); }
         .alert-info { background-color: rgba(52, 152, 219, 0.85); color: white; border-radius: 10px; padding: 10px; font-size: 12px; text-align: center; margin-bottom: 16px; display: none; backdrop-filter: blur(5px); }
@@ -218,7 +319,8 @@
         }
         .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid rgba(0,0,0,0.08); }
         .modal-header h3 { margin: 0; color: #8e44ad; font-size: 16px; font-weight: 700; }
-        .btn-close-modal { background: none; border: none; font-size: 24px; color: #7f8c8d; cursor: pointer; }
+        .btn-close-modal { background: none; border: none; font-size: 24px; color: #7f8c8d; cursor: pointer; transition: transform 0.2s; }
+        .btn-close-modal:active { transform: scale(0.85); }
         #productFrame { width: 100%; height: 80vh; border: none; }
 
         .slider-container { margin-top: 15px; }
@@ -315,13 +417,14 @@
             </button>
 
             <button type="button" class="btn-product-toggle" onclick="window.openProductModal()">
-                + Ajoutez des éléments à la liste ou retirez-les-en
+                <span class="btn-icon-badge">➕</span>
+                <span>Ajoutez des éléments à la liste ou retirez-les-en</span>
             </button>
         </form>
     </div>
 </div>
 
-<!-- INSTELLINGEN MODAL (ACHTERGROND & TRANSPARANTIE) -->
+<!-- INSTELLINGEN MODAL -->
 <div id="settingsModal" class="modal-overlay">
     <div class="modal-container" style="padding: 20px;">
         <div class="modal-header" style="padding: 0 0 10px 0;">
@@ -329,7 +432,6 @@
             <button class="btn-close-modal" onclick="document.getElementById('settingsModal').style.display='none'">&times;</button>
         </div>
         
-        <!-- Transparantie Slider ingesteld op 20% (0.20) -->
         <div class="slider-container">
             <label style="font-size: 13px; font-weight: 600; color: #4a4a4a; display: flex; justify-content: space-between;">
                 <span>Transparence des cartes:</span>
@@ -404,7 +506,6 @@
         const savedBg = localStorage.getItem("customAppBackground");
         if (savedBg) applyBackground(savedBg);
 
-        // Laadt opgeslagen transparantie of valt terug op 20% (0.20)
         const savedOpacity = localStorage.getItem("appGlassOpacity") || "0.20";
         document.getElementById("opacitySlider").value = savedOpacity;
         window.updateOpacity(savedOpacity);
