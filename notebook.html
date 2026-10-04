@@ -428,12 +428,6 @@
             white-space: pre-wrap;
             color: #444;
         }
-        .pdf-item-img {
-            max-width: 150px;
-            max-height: 150px;
-            margin-top: 8px;
-            border-radius: 4px;
-        }
     </style>
 </head>
 <body>
@@ -487,7 +481,7 @@
         <!-- Barre d'outils Sélection, Suppression & PDF -->
         <div class="list-toolbar">
             <button class="btn-tool" onclick="window.toggleSelectAll()" id="btnToggleSelect">
-                ☑️ Tout sélectionner
+                ☑ Tout sélectionner
             </button>
             <button class="btn-tool btn-delete-selected" onclick="window.deleteSelected()">
                 🗑️ Supprimer la sélection
@@ -505,7 +499,7 @@
     <!-- APARTE KAART: Fotogalerij Lijst met Directe Upload & Acties -->
     <div class="app-card">
         <h2 class="section-title">
-            <span>📷 Galerie de photos</span>
+            <span>😀 le prototype</span>
         </h2>
 
         <!-- Toolbar voor Galerie -->
@@ -516,7 +510,7 @@
             <input type="file" id="galleryDirectUpload" accept="image/*" multiple style="display: none;">
 
             <button class="btn-tool" onclick="window.toggleSelectAllPhotos()" id="btnToggleSelectPhotos">
-                ☑️ Tout sélectionner
+                ☑️️ Tout sélectionner
             </button>
             <button class="btn-tool btn-delete-selected" onclick="window.deleteSelectedPhotos()">
                 🗑️ Supprimer la sélection
@@ -579,7 +573,7 @@
         }
     });
 
-    // Directly Upload Photos into Gallery
+    // Directly Upload Photos into Gallery (Merk op: isPhotoOnly = true)
     const galleryDirectUploadInput = document.getElementById("galleryDirectUpload");
     galleryDirectUploadInput.addEventListener("change", async (e) => {
         const files = Array.from(e.target.files);
@@ -596,6 +590,7 @@
                             titre: photoName,
                             description: "",
                             image: event.target.result,
+                            isPhotoOnly: true, // Markering: dit is enkel een foto-upload!
                             confirmed: false,
                             timestamp: Date.now()
                         });
@@ -645,12 +640,16 @@
         window.renderPhotos();
     });
 
-    // 2. RENDER IDEAS LIST
+    // 2. RENDER IDEAS LIST (Filtert foto-only bestanden eruit)
     window.renderIdeas = function() {
         const container = document.getElementById("ideasContainer");
         container.innerHTML = "";
 
-        const ideaKeys = Object.keys(allIdeasData);
+        // Enkel items die NIET gemarkeerd zijn als foto-only én een beschrijving/titel hebben
+        const ideaKeys = Object.keys(allIdeasData).filter(id => {
+            const item = allIdeasData[id];
+            return !item.isPhotoOnly && (item.description || item.titre);
+        });
 
         if (ideaKeys.length === 0) {
             container.innerHTML = `<div style="text-align: center; color: #7f8c8d; padding: 15px;">Aucune idée enregistrée pour le moment.</div>`;
@@ -668,7 +667,6 @@
 
             const titre = item.titre || "Sans titre";
             const description = item.description || "";
-            const imageUrl = item.image || "";
             const dateStr = item.timestamp ? new Date(item.timestamp).toLocaleDateString('fr-BE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
 
             div.innerHTML = `
@@ -693,7 +691,7 @@
                 window.toggleConfirm(id, !isConfirmed);
             });
             div.querySelector('.btn-edit').addEventListener('click', () => {
-                window.editIdea(id, titre, description, imageUrl);
+                window.editIdea(id, titre, description, item.image || "");
             });
             div.querySelector('.btn-delete').addEventListener('click', () => {
                 window.deleteIdea(id);
@@ -703,7 +701,7 @@
         });
     };
 
-    // 3. RENDER APARTE FOTOGALERIJ
+    // 3. RENDER APARTE FOTOGALERIJ (Toont alle afbeeldingen)
     window.renderPhotos = function() {
         const photoContainer = document.getElementById("photosContainer");
         photoContainer.innerHTML = "";
@@ -743,7 +741,7 @@
         checkboxes.forEach(cb => cb.checked = allPhotosSelected);
         
         const btn = document.getElementById('btnToggleSelectPhotos');
-        btn.textContent = allPhotosSelected ? '⏹️️ Tout désélectionner' : '☑️ Tout sélectionner';
+        btn.textContent = allPhotosSelected ? '⏹ Tout désélectionner' : '☑️ Tout sélectionner';
     };
 
     // 5. GALERIE: SUPPRIMER LA SÉLECTION
@@ -762,7 +760,7 @@
                 await Promise.all(deletePromises);
                 
                 allPhotosSelected = false;
-                document.getElementById('btnToggleSelectPhotos').textContent = '☑️️ Tout sélectionner';
+                document.getElementById('btnToggleSelectPhotos').textContent = '☑ Tout sélectionner';
                 showMessage(`${selectedIds.length} photo(s) supprimée(s) !`);
             } catch (error) {
                 alert("Erreur lors de la suppression: " + error.message);
@@ -808,7 +806,7 @@
                 await Promise.all(deletePromises);
                 
                 allSelected = false;
-                document.getElementById('btnToggleSelect').textContent = '☑️ Tout sélectionner';
+                document.getElementById('btnToggleSelect').textContent = '☑️️ Tout sélectionner';
                 showMessage(`${selectedIds.length} idée(s) supprimée(s) !`);
             } catch (error) {
                 alert("Erreur lors de la suppression: " + error.message);
@@ -826,7 +824,7 @@
         if (idsToExport.length === 0) {
             const exportAll = confirm("Aucune idée n'est cochée. Voulez-vous exporter TOUTES les idées en PDF ?");
             if (!exportAll) return;
-            idsToExport = Object.keys(allIdeasData);
+            idsToExport = Object.keys(allIdeasData).filter(id => !allIdeasData[id].isPhotoOnly);
         }
 
         if (idsToExport.length === 0) {
@@ -845,7 +843,6 @@
 
             const titre = item.titre || "Sans titre";
             const description = item.description || "";
-            const imageUrl = item.image || "";
             const isConfirmed = item.confirmed || false;
             const dateStr = item.timestamp ? new Date(item.timestamp).toLocaleDateString('fr-BE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
 
@@ -855,7 +852,6 @@
                 <div class="pdf-item-title">${isConfirmed ? '✓ ' : ''}${escapeHtml(titre)}</div>
                 <div class="pdf-item-date">${dateStr}</div>
                 ${description ? `<div class="pdf-item-desc">${escapeHtml(description)}</div>` : ''}
-                ${imageUrl ? `<div><img src="${imageUrl}" class="pdf-item-img"></div>` : ''}
             `;
             pdfContent.appendChild(itemDiv);
         });
@@ -896,7 +892,8 @@
                 const itemRef = ref(db, `ideas/${editId}`);
                 const updatePayload = {
                     titre: titre,
-                    description: description
+                    description: description,
+                    isPhotoOnly: false
                 };
                 if (currentBase64Image) {
                     updatePayload.image = currentBase64Image;
@@ -908,7 +905,8 @@
                 await set(newRef, {
                     titre: titre,
                     description: description,
-                    image: currentBase64Image,
+                    image: currentBase64Image || "",
+                    isPhotoOnly: false,
                     confirmed: false,
                     timestamp: Date.now()
                 });
