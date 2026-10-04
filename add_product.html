@@ -5,569 +5,602 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Au bonheur des Anges - Gérer les Produits</title>
     <link rel="icon" href="logo.jpg">
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background-color: #fbeef7; color: #202124; margin: 0; padding-bottom: 90px; display: flex; flex-direction: column; align-items: center; }
-        .app-header { background-color: #ffffff; width: 100%; text-align: center; padding: 12px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
-        .app-header h1 { font-size: 16px; margin: 0; color: #9b59b6; font-weight: 600; }
-        .app-view { width: 100%; max-width: 600px; box-sizing: border-box; padding: 16px; }
-        .app-card { background: #ffffff; border: 1px solid #f3d6ed; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(155, 89, 182, 0.05); width: 100%; box-sizing: border-box; margin-bottom: 16px; }
-        .section-title { font-size: 16px; text-transform: uppercase; letter-spacing: 0.5px; color: #9b59b6; margin: 0 0 16px 0; font-weight: 700; border-bottom: 2px solid #fbeef7; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-        
-        .form-group { margin-bottom: 16px; display: flex; flex-direction: column; }
-        .form-group label { font-size: 13px; font-weight: 600; color: #5f6368; margin-bottom: 6px; }
-        .form-control { border: 1px solid #f3d6ed; border-radius: 8px; padding: 12px; font-size: 15px; outline: none; transition: border-color 0.2s; background: #fafafa; }
-        .form-control:focus { border-color: #9b59b6; background: #ffffff; }
-
-        .cat-input-group { display: flex; gap: 8px; }
-        .cat-input-group select { flex: 1; }
-        .btn-add-cat { background-color: #8e44ad; color: white; border: none; border-radius: 8px; padding: 0 12px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background-color 0.2s; }
-        .btn-add-cat:hover { background-color: #7d3c98; }
-
-        .btn-submit { background-color: #9b59b6; color: white; border: none; border-radius: 8px; padding: 14px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; box-shadow: 0 2px 4px rgba(155, 89, 182, 0.3); transition: background-color 0.2s; }
-        .btn-submit:active { background-color: #8e44ad; }
-        
-        .btn-cancel { background-color: #95a5a6; color: white; border: none; border-radius: 8px; padding: 10px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 8px; display: none; }
-        
-        /* Tool Knoppen */
-        .tools-bar { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; background-color: #fbf5fa; padding: 12px; border-radius: 8px; border: 1px solid #f3d6ed; }
-        .tools-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
-        .tools-description { font-size: 12px; color: #7f8c8d; margin: 0; }
-        .btn-tool { border: none; border-radius: 6px; padding: 8px 12px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: opacity 0.2s; }
-        .btn-tool:hover { opacity: 0.9; }
-        .btn-seed { background-color: #3498db; color: white; }
-        .btn-export { background-color: #2ecc71; color: white; }
-        .btn-import { background-color: #e67e22; color: white; }
-
-        .alert-success { background-color: #e6f4ea; color: #137333; border: 1px solid #ceead6; padding: 12px; border-radius: 8px; font-size: 14px; text-align: center; margin-bottom: 16px; display: none; }
-
-        /* Filter Controls */
-        .filter-container { margin-bottom: 12px; display: flex; gap: 8px; align-items: center; }
-        .filter-container label { font-size: 12px; font-weight: 600; color: #5f6368; }
-
-        /* Table Styling */
-        .table-container { overflow-x: auto; width: 100%; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
-        th { background-color: #fbeef7; color: #9b59b6; font-weight: 700; padding: 10px 8px; border-bottom: 2px solid #f3d6ed; }
-        td { padding: 10px 8px; border-bottom: 1px solid #f3d6ed; vertical-align: middle; }
-        tr:hover { background-color: #fafafa; }
-
-        .badge-cat { background-color: #f3d6ed; color: #9b59b6; padding: 3px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; display: inline-block; white-space: nowrap; }
-
-        .btn-action { border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
-        .btn-edit { background-color: #f39c12; color: white; margin-right: 4px; }
-        .btn-delete { background-color: #e74c3c; color: white; }
-
-        /* Bouton Fermer / Retour (X) */
-        .btn-close-top {
-            position: fixed;
-            top: 10px;
-            right: 15px;
-            width: 32px;
-            height: 32px;
-            background-color: #ffffff;
-            border: 1px solid #f3d6ed;
-            border-radius: 50%;
-            color: #9b59b6;
-            font-size: 18px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            z-index: 1001;
-            transition: background-color 0.2s, transform 0.1s;
-        }
-        .btn-close-top:hover { background-color: #fbeef7; }
-        .btn-close-top:active { transform: scale(0.95); }
-
-        /* Bottom Nav */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #ffffff; display: flex; justify-content: space-around; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); border-top: 1px solid #dadce0; z-index: 1000; }
-        .nav-item { flex: 1; text-align: center; padding: 10px 0; color: #5f6368; text-decoration: none; font-size: 11px; font-weight: 500; display: flex; flex-direction: column; align-items: center; gap: 2px; }
-        .nav-item.active { color: #9b59b6; font-weight: 600; }
-
-        .db-status-container { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; font-weight: 600; margin-top: 8px; }
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; transition: background-color 0.3s, box-shadow 0.3s; }
-        .status-dot.online { background-color: #2ecc71; box-shadow: 0 0 8px #2ecc71; }
-        .status-dot.offline { background-color: #e74c3c; box-shadow: 0 0 8px #e74c3c; }
-    </style>
-</head>
-<body>
-
-
-
-<div class="app-view">
-    <div id="alertSuccess" class="alert-success">
-        &check; Opération réussie !
-    </div>
-    
-    <div>
-    <h2 class="section-title">Ajoutez des éléments à la liste ou retirez-les-en.</h2>
-    </div>
-
-    <!-- Form Card -->
-    <div class="app-card">
-        <h2 class="section-title" id="formTitle">Ajouter un Produit</h2>
-        <form id="productForm">
-            <input type="hidden" id="editProductId" value="">
-
-            <div class="form-group">
-                <label for="categorie">Catégorie *</label>
-                <div class="cat-input-group">
-                    <select id="categorie" class="form-control" required>
-                        <!-- Standaard categorieën -->
-                        <option value="Sublimation">Sublimation</option>
-                        <option value="Créations 3D">Créations 3D</option>
-                        <option value="Déco pour Noël">Déco pour Noël</option>
-                        <option value="Photo Design">Photo Design</option>
-						<option value="Idée 3D Crétions">Idée 3D Crétions</option>
-                        <option value="Autre">Autre</option>
-                    </select>
-                                   </div>
-            </div>
-
-            <div class="form-group">
-                <label for="productNaam">Nom du produit *</label>
-                <input type="text" id="productNaam" class="form-control" placeholder="ex: Mug personnalisé" required>
-            </div>
-
-            <div class="form-group">
-                <label for="productPrijs">Prix (€) *</label>
-                <input type="number" step="0.01" id="productPrijs" class="form-control" placeholder="0.00" required>
-            </div>
-
-            <button type="submit" class="btn-submit" id="submitBtn">
-                Enregistrer le produit
-            </button>
-            <button type="button" class="btn-cancel" id="cancelBtn" onclick="window.resetForm()">
-                Annuler la modification
-            </button>
-        </form>
-    </div>
-
-    <!-- Products Table Card -->
-    <div class="app-card">
-        <h2 class="section-title">
-            <span>Tous les Produits</span>
-        </h2>
-
-        <!-- Backup / Restore Tools Bar -->
-        <div class="tools-bar">
-            <h3 class="section-title" style="margin: 0; font-size: 14px;">Sauvegarde vers un fichier .JSON</h3>
-            <p class="tools-description">Vous pouvez sauvegarder la base de données actuelle dans un fichier JSON ou importer une base de données depuis un fichier JSON.</p>
-            <div class="tools-buttons">
-                <button class="btn-tool btn-import" onclick="document.getElementById('importFileInput').click()">
-                    📂 Importer JSON
-                </button>
-                <button class="btn-tool btn-export" onclick="window.exportToJson()">
-                    💾 Exporter JSON (Backup)
-                </button>
-            </div>
-            <!-- Hidden file input for JSON import -->
-            <input type="file" id="importFileInput" accept=".json" style="display: none;" onchange="window.importFromJson(event)">
-        </div>
-
-        <div class="filter-container">
-            <label for="filterCategory">Filtrer par catégorie :</label>
-            <select id="filterCategory" class="form-control" style="padding: 6px 10px; font-size: 13px;" onchange="window.renderProductsTable()">
-                <option value="ALL">-- Toutes les catégories --</option>
-                <option value="Sublimation">Sublimation</option>
-                <option value="Créations 3D">Créations 3D</option>
-                <option value="Déco pour Noël">Déco pour Noël</option>
-                <option value="Photo Design">Photo Design</option>
-                <option value="Autre">Autre</option>
-            </select>
-        </div>
-
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Catégorie</th>
-                        <th>Nom</th>
-                        <th>Prix</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="productsTableBody">
-                    <tr>
-                        <td colspan="4" style="text-align: center; color: #7f8c8d;">Chargement...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getDatabase, ref, push, set, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
-    const firebaseConfig = {
-        apiKey: "JOUW_API_KEY", 
-        authDomain: "cloudstockage-b1580.firebaseapp.com",
-        databaseURL: "https://cloudstockage-b1580-default-rtdb.europe-west1.firebasedatabase.app",
-        projectId: "cloudstockage-b1580",
-        storageBucket: "cloudstockage-b1580.appspot.com",
-        messagingSenderId: "524333606775",
-        appId: "JOUW_APP_ID"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    let allProductsData = {};
-
-    // 0. BEHEER VAN EXTRA CATEGORIEËN (LOCALSTORAGE)
-    window.loadCustomCategories = function() {
-        const customCats = JSON.parse(localStorage.getItem("customCategories") || "[]");
-        const catSelect = document.getElementById("categorie");
-        const filterSelect = document.getElementById("filterCategory");
-
-        customCats.forEach(cat => {
-            // Check of de optie al bestaat in de select
-            if (!catSelect.querySelector(`option[value="${cat}"]`)) {
-                const option1 = new Option(cat, cat);
-                catSelect.add(option1);
-
-                const option2 = new Option(cat, cat);
-                filterSelect.add(option2);
-            }
-        });
-    };
-
-    window.addNewCategory = function() {
-        const newCat = prompt("Entrez le nom de la nouvelle catégorie :");
-        if (!newCat || newCat.trim() === "") return;
-
-        const cleanCat = newCat.trim();
-        const catSelect = document.getElementById("categorie");
-        const filterSelect = document.getElementById("filterCategory");
-
-        // Controleren of de categorie al bestaat
-        let exists = false;
-        for (let i = 0; i < catSelect.options.length; i++) {
-            if (catSelect.options[i].value.toLowerCase() === cleanCat.toLowerCase()) {
-                exists = true;
-                break;
-            }
-        }
-
-        if (exists) {
-            alert("Cette catégorie existe déjà !");
-            catSelect.value = cleanCat;
-            return;
-        }
-
-        // Toevoegen aan keuzelijsten
-        const option1 = new Option(cleanCat, cleanCat);
-        catSelect.add(option1);
-        catSelect.value = cleanCat; // Direct selecteren
-
-        const option2 = new Option(cleanCat, cleanCat);
-        filterSelect.add(option2);
-
-        // Opslaan in LocalStorage
-        const customCats = JSON.parse(localStorage.getItem("customCategories") || "[]");
-        customCats.push(cleanCat);
-        localStorage.setItem("customCategories", JSON.stringify(customCats));
-
-        showMessage("Nouvelle catégorie ajoutée !");
-    };
-
-    // Laad opgeslagen categorieën bij het starten
-    window.loadCustomCategories();
-
-    // 1. DATABASE STATUS LISTENER
-    const connectedRef = ref(db, ".info/connected");
-    onValue(connectedRef, (snap) => {
-        const statusDot = document.getElementById("statusDot");
-        const statusText = document.getElementById("statusText");
-
-        if (statusDot && statusText) {
-            if (snap.val() === true) {
-                statusDot.className = "status-dot online";
-                statusText.textContent = "Online";
-                statusText.style.color = "#2ecc71";
-            } else {
-                statusDot.className = "status-dot offline";
-                statusText.textContent = "Offline";
-                statusText.style.color = "#e74c3c";
-            }
-        }
-    });
-
-    // 2. LIVE PRODUCTS LISTENER FROM FIREBASE
-    const productsRef = ref(db, 'products');
-    onValue(productsRef, (snapshot) => {
-        if (snapshot.exists()) {
-            allProductsData = snapshot.val();
-            
-            // Automatisch categorieën toevoegen aan de lijst als ze uit Firebase komen
-            Object.values(allProductsData).forEach(item => {
-                if (item.categorie) {
-                    const catSelect = document.getElementById("categorie");
-                    const filterSelect = document.getElementById("filterCategory");
-                    if (!catSelect.querySelector(`option[value="${item.categorie}"]`)) {
-                        catSelect.add(new Option(item.categorie, item.categorie));
-                        filterSelect.add(new Option(item.categorie, item.categorie));
+    <!-- Google Fonts Inter & FontAwesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fdf4fc',
+                            100: '#fbf5fa',
+                            200: '#f3d6ed',
+                            300: '#e7aee0',
+                            400: '#d576cc',
+                            500: '#b84ab0',
+                            600: '#9b59b6',
+                            700: '#8e44ad',
+                            800: '#73358d',
+                            900: '#5c2b71'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
                     }
                 }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #fbeef7; color: #202124; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #fbf5fa; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e7aee0; border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #b84ab0; }
+    </style>
+</head>
+<body class="min-h-screen pb-24 flex flex-col items-center">
+
+    <header class="bg-white/90 backdrop-blur-md w-full text-center py-4 px-6 shadow-sm sticky top-0 z-50 border-b border-brand-200/60 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-400 flex items-center justify-center text-white shadow-md shadow-brand-600/20">
+                <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
+            </div>
+            <div class="text-left">
+                <h1 class="text-base font-bold text-brand-700 tracking-tight">Au bonheur des Anges</h1>
+                <p class="text-xs text-gray-500 font-medium">Gestionnaire de Produits & Créations</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2 bg-brand-50 px-3 py-1.5 rounded-full border border-brand-200/80">
+            <span id="statusDot" class="w-2.5 h-2.5 rounded-full bg-gray-400 transition-all duration-300"></span>
+            <span id="statusText" class="text-xs font-semibold text-gray-600">Connexion...</span>
+        </div>
+    </header>
+
+    <main class="w-full max-w-4xl box-border p-4 md:p-6 flex flex-col gap-6">
+
+        <!-- Custom Notification Banner -->
+        <div id="alertSuccess" class="hidden bg-emerald-50 text-emerald-800 border border-emerald-200 p-4 rounded-xl text-sm font-medium text-center shadow-sm transition-all duration-300 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-circle-check text-emerald-600"></i>
+            <span id="alertText">Opération réussie !</span>
+        </div>
+
+        <!-- Top Intro -->
+        <div class="bg-gradient-to-r from-brand-700 to-brand-500 text-white p-6 rounded-2xl shadow-lg shadow-brand-600/15 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+                <h2 class="text-lg md:text-xl font-bold mb-1">Catalogue et Gestion des Produits</h2>
+                <p class="text-brand-100 text-xs md:text-sm">Ajoutez, modifiez ou organisez facilement vos créations uniques et articles faits main.</p>
+            </div>
+            <button onclick="document.getElementById('importFileInput').click()" class="bg-white/20 hover:bg-white/30 text-white border border-white/30 px-4 py-2.5 rounded-xl text-xs md:text-sm font-semibold transition-all duration-200 flex items-center gap-2 backdrop-blur-sm whitespace-nowrap shadow-sm">
+                <i class="fa-solid fa-file-arrow-up"></i> Importer un fichier
+            </button>
+        </div>
+
+        <!-- Grid Layout for Form & Tools / Products -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- Left Column: Add/Edit Form -->
+            <section class="lg:col-span-5">
+                <div class="bg-white border border-brand-200/80 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow sticky top-24">
+                    <div class="flex items-center justify-between pb-4 mb-4 border-b border-brand-100">
+                        <h3 id="formTitle" class="text-sm font-bold uppercase tracking-wider text-brand-700 flex items-center gap-2">
+                            <i class="fa-solid fa-plus-circle text-brand-500"></i> Ajouter un Produit
+                        </h3>
+                        <button type="button" id="cancelBtn" onclick="window.resetForm()" class="hidden text-xs text-gray-500 hover:text-red-500 font-semibold transition-colors flex items-center gap-1">
+                            <i class="fa-solid fa-xmark"></i> Annuler
+                        </button>
+                    </div>
+
+                    <form id="productForm" class="flex flex-col gap-4">
+                        <input type="hidden" id="editProductId" value="">
+
+                        <div class="flex flex-col gap-1.5">
+                            <label for="categorie" class="text-xs font-bold text-gray-600 flex items-center justify-between">
+                                <span>Catégorie <span class="text-brand-600">*</span></span>
+                                <button type="button" onclick="window.addNewCategory()" class="text-brand-600 hover:text-brand-800 text-[11px] font-semibold underline flex items-center gap-1">
+                                    <i class="fa-solid fa-plus"></i> Nouvelle catégorie
+                                </button>
+                            </label>
+                            <div class="relative">
+                                <select id="categorie" class="w-full bg-gray-50/80 border border-brand-200 rounded-xl px-4 py-3 text-sm text-gray-800 outline-none focus:border-brand-500 focus:bg-white transition-all appearance-none cursor-pointer" required>
+                                    <option value="Sublimation">Sublimation</option>
+                                    <option value="Créations 3D">Créations 3D</option>
+                                    <option value="Déco pour Noël">Déco pour Noël</option>
+                                    <option value="Photo Design">Photo Design</option>
+                                    <option value="Idée 3D Crétions">Idée 3D Crétions</option>
+                                    <option value="Autre">Autre</option>
+                                </select>
+                                <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-brand-500 text-xs">
+                                    <i class="fa-solid fa-chevron-down"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col gap-1.5">
+                            <label for="productNaam" class="text-xs font-bold text-gray-600">Nom du produit <span class="text-brand-600">*</span></label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
+                                    <i class="fa-solid fa-tag"></i>
+                                </span>
+                                <input type="text" id="productNaam" class="w-full bg-gray-50/85 border border-brand-200 rounded-xl pl-11 pr-4 py-3 text-sm text-gray-800 outline-none focus:border-brand-500 focus:bg-white transition-all placeholder:text-gray-400" placeholder="ex: Mug personnalisé" required>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col gap-1.5">
+                            <label for="productPrijs" class="text-xs font-bold text-gray-600">Prix (€) <span class="text-brand-600">*</span></label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
+                                    <i class="fa-solid fa-euro-sign"></i>
+                                </span>
+                                <input type="number" step="0.01" id="productPrijs" class="w-full bg-gray-50/85 border border-brand-200 rounded-xl pl-11 pr-4 py-3 text-sm text-gray-800 outline-none focus:border-brand-500 focus:bg-white transition-all placeholder:text-gray-400" placeholder="0.00" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="submitBtn" class="mt-2 bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white font-semibold py-3.5 px-6 rounded-xl shadow-md shadow-brand-600/25 transition-all duration-200 flex items-center justify-center gap-2 text-sm cursor-pointer">
+                            <i class="fa-solid fa-check"></i> Enregistrer le produit
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Right Column: Tools & Products Table -->
+            <section class="lg:col-span-7 flex flex-col gap-6">
+
+                <!-- Tools & Backup Card -->
+                <div class="bg-white border border-brand-200/80 rounded-2xl p-5 shadow-sm">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-brand-700 mb-1 flex items-center gap-1.5">
+                                <i class="fa-solid fa-database text-brand-500"></i> Sauvegarde & Restauration
+                            </h4>
+                            <p class="text-xs text-gray-500">Exportez votre base au format JSON ou importez un backup existant.</p>
+                        </div>
+                        <div class="flex items-center gap-2 self-start sm:self-auto">
+                            <button onclick="window.exportToJson()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold py-2 px-3.5 rounded-xl shadow-sm transition-all flex items-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-floppy-disk"></i> Exporter JSON
+                            </button>
+                            <button onclick="document.getElementById('importFileInput').click()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold py-2 px-3.5 rounded-xl shadow-sm transition-all flex items-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-folder-open"></i> Importer
+                            </button>
+                            <input type="file" id="importFileInput" accept=".json" class="hidden" onchange="window.importFromJson(event)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Products Table Card -->
+                <div class="bg-white border border-brand-200/80 rounded-2xl p-6 shadow-sm flex-1 flex flex-col">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 mb-4 border-b border-brand-100">
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-brand-700 flex items-center gap-2">
+                            <i class="fa-solid fa-list text-brand-500"></i> Tous les Produits
+                        </h3>
+
+                        <!-- Category Filter Dropdown -->
+                        <div class="flex items-center gap-2">
+                            <label for="filterCategory" class="text-xs font-semibold text-gray-500 whitespace-nowrap">Filtrer :</label>
+                            <div class="relative">
+                                <select id="filterCategory" onchange="window.renderProductsTable()" class="bg-brand-50/80 border border-brand-200 rounded-xl px-3 py-1.5 text-xs font-medium text-brand-700 outline-none focus:border-brand-500 cursor-pointer pr-7 appearance-none">
+                                    <option value="ALL">Toutes les catégories</option>
+                                    <option value="Sublimation">Sublimation</option>
+                                    <option value="Créations 3D">Créations 3D</option>
+                                    <option value="Déco pour Noël">Déco pour Noël</option>
+                                    <option value="Photo Design">Photo Design</option>
+                                    <option value="Autre">Autre</option>
+                                </select>
+                                <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-brand-600 text-[10px]">
+                                    <i class="fa-solid fa-chevron-down"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Table Wrapper -->
+                    <div class="overflow-x-auto custom-scrollbar flex-1 rounded-xl border border-brand-100">
+                        <table class="w-full text-left text-sm border-collapse">
+                            <thead>
+                                <tr class="bg-brand-50/70 text-brand-700 text-xs font-bold uppercase tracking-wider border-b border-brand-200">
+                                    <th class="py-3 px-4">Catégorie</th>
+                                    <th class="py-3 px-4">Nom du produit</th>
+                                    <th class="py-3 px-4">Prix</th>
+                                    <th class="py-3 px-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsTableBody" class="divide-y divide-brand-100/60 text-gray-700 text-sm">
+                                <tr>
+                                    <td colspan="4" class="text-center py-8 text-gray-400 italic">
+                                        <i class="fa-solid fa-spinner fa-spin mr-2"></i> Chargement des produits...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getDatabase, ref, push, set, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "JOUW_API_KEY", 
+            authDomain: "cloudstockage-b1580.firebaseapp.com",
+            databaseURL: "https://cloudstockage-b1580-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "cloudstockage-b1580",
+            storageBucket: "cloudstockage-b1580.appspot.com",
+            messagingSenderId: "524333606775",
+            appId: "JOUW_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let allProductsData = {};
+
+        // Load Custom Categories from LocalStorage
+        window.loadCustomCategories = function() {
+            const customCats = JSON.parse(localStorage.getItem("customCategories") || "[]");
+            const catSelect = document.getElementById("categorie");
+            const filterSelect = document.getElementById("filterCategory");
+
+            customCats.forEach(cat => {
+                if (!catSelect.querySelector(`option[value="${cat}"]`)) {
+                    catSelect.add(new Option(cat, cat));
+                    filterSelect.add(new Option(cat, cat));
+                }
             });
-        } else {
-            allProductsData = {};
-        }
-        window.renderProductsTable();
-    });
+        };
 
-    // 3. RENDER TABLE WITH FILTERING & SORTING
-    window.renderProductsTable = function() {
-        const tbody = document.getElementById("productsTableBody");
-        const selectedCategory = document.getElementById("filterCategory").value;
-        tbody.innerHTML = "";
+        window.addNewCategory = function() {
+            const newCat = prompt("Entrez le nom de la nouvelle catégorie :");
+            if (!newCat || newCat.trim() === "") return;
 
-        const productKeys = Object.keys(allProductsData);
+            const cleanCat = newCat.trim();
+            const catSelect = document.getElementById("categorie");
+            const filterSelect = document.getElementById("filterCategory");
 
-        if (productKeys.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #7f8c8d; padding: 15px;">Aucun produit dans la base. Cliquez sur <strong>"Importer JSON"</strong> ci-dessus !</td></tr>`;
-            return;
-        }
+            let exists = false;
+            for (let i = 0; i < catSelect.options.length; i++) {
+                if (catSelect.options[i].value.toLowerCase() === cleanCat.toLowerCase()) {
+                    exists = true;
+                    break;
+                }
+            }
 
-        let filteredKeys = productKeys.filter(key => {
-            if (selectedCategory === "ALL") return true;
-            return (allProductsData[key].categorie || "Autre") === selectedCategory;
-        });
+            if (exists) {
+                showCustomMessage("Cette catégorie existe déjà !", "error");
+                catSelect.value = cleanCat;
+                return;
+            }
 
-        // Sort by Category and then Name
-        filteredKeys.sort((a, b) => {
-            const catA = (allProductsData[a].categorie || "").toLowerCase();
-            const catB = (allProductsData[b].categorie || "").toLowerCase();
-            if (catA < catB) return -1;
-            if (catA > catB) return 1;
+            const option1 = new Option(cleanCat, cleanCat);
+            catSelect.add(option1);
+            catSelect.value = cleanCat;
 
-            const nameA = (allProductsData[a].naam || "").toLowerCase();
-            const nameB = (allProductsData[b].naam || "").toLowerCase();
-            return nameA.localeCompare(nameB);
-        });
+            const option2 = new Option(cleanCat, cleanCat);
+            filterSelect.add(option2);
 
-        if (filteredKeys.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #7f8c8d; padding: 15px;">Aucun produit pour cette catégorie.</td></tr>`;
-            return;
-        }
+            const customCats = JSON.parse(localStorage.getItem("customCategories") || "[]");
+            customCats.push(cleanCat);
+            localStorage.setItem("customCategories", JSON.stringify(customCats));
 
-        filteredKeys.forEach(id => {
-            const item = allProductsData[id];
-            const tr = document.createElement("tr");
+            showCustomMessage("Nouvelle catégorie ajoutée avec succès !");
+        };
 
-            const categorie = item.categorie || "Autre";
-            const naam = item.naam || "";
-            const prijs = parseFloat(item.prijs || 0).toFixed(2);
+        window.loadCustomCategories();
 
-            tr.innerHTML = `
-                <td><span class="badge-cat">${escapeHtml(categorie)}</span></td>
-                <td><strong>${escapeHtml(naam)}</strong></td>
-                <td>${prijs} €</td>
-                <td style="white-space: nowrap;">
-                    <button class="btn-action btn-edit" data-id="${id}">✏️</button>
-                    <button class="btn-action btn-delete" data-id="${id}">🗑️</button>
-                </td>
-            `;
+        // Database Connection Listener
+        const connectedRef = ref(db, ".info/connected");
+        onValue(connectedRef, (snap) => {
+            const statusDot = document.getElementById("statusDot");
+            const statusText = document.getElementById("statusText");
 
-            tr.querySelector('.btn-edit').addEventListener('click', () => {
-                window.editProduct(id, naam, prijs, categorie);
-            });
-            tr.querySelector('.btn-delete').addEventListener('click', () => {
-                window.deleteProduct(id);
-            });
-
-            tbody.appendChild(tr);
-        });
-    };
-
-    // 4. EXPORT TO JSON FILE (DIRECT DOWNLOAD)
-    window.exportToJson = function() {
-        const keys = Object.keys(allProductsData);
-        if (keys.length === 0) {
-            alert("Aucun produit à exporter !");
-            return;
-        }
-
-        const exportArray = keys.map(key => ({
-            categorie: allProductsData[key].categorie || "Autre",
-            naam: allProductsData[key].naam || "",
-            prijs: parseFloat(allProductsData[key].prijs || 0)
-        }));
-
-        const jsonString = JSON.stringify(exportArray, null, 2);
-        const blob = new Blob([jsonString], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-
-        const today = new Date().toISOString().split('T')[0];
-        const fileName = `produits_backup_${today}.json`;
-
-        const downloadLink = document.createElement("a");
-        downloadLink.href = url;
-        downloadLink.download = fileName;
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-        URL.revokeObjectURL(url);
-
-        showMessage("Backup JSON téléchargé avec succès !");
-    };
-
-    // 5. IMPORT FROM JSON FILE TO FIREBASE
-    window.importFromJson = function(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-            try {
-                const importedData = JSON.parse(e.target.result);
-                let productsToImport = [];
-
-                if (Array.isArray(importedData)) {
-                    productsToImport = importedData;
-                } else if (typeof importedData === 'object' && importedData !== null) {
-                    productsToImport = Object.values(importedData);
+            if (statusDot && statusText) {
+                if (snap.val() === true) {
+                    statusDot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50 animate-pulse";
+                    statusText.textContent = "Online";
+                    statusText.className = "text-xs font-semibold text-emerald-700";
                 } else {
-                    throw new Error("Le fichier ne contient pas une liste valide de produits.");
+                    statusDot.className = "w-2.5 h-2.5 rounded-full bg-rose-500 shadow-sm shadow-rose-500/50";
+                    statusText.textContent = "Offline";
+                    statusText.className = "text-xs font-semibold text-rose-700";
                 }
+            }
+        });
 
-                if (productsToImport.length === 0) {
-                    alert("Le fichier JSON est vide.");
-                    return;
+        // Live Products Listener
+        const productsRef = ref(db, 'products');
+        onValue(productsRef, (snapshot) => {
+            if (snapshot.exists()) {
+                allProductsData = snapshot.val();
+                
+                Object.values(allProductsData).forEach(item => {
+                    if (item.categorie) {
+                        const catSelect = document.getElementById("categorie");
+                        const filterSelect = document.getElementById("filterCategory");
+                        if (!catSelect.querySelector(`option[value="${item.categorie}"]`)) {
+                            catSelect.add(new Option(item.categorie, item.categorie));
+                            filterSelect.add(new Option(item.categorie, item.categorie));
+                        }
+                    }
+                });
+            } else {
+                allProductsData = {};
+            }
+            window.renderProductsTable();
+        });
+
+        // Render Table Function
+        window.renderProductsTable = function() {
+            const tbody = document.getElementById("productsTableBody");
+            const selectedCategory = document.getElementById("filterCategory").value;
+            tbody.innerHTML = "";
+
+            const productKeys = Object.keys(allProductsData);
+
+            if (productKeys.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-10 text-gray-400 italic"><i class="fa-solid fa-box-open text-2xl mb-2 text-brand-300 block"></i>Aucun produit dans la base. Cliquez sur <strong>"Importer"</strong> ci-dessus !</td></tr>`;
+                return;
+            }
+
+            let filteredKeys = productKeys.filter(key => {
+                if (selectedCategory === "ALL") return true;
+                return (allProductsData[key].categorie || "Autre") === selectedCategory;
+            });
+
+            filteredKeys.sort((a, b) => {
+                const catA = (allProductsData[a].categorie || "").toLowerCase();
+                const catB = (allProductsData[b].categorie || "").toLowerCase();
+                if (catA < catB) return -1;
+                if (catA > catB) return 1;
+
+                const nameA = (allProductsData[a].naam || "").toLowerCase();
+                const nameB = (allProductsData[b].naam || "").toLowerCase();
+                return nameA.localeCompare(nameB);
+            });
+
+            if (filteredKeys.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-10 text-gray-400 italic">Aucun produit trouvé pour cette catégorie.</td></tr>`;
+                return;
+            }
+
+            filteredKeys.forEach(id => {
+                const item = allProductsData[id];
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-brand-50/40 transition-colors";
+
+                const categorie = item.categorie || "Autre";
+                const naam = item.naam || "";
+                const prijs = parseFloat(item.prijs || 0).toFixed(2);
+
+                tr.innerHTML = `
+                    <td class="py-3 px-4"><span class="bg-brand-100 text-brand-700 font-semibold px-2.5 py-1 rounded-lg text-xs inline-block">${escapeHtml(categorie)}</span></td>
+                    <td class="py-3 px-4 font-semibold text-gray-800">${escapeHtml(naam)}</td>
+                    <td class="py-3 px-4 font-bold text-brand-700">${prijs} €</td>
+                    <td class="py-3 px-4 text-right whitespace-nowrap">
+                        <button class="btn-edit bg-amber-500 hover:bg-amber-600 text-white w-8 h-8 rounded-lg shadow-sm transition-all inline-flex items-center justify-center mr-1.5 cursor-pointer" title="Modifier" data-id="${id}">
+                            <i class="fa-solid fa-pen text-xs"></i>
+                        </button>
+                        <button class="btn-delete bg-rose-500 hover:bg-rose-600 text-white w-8 h-8 rounded-lg shadow-sm transition-all inline-flex items-center justify-center cursor-pointer" title="Supprimer" data-id="${id}">
+                            <i class="fa-solid fa-trash text-xs"></i>
+                        </button>
+                    </td>
+                `;
+
+                tr.querySelector('.btn-edit').addEventListener('click', () => {
+                    window.editProduct(id, naam, prijs, categorie);
+                });
+                tr.querySelector('.btn-delete').addEventListener('click', () => {
+                    window.deleteProduct(id);
+                });
+
+                tbody.appendChild(tr);
+            });
+        };
+
+        // Export JSON
+        window.exportToJson = function() {
+            const keys = Object.keys(allProductsData);
+            if (keys.length === 0) {
+                showCustomMessage("Aucun produit à exporter !", "error");
+                return;
+            }
+
+            const exportArray = keys.map(key => ({
+                categorie: allProductsData[key].categorie || "Autre",
+                naam: allProductsData[key].naam || "",
+                prijs: parseFloat(allProductsData[key].prijs || 0)
+            }));
+
+            const jsonString = JSON.stringify(exportArray, null, 2);
+            const blob = new Blob([jsonString], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+
+            const today = new Date().toISOString().split('T')[0];
+            const fileName = `produits_backup_${today}.json`;
+
+            const downloadLink = document.createElement("a");
+            downloadLink.href = url;
+            downloadLink.download = fileName;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            URL.revokeObjectURL(url);
+
+            showCustomMessage("Backup JSON téléchargé avec succès !");
+        };
+
+        // Import JSON
+        window.importFromJson = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    let productsToImport = [];
+
+                    if (Array.isArray(importedData)) {
+                        productsToImport = importedData;
+                    } else if (typeof importedData === 'object' && importedData !== null) {
+                        productsToImport = Object.values(importedData);
+                    } else {
+                        throw new Error("Le fichier ne contient pas une liste valide de produits.");
+                    }
+
+                    if (productsToImport.length === 0) {
+                        showCustomMessage("Le fichier JSON est vide.", "error");
+                        return;
+                    }
+
+                    const overwrite = confirm(
+                        `Le fichier contient ${productsToImport.length} produit(s).\n\n` +
+                        "Voulez-vous ÉCRASER tous les produits existants dans la base de données ?\n\n" +
+                        "• OK pour ÉCRASER toute la base.\n" +
+                        "• Annuler pour AJOUTER (fusionner) ces produits aux existants."
+                    );
+
+                    if (overwrite) {
+                        await remove(productsRef);
+                    }
+
+                    for (let prod of productsToImport) {
+                        const newRef = push(productsRef);
+                        await set(newRef, {
+                            categorie: prod.categorie || "Autre",
+                            naam: prod.naam || "Produit sans nom",
+                            prijs: parseFloat(prod.prijs || 0),
+                            timestamp: Date.now()
+                        });
+                    }
+
+                    showCustomMessage(`${productsToImport.length} produit(s) importé(s) avec succès !`);
+
+                } catch (err) {
+                    showCustomMessage("Erreur lors de l'importation : " + err.message, "error");
+                } finally {
+                    event.target.value = "";
                 }
+            };
 
-                const overwrite = confirm(
-                    `Le fichier contient ${productsToImport.length} produit(s).\n\n` +
-                    "Voulez-vous ÉCRASER tous les produits existants dans la base de données ?\n\n" +
-                    "• Cliquez sur OK pour ÉCRASER toute la base.\n" +
-                    "• Cliquez sur Annuler pour AJOUTER (fusionner) ces produits aux existants."
-                );
+            reader.readAsText(file);
+        };
 
-                if (overwrite) {
-                    await remove(productsRef);
-                }
+        // Form Submit
+        const form = document.getElementById("productForm");
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
 
-                for (let prod of productsToImport) {
+            const editId = document.getElementById("editProductId").value;
+            const categorie = document.getElementById("categorie").value;
+            const naam = document.getElementById("productNaam").value.trim();
+            const prijs = parseFloat(document.getElementById("productPrijs").value) || 0;
+
+            const submitBtn = document.getElementById("submitBtn");
+            submitBtn.disabled = true;
+
+            try {
+                if (editId) {
+                    const itemRef = ref(db, `products/${editId}`);
+                    await update(itemRef, {
+                        categorie: categorie,
+                        naam: naam,
+                        prijs: prijs
+                    });
+                    showCustomMessage("Produit mis à jour avec succès !");
+                } else {
                     const newRef = push(productsRef);
                     await set(newRef, {
-                        categorie: prod.categorie || "Autre",
-                        naam: prod.naam || "Produit sans nom",
-                        prijs: parseFloat(prod.prijs || 0),
+                        categorie: categorie,
+                        naam: naam,
+                        prijs: prijs,
                         timestamp: Date.now()
                     });
+                    showCustomMessage("Nouveau produit ajouté avec succès !");
                 }
 
-                showMessage(`${productsToImport.length} produit(s) importé(s) avec succès !`);
-
-            } catch (err) {
-                alert("Erreur lors de l'importation : " + err.message);
+                window.resetForm();
+            } catch (error) {
+                showCustomMessage("Erreur: " + error.message, "error");
             } finally {
-                event.target.value = "";
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Edit Product
+        window.editProduct = function(id, naam, prijs, categorie) {
+            document.getElementById("editProductId").value = id;
+            
+            const catSelect = document.getElementById("categorie");
+            if (!catSelect.querySelector(`option[value="${categorie}"]`)) {
+                const filterSelect = document.getElementById("filterCategory");
+                catSelect.add(new Option(categorie, categorie));
+                filterSelect.add(new Option(categorie, categorie));
+            }
+            
+            catSelect.value = categorie;
+            document.getElementById("productNaam").value = naam;
+            document.getElementById("productPrijs").value = prijs;
+
+            document.getElementById("formTitle").innerHTML = `<i class="fa-solid fa-pen-to-square text-brand-500"></i> Modifier le Produit`;
+            document.getElementById("submitBtn").innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Mettre à jour`;
+            document.getElementById("cancelBtn").classList.remove("hidden");
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        // Delete Product
+        window.deleteProduct = async function(id) {
+            if (confirm("Voulez-vous vraiment supprimer ce produit ?")) {
+                try {
+                    const itemRef = ref(db, `products/${id}`);
+                    await remove(itemRef);
+                    showCustomMessage("Produit supprimé avec succès !");
+                } catch (error) {
+                    showCustomMessage("Erreur lors de la suppression: " + error.message, "error");
+                }
             }
         };
 
-        reader.readAsText(file);
-    };
+        // Reset Form
+        window.resetForm = function() {
+            form.reset();
+            document.getElementById("editProductId").value = "";
+            document.getElementById("formTitle").innerHTML = `<i class="fa-solid fa-plus-circle text-brand-500"></i> Ajouter un Produit`;
+            document.getElementById("submitBtn").innerHTML = `<i class="fa-solid fa-check"></i> Enregistrer le produit`;
+            document.getElementById("cancelBtn").classList.add("hidden");
+        };
 
-    // 6. FORM SUBMIT (ADD OR UPDATE)
-    const form = document.getElementById("productForm");
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const editId = document.getElementById("editProductId").value;
-        const categorie = document.getElementById("categorie").value;
-        const naam = document.getElementById("productNaam").value.trim();
-        const prijs = parseFloat(document.getElementById("productPrijs").value) || 0;
-
-        const submitBtn = document.getElementById("submitBtn");
-        submitBtn.disabled = true;
-
-        try {
-            if (editId) {
-                const itemRef = ref(db, `products/${editId}`);
-                await update(itemRef, {
-                    categorie: categorie,
-                    naam: naam,
-                    prijs: prijs
-                });
-                showMessage("Produit mis à jour avec succès !");
+        function showCustomMessage(text, type = "success") {
+            const alertBox = document.getElementById("alertSuccess");
+            const alertText = document.getElementById("alertText");
+            
+            alertText.textContent = text;
+            
+            if (type === "error") {
+                alertBox.className = "bg-rose-50 text-rose-800 border border-rose-200 p-4 rounded-xl text-sm font-medium text-center shadow-sm transition-all duration-300 flex items-center justify-center gap-2";
+                alertBox.querySelector("i").className = "fa-solid fa-circle-exclamation text-rose-600";
             } else {
-                const newRef = push(productsRef);
-                await set(newRef, {
-                    categorie: categorie,
-                    naam: naam,
-                    prijs: prijs,
-                    timestamp: Date.now()
-                });
-                showMessage("Nouveau produit ajouté !");
+                alertBox.className = "bg-emerald-50 text-emerald-800 border border-emerald-200 p-4 rounded-xl text-sm font-medium text-center shadow-sm transition-all duration-300 flex items-center justify-center gap-2";
+                alertBox.querySelector("i").className = "fa-solid fa-circle-check text-emerald-600";
             }
 
-            window.resetForm();
-        } catch (error) {
-            alert("Erreur: " + error.message);
-        } finally {
-            submitBtn.disabled = false;
+            alertBox.classList.remove("hidden");
+            setTimeout(() => { alertBox.classList.add("hidden"); }, 3500);
         }
-    });
 
-    // 7. EDIT PRODUCT
-    window.editProduct = function(id, naam, prijs, categorie) {
-        document.getElementById("editProductId").value = id;
-        
-        const catSelect = document.getElementById("categorie");
-        if (!catSelect.querySelector(`option[value="${categorie}"]`)) {
-            const filterSelect = document.getElementById("filterCategory");
-            catSelect.add(new Option(categorie, categorie));
-            filterSelect.add(new Option(categorie, categorie));
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
         }
-        
-        catSelect.value = categorie;
-        document.getElementById("productNaam").value = naam;
-        document.getElementById("productPrijs").value = prijs;
-
-        document.getElementById("formTitle").textContent = "Modifier le Produit";
-        document.getElementById("submitBtn").textContent = "Mettre à jour le produit";
-        document.getElementById("cancelBtn").style.display = "block";
-
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    // 8. DELETE PRODUCT
-    window.deleteProduct = async function(id) {
-        if (confirm("Voulez-vous vraiment supprimer ce produit ?")) {
-            try {
-                const itemRef = ref(db, `products/${id}`);
-                await remove(itemRef);
-                showMessage("Produit supprimé !");
-            } catch (error) {
-                alert("Erreur lors de la suppression: " + error.message);
-            }
-        }
-    };
-
-    // 9. RESET FORM
-    window.resetForm = function() {
-        form.reset();
-        document.getElementById("editProductId").value = "";
-        document.getElementById("formTitle").textContent = "Ajouter un Produit";
-        document.getElementById("submitBtn").textContent = "Enregistrer le produit";
-        document.getElementById("cancelBtn").style.display = "none";
-    };
-
-    function showMessage(text) {
-        const alertBox = document.getElementById("alertSuccess");
-        alertBox.textContent = "✓ " + text;
-        alertBox.style.display = "block";
-        setTimeout(() => { alertBox.style.display = "none"; }, 3500);
-    }
-
-    function escapeHtml(str) {
-        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-    }
-</script>
+    </script>
 </body>
 </html>
