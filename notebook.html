@@ -8,82 +8,105 @@
     <!-- Script pour la génération PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
+        :root {
+            --primary-color: #9b59b6;
+            --primary-hover: #8e44ad;
+            --bg-gradient: linear-gradient(135deg, #fbeef7 0%, #e8d5e5 100%);
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --glass-shadow: 0 8px 32px 0 rgba(155, 89, 182, 0.12);
+            --text-dark: #2c3e50;
+            --text-muted: #7f8c8d;
+        }
+
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; 
-            background-color: #fbeef7; 
-            color: #202124; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-dark); 
             margin: 0; 
             padding-bottom: 90px; 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
+            min-height: 100vh;
         }
+
         .app-header { 
-            background-color: #ffffff; 
+            background: rgba(255, 255, 255, 0.85); 
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             width: 100%; 
             text-align: center; 
-            padding: 14px 0; 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
+            padding: 16px 0; 
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05); 
             position: sticky; 
             top: 0; 
             z-index: 100; 
-        }
-        .app-header h1 { 
-            font-size: 16px; 
-            margin: 0; 
-            color: #9b59b6; 
-            font-weight: 600; 
+            border-bottom: 1px solid var(--glass-border);
         }
 
-        /* Bouton Fermer (X) vers index.html */
+        .app-header h1 { 
+            font-size: 18px; 
+            margin: 0; 
+            color: var(--primary-color); 
+            font-weight: 700; 
+            letter-spacing: 0.5px;
+        }
+
         .btn-close-app {
             position: absolute;
-            top: 8px;
-            right: 14px;
+            top: 10px;
+            right: 16px;
             text-decoration: none;
-            color: #9b59b6;
+            color: var(--primary-color);
             font-size: 22px;
             font-weight: bold;
-            line-height: 1;
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            background-color: #fbeef7;
-            transition: background-color 0.2s, color 0.2s;
+            background: rgba(251, 238, 247, 0.8);
+            transition: all 0.25s ease;
         }
+
         .btn-close-app:hover, .btn-close-app:active {
-            background-color: #9b59b6;
+            background-color: var(--primary-color);
             color: #ffffff;
+            transform: rotate(90deg);
         }
 
         .app-view { 
             width: 100%; 
-            max-width: 600px; 
+            max-width: 650px; 
             box-sizing: border-box; 
-            padding: 16px; 
+            padding: 20px 16px; 
         }
+
         .app-card { 
-            background: #ffffff; 
-            border: 1px solid #f3d6ed; 
-            border-radius: 12px; 
-            padding: 20px; 
-            box-shadow: 0 2px 8px rgba(155, 89, 182, 0.05); 
+            background: var(--glass-bg); 
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border); 
+            border-radius: 16px; 
+            padding: 24px; 
+            box-shadow: var(--glass-shadow); 
             width: 100%; 
             box-sizing: border-box; 
-            margin-bottom: 16px; 
+            margin-bottom: 20px; 
         }
+
         .section-title { 
-            font-size: 16px; 
+            font-size: 15px; 
             text-transform: uppercase; 
-            letter-spacing: 0.5px; 
-            color: #9b59b6; 
-            margin: 0 0 16px 0; 
-            font-weight: 700; 
-            border-bottom: 2px solid #fbeef7; 
-            padding-bottom: 8px; 
+            letter-spacing: 1px; 
+            color: var(--primary-color); 
+            margin: 0 0 18px 0; 
+            font-weight: 800; 
+            border-bottom: 2px solid rgba(155, 89, 182, 0.15); 
+            padding-bottom: 10px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
@@ -92,219 +115,259 @@
         }
         
         .form-group { 
-            margin-bottom: 16px; 
+            margin-bottom: 18px; 
             display: flex; 
             flex-direction: column; 
         }
+
         .form-group label { 
             font-size: 13px; 
-            font-weight: 600; 
-            color: #5f6368; 
-            margin-bottom: 6px; 
+            font-weight: 700; 
+            color: #555; 
+            margin-bottom: 8px; 
         }
+
         .form-control { 
-            border: 1px solid #f3d6ed; 
-            border-radius: 8px; 
-            padding: 12px; 
+            border: 1px solid rgba(155, 89, 182, 0.2); 
+            border-radius: 10px; 
+            padding: 12px 14px; 
             font-size: 15px; 
             outline: none; 
-            transition: border-color 0.2s; 
-            background: #fafafa; 
+            transition: all 0.25s ease; 
+            background: rgba(255, 255, 255, 0.9); 
             font-family: inherit;
         }
+
         .form-control:focus { 
-            border-color: #9b59b6; 
+            border-color: var(--primary-color); 
             background: #ffffff; 
+            box-shadow: 0 0 0 3px rgba(155, 89, 182, 0.15);
         }
+
         textarea.form-control {
             resize: vertical;
             min-height: 100px;
         }
 
         .btn-submit { 
-            background-color: #9b59b6; 
+            background: linear-gradient(135deg, #a569bd 0%, #8e44ad 100%); 
             color: white; 
             border: none; 
-            border-radius: 8px; 
+            border-radius: 10px; 
             padding: 14px; 
             font-size: 16px; 
-            font-weight: 600; 
+            font-weight: 700; 
             cursor: pointer; 
             width: 100%; 
-            box-shadow: 0 2px 4px rgba(155, 89, 182, 0.3); 
-            transition: background-color 0.2s; 
+            box-shadow: 0 4px 12px rgba(142, 68, 173, 0.3); 
+            transition: all 0.25s ease; 
         }
-        .btn-submit:active { 
-            background-color: #8e44ad; 
+
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(142, 68, 173, 0.4);
         }
         
         .btn-cancel { 
             background-color: #95a5a6; 
             color: white; 
             border: none; 
-            border-radius: 8px; 
-            padding: 10px; 
+            border-radius: 10px; 
+            padding: 12px; 
             font-size: 14px; 
             font-weight: 600; 
             cursor: pointer; 
             width: 100%; 
-            margin-top: 8px; 
+            margin-top: 10px; 
             display: none; 
         }
 
         .alert-success { 
-            background-color: #e6f4ea; 
-            color: #137333; 
-            border: 1px solid #ceead6; 
-            padding: 12px; 
-            border-radius: 8px; 
+            background-color: #d4edda; 
+            color: #155724; 
+            border: 1px solid #c3e6cb; 
+            padding: 14px; 
+            border-radius: 10px; 
             font-size: 14px; 
             text-align: center; 
             margin-bottom: 16px; 
             display: none; 
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
-        /* Toolbar / Actions de la liste */
         .list-toolbar {
             display: flex;
             gap: 8px;
-            margin-bottom: 14px;
+            margin-bottom: 16px;
             flex-wrap: wrap;
         }
+
         .btn-tool {
-            background-color: #fbeef7;
-            color: #9b59b6;
-            border: 1px solid #f3d6ed;
-            border-radius: 6px;
-            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.8);
+            color: var(--primary-color);
+            border: 1px solid rgba(155, 89, 182, 0.3);
+            border-radius: 8px;
+            padding: 8px 14px;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
         }
+
         .btn-tool:hover {
-            background-color: #9b59b6;
+            background-color: var(--primary-color);
             color: #ffffff;
         }
+
         .btn-delete-selected {
             background-color: #e74c3c;
             color: white;
             border: none;
         }
+
         .btn-delete-selected:hover {
             background-color: #c0392b;
         }
+
         .btn-pdf {
             background-color: #27ae60;
             color: white;
             border: none;
             margin-left: auto;
         }
+
         .btn-pdf:hover {
             background-color: #219150;
         }
 
-        /* Ideas Grid */
         .ideas-grid {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 14px;
         }
+
         .idea-card {
-            background-color: #fafafa;
-            border: 1px solid #f3d6ed;
-            border-left: 4px solid #9b59b6;
-            border-radius: 8px;
-            padding: 14px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(243, 214, 237, 0.8);
+            border-left: 5px solid var(--primary-color);
+            border-radius: 12px;
+            padding: 16px;
             position: relative;
-            transition: background-color 0.3s, border-color 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         }
+
         .idea-card.confirmed {
             background-color: #f0fdf4;
             border-left-color: #2ecc71;
             border-color: #c6f6d5;
         }
+
         .idea-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 8px;
         }
+
         .idea-title-wrapper {
             display: flex;
             align-items: center;
             gap: 10px;
         }
+
         .select-checkbox {
             width: 18px;
             height: 18px;
-            accent-color: #9b59b6;
+            accent-color: var(--primary-color);
             cursor: pointer;
         }
+
         .idea-title {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 700;
-            color: #202124;
+            color: var(--text-dark);
             margin: 0;
         }
+
         .idea-date {
             font-size: 11px;
-            color: #7f8c8d;
+            color: var(--text-muted);
         }
+
         .idea-content {
-            font-size: 13px;
-            color: #5f6368;
+            font-size: 14px;
+            color: #4a5568;
             white-space: pre-wrap;
-            margin-bottom: 10px;
-            line-height: 1.4;
+            margin-bottom: 12px;
+            line-height: 1.5;
             padding-left: 28px;
         }
 
-        /* Fotogalerij (Aparte lijst) Grid */
+        .idea-image {
+            width: calc(100% - 28px);
+            margin-left: 28px;
+            max-height: 240px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-top: 6px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .idea-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+        }
+
         .photos-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
             gap: 12px;
             margin-top: 10px;
         }
+
         .photo-card-item {
-            background: #fafafa;
-            border: 1px solid #f3d6ed;
-            border-radius: 8px;
+            background: #ffffff;
+            border: 1px solid rgba(243, 214, 237, 0.8);
+            border-radius: 10px;
             padding: 6px;
             display: flex;
             flex-direction: column;
             align-items: center;
             position: relative;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
-        .photo-card-item.selected {
-            border-color: #9b59b6;
-            background-color: #fbeef7;
-        }
+
         .photo-select-checkbox {
             position: absolute;
             top: 10px;
             left: 10px;
             width: 20px;
             height: 20px;
-            accent-color: #9b59b6;
+            accent-color: var(--primary-color);
             cursor: pointer;
             z-index: 2;
         }
+
         .photo-thumb {
             width: 100%;
             height: 100px;
             object-fit: cover;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             transition: transform 0.2s ease;
         }
+
         .photo-thumb:hover {
             transform: scale(1.04);
         }
+
         .photo-title-caption {
             font-size: 11px;
             font-weight: 600;
@@ -322,28 +385,31 @@
             justify-content: flex-end;
             gap: 6px;
         }
+
         .btn-action { 
             border: none; 
-            padding: 6px 10px; 
+            padding: 6px 12px; 
             border-radius: 6px; 
             cursor: pointer; 
             font-size: 12px; 
             font-weight: 600; 
         }
+
         .btn-confirm {
             background-color: #e6f4ea;
             color: #27ae60;
             border: 1px solid #27ae60;
         }
+
         .btn-confirm.active {
             background-color: #2ecc71;
             color: white;
             border-color: #2ecc71;
         }
+
         .btn-edit { background-color: #f39c12; color: white; }
         .btn-delete { background-color: #e74c3c; color: white; }
 
-        /* Full Screen Lightbox Modal */
         .lightbox-modal {
             display: none;
             position: fixed;
@@ -352,43 +418,49 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.88);
+            background-color: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             justify-content: center;
             align-items: center;
             flex-direction: column;
         }
+
         .lightbox-modal.active {
             display: flex;
         }
+
         .lightbox-img {
             max-width: 90%;
-            max-height: 80%;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            max-height: 80vh;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.6);
             object-fit: contain;
         }
+
         .lightbox-caption {
             color: #ffffff;
             font-size: 16px;
-            margin-top: 14px;
+            margin-top: 16px;
             font-weight: 600;
             text-align: center;
         }
+
         .lightbox-close {
             position: absolute;
             top: 20px;
             right: 25px;
             color: #ffffff;
-            font-size: 35px;
+            font-size: 36px;
             font-weight: bold;
             cursor: pointer;
             user-select: none;
         }
+
         .lightbox-close:hover {
-            color: #f3d6ed;
+            color: var(--primary-color);
         }
 
-        /* Template PDF caché pour l'export */
         #pdfExportTemplate {
             display: none;
             background: white;
@@ -396,33 +468,39 @@
             font-family: Arial, sans-serif;
             color: #333;
         }
+
         #pdfExportTemplate h2 {
-            color: #9b59b6;
-            border-bottom: 2px solid #9b59b6;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
             padding-bottom: 8px;
             margin-bottom: 20px;
         }
+
         .pdf-item {
             margin-bottom: 16px;
             padding: 12px;
             border: 1px solid #e0e0e0;
-            border-left: 4px solid #9b59b6;
+            border-left: 4px solid var(--primary-color);
             border-radius: 6px;
         }
+
         .pdf-item.confirmed {
             border-left-color: #2ecc71;
             background-color: #f0fdf4;
         }
+
         .pdf-item-title {
             font-weight: bold;
             font-size: 14px;
             color: #2c3e50;
         }
+
         .pdf-item-date {
             font-size: 10px;
             color: #7f8c8d;
             margin-bottom: 6px;
         }
+
         .pdf-item-desc {
             font-size: 12px;
             white-space: pre-wrap;
@@ -478,7 +556,6 @@
             <span>Mes Idées Enregistrées</span>
         </h2>
 
-        <!-- Barre d'outils Sélection, Suppression & PDF -->
         <div class="list-toolbar">
             <button class="btn-tool" onclick="window.toggleSelectAll()" id="btnToggleSelect">
                 ☑ Tout sélectionner
@@ -496,13 +573,12 @@
         </div>
     </div>
 
-    <!-- APARTE KAART: Fotogalerij Lijst met Directe Upload & Acties -->
+    <!-- Galerie Card -->
     <div class="app-card">
         <h2 class="section-title">
-            <span>😀 le prototype</span>
+            <span>😀 Le prototype</span>
         </h2>
 
-        <!-- Toolbar voor Galerie -->
         <div class="list-toolbar">
             <button class="btn-tool" onclick="document.getElementById('galleryDirectUpload').click()">
                 📷 Upload foto('s)
@@ -510,7 +586,7 @@
             <input type="file" id="galleryDirectUpload" accept="image/*" multiple style="display: none;">
 
             <button class="btn-tool" onclick="window.toggleSelectAllPhotos()" id="btnToggleSelectPhotos">
-                ☑️️ Tout sélectionner
+                ☑ Tout sélectionner
             </button>
             <button class="btn-tool btn-delete-selected" onclick="window.deleteSelectedPhotos()">
                 🗑️ Supprimer la sélection
@@ -526,11 +602,11 @@
 <!-- Lightbox Modal Fullscreen -->
 <div id="lightboxModal" class="lightbox-modal" onclick="window.closeLightbox()">
     <span class="lightbox-close">&times;</span>
-    <img id="lightboxImage" class="lightbox-img" src="logo.jpg" alt="Image grand écran">
+    <img id="lightboxImage" class="lightbox-img" src="" alt="Image grand écran">
     <div id="lightboxCaption" class="lightbox-caption"></div>
 </div>
 
-<!-- Div cachée servant de modèle pour la génération du PDF -->
+<!-- Div voor PDF Export -->
 <div id="pdfExportTemplate">
     <h2>Au bonheur des Anges - Mes Idées</h2>
     <div id="pdfContent"></div>
@@ -558,7 +634,7 @@
     let allPhotosSelected = false;
     let currentBase64Image = "";
 
-    // Convert file to Base64 voor het hoofdformulier
+    // Convert file naar Base64
     const photoInput = document.getElementById("ideaPhoto");
     photoInput.addEventListener("change", (e) => {
         const file = e.target.files[0];
@@ -573,7 +649,7 @@
         }
     });
 
-    // Directly Upload Photos into Gallery (Merk op: isPhotoOnly = true)
+    // Gallery direct upload
     const galleryDirectUploadInput = document.getElementById("galleryDirectUpload");
     galleryDirectUploadInput.addEventListener("change", async (e) => {
         const files = Array.from(e.target.files);
@@ -590,7 +666,7 @@
                             titre: photoName,
                             description: "",
                             image: event.target.result,
-                            isPhotoOnly: true, // Markering: dit is enkel een foto-upload!
+                            isPhotoOnly: true,
                             confirmed: false,
                             timestamp: Date.now()
                         });
@@ -613,7 +689,7 @@
         }
     });
 
-    // Lightbox functions
+    // Lightbox functies
     window.openLightbox = function(src, title) {
         const modal = document.getElementById("lightboxModal");
         const img = document.getElementById("lightboxImage");
@@ -628,7 +704,7 @@
         modal.classList.remove("active");
     };
 
-    // 1. LIVE IDEAS LISTENER FROM FIREBASE
+    // 1. LIVE DATA LISTENER
     const ideasRef = ref(db, 'ideas');
     onValue(ideasRef, (snapshot) => {
         if (snapshot.exists()) {
@@ -640,12 +716,11 @@
         window.renderPhotos();
     });
 
-    // 2. RENDER IDEAS LIST (Filtert foto-only bestanden eruit)
+    // 2. RENDER IDEAS LIST
     window.renderIdeas = function() {
         const container = document.getElementById("ideasContainer");
         container.innerHTML = "";
 
-        // Enkel items die NIET gemarkeerd zijn als foto-only én een beschrijving/titel hebben
         const ideaKeys = Object.keys(allIdeasData).filter(id => {
             const item = allIdeasData[id];
             return !item.isPhotoOnly && (item.description || item.titre);
@@ -678,6 +753,7 @@
                     <span class="idea-date">${dateStr}</span>
                 </div>
                 ${description ? `<div class="idea-content">${escapeHtml(description)}</div>` : ''}
+                ${item.image ? `<img src="${item.image}" class="idea-image" alt="${escapeHtml(titre)}" onclick="window.openLightbox('${item.image}', '${escapeHtml(titre)}')">` : ''}
                 <div class="idea-actions">
                     <button class="btn-action btn-confirm ${isConfirmed ? 'active' : ''}" data-id="${id}">
                         ${isConfirmed ? '✓ Confirmé' : '✓ Confirmer'}
@@ -701,7 +777,7 @@
         });
     };
 
-    // 3. RENDER APARTE FOTOGALERIJ (Toont alle afbeeldingen)
+    // 3. RENDER FOTOGALERIJ
     window.renderPhotos = function() {
         const photoContainer = document.getElementById("photosContainer");
         photoContainer.innerHTML = "";
@@ -733,18 +809,13 @@
         }
     };
 
-    // 4. GALERIE: TOUT SÉLECTIONNER / DÉSÉLECTIONNER
     window.toggleSelectAllPhotos = function() {
         const checkboxes = document.querySelectorAll('.photo-select-checkbox');
         allPhotosSelected = !allPhotosSelected;
-        
         checkboxes.forEach(cb => cb.checked = allPhotosSelected);
-        
-        const btn = document.getElementById('btnToggleSelectPhotos');
-        btn.textContent = allPhotosSelected ? '⏹ Tout désélectionner' : '☑️ Tout sélectionner';
+        document.getElementById('btnToggleSelectPhotos').textContent = allPhotosSelected ? '⏹ Tout désélectionner' : '☑️ Tout sélectionner';
     };
 
-    // 5. GALERIE: SUPPRIMER LA SÉLECTION
     window.deleteSelectedPhotos = async function() {
         const checkboxes = document.querySelectorAll('.photo-select-checkbox:checked');
         const selectedIds = Array.from(checkboxes).map(cb => cb.getAttribute('data-id'));
@@ -758,7 +829,6 @@
             try {
                 const deletePromises = selectedIds.map(id => remove(ref(db, `ideas/${id}`)));
                 await Promise.all(deletePromises);
-                
                 allPhotosSelected = false;
                 document.getElementById('btnToggleSelectPhotos').textContent = '☑ Tout sélectionner';
                 showMessage(`${selectedIds.length} photo(s) supprimée(s) !`);
@@ -768,29 +838,22 @@
         }
     };
 
-    // 6. TOGGLE CONFIRMATION
     window.toggleConfirm = async function(id, status) {
         try {
-            const itemRef = ref(db, `ideas/${id}`);
-            await update(itemRef, { confirmed: status });
+            await update(ref(db, `ideas/${id}`), { confirmed: status });
             showMessage(status ? "Idée confirmée !" : "Confirmation retirée.");
         } catch (error) {
             alert("Erreur: " + error.message);
         }
     };
 
-    // 7. TOUT SÉLECTIONNER / DÉSÉLECTIONNER (IDEAS)
     window.toggleSelectAll = function() {
         const checkboxes = document.querySelectorAll('.select-checkbox');
         allSelected = !allSelected;
-        
         checkboxes.forEach(cb => cb.checked = allSelected);
-        
-        const btn = document.getElementById('btnToggleSelect');
-        btn.textContent = allSelected ? '⏹️ Tout désélectionner' : '☑️ Tout sélectionner';
+        document.getElementById('btnToggleSelect').textContent = allSelected ? '⏹️ Tout désélectionner' : '☑️ Tout sélectionner';
     };
 
-    // 8. SUPPRIMER LA SÉLECTION (IDEAS)
     window.deleteSelected = async function() {
         const checkboxes = document.querySelectorAll('.select-checkbox:checked');
         const selectedIds = Array.from(checkboxes).map(cb => cb.getAttribute('data-id'));
@@ -804,9 +867,8 @@
             try {
                 const deletePromises = selectedIds.map(id => remove(ref(db, `ideas/${id}`)));
                 await Promise.all(deletePromises);
-                
                 allSelected = false;
-                document.getElementById('btnToggleSelect').textContent = '☑️️ Tout sélectionner';
+                document.getElementById('btnToggleSelect').textContent = '☑ Tout sélectionner';
                 showMessage(`${selectedIds.length} idée(s) supprimée(s) !`);
             } catch (error) {
                 alert("Erreur lors de la suppression: " + error.message);
@@ -814,12 +876,9 @@
         }
     };
 
-    // 9. EXPORT EN PDF
     window.exportSelectedToPDF = function() {
         const checkboxes = document.querySelectorAll('.select-checkbox:checked');
-        const selectedIds = Array.from(checkboxes).map(cb => cb.getAttribute('data-id'));
-
-        let idsToExport = selectedIds;
+        let idsToExport = Array.from(checkboxes).map(cb => cb.getAttribute('data-id'));
 
         if (idsToExport.length === 0) {
             const exportAll = confirm("Aucune idée n'est cochée. Voulez-vous exporter TOUTES les idées en PDF ?");
@@ -875,7 +934,7 @@
         });
     };
 
-    // 10. FORM SUBMIT (ADD OR UPDATE)
+    // 8. FORM SUBMIT (Inclusief correct opslaan van de foto naar Firebase)
     const form = document.getElementById("ideaForm");
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -883,13 +942,12 @@
         const editId = document.getElementById("editIdeaId").value;
         const titre = document.getElementById("ideaTitre").value.trim();
         const description = document.getElementById("ideaDescription").value.trim();
-
         const submitBtn = document.getElementById("submitBtn");
+        
         submitBtn.disabled = true;
 
         try {
             if (editId) {
-                const itemRef = ref(db, `ideas/${editId}`);
                 const updatePayload = {
                     titre: titre,
                     description: description,
@@ -898,14 +956,14 @@
                 if (currentBase64Image) {
                     updatePayload.image = currentBase64Image;
                 }
-                await update(itemRef, updatePayload);
+                await update(ref(db, `ideas/${editId}`), updatePayload);
                 showMessage("Idée mise à jour avec succès !");
             } else {
                 const newRef = push(ideasRef);
                 await set(newRef, {
                     titre: titre,
                     description: description,
-                    image: currentBase64Image || "",
+                    image: currentBase64Image || "", // Foto wordt nu correct opgeslagen!
                     isPhotoOnly: false,
                     confirmed: false,
                     timestamp: Date.now()
@@ -921,7 +979,6 @@
         }
     });
 
-    // 11. EDIT IDEA
     window.editIdea = function(id, titre, description, image) {
         document.getElementById("editIdeaId").value = id;
         document.getElementById("ideaTitre").value = titre;
@@ -935,12 +992,10 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    // 12. DELETE SINGLE IDEA
     window.deleteIdea = async function(id) {
         if (confirm("Voulez-vous vraiment supprimer cette idée ?")) {
             try {
-                const itemRef = ref(db, `ideas/${id}`);
-                await remove(itemRef);
+                await remove(ref(db, `ideas/${id}`));
                 showMessage("Idée supprimée !");
             } catch (error) {
                 alert("Erreur lors de la suppression: " + error.message);
@@ -948,7 +1003,6 @@
         }
     };
 
-    // 13. RESET FORM
     window.resetForm = function() {
         form.reset();
         document.getElementById("editIdeaId").value = "";
