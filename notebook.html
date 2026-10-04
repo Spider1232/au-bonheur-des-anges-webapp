@@ -262,6 +262,61 @@
             line-height: 1.4;
             padding-left: 28px;
         }
+
+        /* Fotogalerij (Aparte lijst) Grid */
+        .photos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .photo-card-item {
+            background: #fafafa;
+            border: 1px solid #f3d6ed;
+            border-radius: 8px;
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        .photo-card-item.selected {
+            border-color: #9b59b6;
+            background-color: #fbeef7;
+        }
+        .photo-select-checkbox {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 20px;
+            height: 20px;
+            accent-color: #9b59b6;
+            cursor: pointer;
+            z-index: 2;
+        }
+        .photo-thumb {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .photo-thumb:hover {
+            transform: scale(1.04);
+        }
+        .photo-title-caption {
+            font-size: 11px;
+            font-weight: 600;
+            color: #5f6368;
+            margin-top: 6px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+        }
+
         .idea-actions {
             display: flex;
             justify-content: flex-end;
@@ -287,6 +342,51 @@
         }
         .btn-edit { background-color: #f39c12; color: white; }
         .btn-delete { background-color: #e74c3c; color: white; }
+
+        /* Full Screen Lightbox Modal */
+        .lightbox-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.88);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .lightbox-modal.active {
+            display: flex;
+        }
+        .lightbox-img {
+            max-width: 90%;
+            max-height: 80%;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            object-fit: contain;
+        }
+        .lightbox-caption {
+            color: #ffffff;
+            font-size: 16px;
+            margin-top: 14px;
+            font-weight: 600;
+            text-align: center;
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            color: #ffffff;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+        }
+        .lightbox-close:hover {
+            color: #f3d6ed;
+        }
 
         /* Template PDF caché pour l'export */
         #pdfExportTemplate {
@@ -328,6 +428,12 @@
             white-space: pre-wrap;
             color: #444;
         }
+        .pdf-item-img {
+            max-width: 150px;
+            max-height: 150px;
+            margin-top: 8px;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -356,6 +462,11 @@
             <div class="form-group">
                 <label for="ideaDescription">Description / Notes</label>
                 <textarea id="ideaDescription" class="form-control" placeholder="Détails de l'idée, matériaux, couleurs..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="ideaPhoto">Ajouter une Photo (Optionnel)</label>
+                <input type="file" id="ideaPhoto" class="form-control" accept="image/*">
             </div>
 
             <button type="submit" class="btn-submit" id="submitBtn">
@@ -390,6 +501,39 @@
             <div style="text-align: center; color: #7f8c8d; padding: 15px;">Chargement des idées...</div>
         </div>
     </div>
+
+    <!-- APARTE KAART: Fotogalerij Lijst met Directe Upload & Acties -->
+    <div class="app-card">
+        <h2 class="section-title">
+            <span>📷 Galerie de photos</span>
+        </h2>
+
+        <!-- Toolbar voor Galerie -->
+        <div class="list-toolbar">
+            <button class="btn-tool" onclick="document.getElementById('galleryDirectUpload').click()">
+                📷 Upload foto('s)
+            </button>
+            <input type="file" id="galleryDirectUpload" accept="image/*" multiple style="display: none;">
+
+            <button class="btn-tool" onclick="window.toggleSelectAllPhotos()" id="btnToggleSelectPhotos">
+                ☑️ Tout sélectionner
+            </button>
+            <button class="btn-tool btn-delete-selected" onclick="window.deleteSelectedPhotos()">
+                🗑️ Supprimer la sélection
+            </button>
+        </div>
+
+        <div id="photosContainer" class="photos-grid">
+            <div style="text-align: center; color: #7f8c8d; padding: 15px; grid-column: 1 / -1;">Chargement des photos...</div>
+        </div>
+    </div>
+</div>
+
+<!-- Lightbox Modal Fullscreen -->
+<div id="lightboxModal" class="lightbox-modal" onclick="window.closeLightbox()">
+    <span class="lightbox-close">&times;</span>
+    <img id="lightboxImage" class="lightbox-img" src="logo.jpg" alt="Image grand écran">
+    <div id="lightboxCaption" class="lightbox-caption"></div>
 </div>
 
 <!-- Div cachée servant de modèle pour la génération du PDF -->
@@ -417,6 +561,77 @@
 
     let allIdeasData = {};
     let allSelected = false;
+    let allPhotosSelected = false;
+    let currentBase64Image = "";
+
+    // Convert file to Base64 voor het hoofdformulier
+    const photoInput = document.getElementById("ideaPhoto");
+    photoInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                currentBase64Image = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            currentBase64Image = "";
+        }
+    });
+
+    // Directly Upload Photos into Gallery
+    const galleryDirectUploadInput = document.getElementById("galleryDirectUpload");
+    galleryDirectUploadInput.addEventListener("change", async (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length === 0) return;
+
+        let uploadPromises = files.map(file => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = async function(event) {
+                    try {
+                        const newRef = push(ref(db, 'ideas'));
+                        const photoName = file.name.replace(/\.[^/.]+$/, "");
+                        await set(newRef, {
+                            titre: photoName,
+                            description: "",
+                            image: event.target.result,
+                            confirmed: false,
+                            timestamp: Date.now()
+                        });
+                        resolve();
+                    } catch(err) {
+                        reject(err);
+                    }
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        });
+
+        try {
+            await Promise.all(uploadPromises);
+            showMessage(`${files.length} photo(s) ajoutée(s) !`);
+            galleryDirectUploadInput.value = "";
+        } catch (error) {
+            alert("Erreur lors de l'envoi : " + error.message);
+        }
+    });
+
+    // Lightbox functions
+    window.openLightbox = function(src, title) {
+        const modal = document.getElementById("lightboxModal");
+        const img = document.getElementById("lightboxImage");
+        const caption = document.getElementById("lightboxCaption");
+        img.src = src;
+        caption.textContent = title || "";
+        modal.classList.add("active");
+    };
+
+    window.closeLightbox = function() {
+        const modal = document.getElementById("lightboxModal");
+        modal.classList.remove("active");
+    };
 
     // 1. LIVE IDEAS LISTENER FROM FIREBASE
     const ideasRef = ref(db, 'ideas');
@@ -427,6 +642,7 @@
             allIdeasData = {};
         }
         window.renderIdeas();
+        window.renderPhotos();
     });
 
     // 2. RENDER IDEAS LIST
@@ -452,6 +668,7 @@
 
             const titre = item.titre || "Sans titre";
             const description = item.description || "";
+            const imageUrl = item.image || "";
             const dateStr = item.timestamp ? new Date(item.timestamp).toLocaleDateString('fr-BE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
 
             div.innerHTML = `
@@ -476,7 +693,7 @@
                 window.toggleConfirm(id, !isConfirmed);
             });
             div.querySelector('.btn-edit').addEventListener('click', () => {
-                window.editIdea(id, titre, description);
+                window.editIdea(id, titre, description, imageUrl);
             });
             div.querySelector('.btn-delete').addEventListener('click', () => {
                 window.deleteIdea(id);
@@ -486,7 +703,74 @@
         });
     };
 
-    // 3. TOGGLE CONFIRMATION (BEVESTIGEN / GROENE VINK)
+    // 3. RENDER APARTE FOTOGALERIJ
+    window.renderPhotos = function() {
+        const photoContainer = document.getElementById("photosContainer");
+        photoContainer.innerHTML = "";
+
+        const ideaKeys = Object.keys(allIdeasData);
+        let hasPhotos = false;
+
+        ideaKeys.sort((a, b) => (allIdeasData[b].timestamp || 0) - (allIdeasData[a].timestamp || 0));
+
+        ideaKeys.forEach(id => {
+            const item = allIdeasData[id];
+            if (item.image) {
+                hasPhotos = true;
+                const titre = item.titre || "Photo";
+                
+                const photoCard = document.createElement("div");
+                photoCard.className = "photo-card-item";
+                photoCard.innerHTML = `
+                    <input type="checkbox" class="photo-select-checkbox" data-id="${id}">
+                    <img src="${item.image}" class="photo-thumb" alt="${escapeHtml(titre)}" onclick="window.openLightbox('${item.image}', '${escapeHtml(titre)}')">
+                    <div class="photo-title-caption">${escapeHtml(titre)}</div>
+                `;
+                photoContainer.appendChild(photoCard);
+            }
+        });
+
+        if (!hasPhotos) {
+            photoContainer.innerHTML = `<div style="text-align: center; color: #7f8c8d; padding: 15px; grid-column: 1 / -1;">Aucune photo enregistrée.</div>`;
+        }
+    };
+
+    // 4. GALERIE: TOUT SÉLECTIONNER / DÉSÉLECTIONNER
+    window.toggleSelectAllPhotos = function() {
+        const checkboxes = document.querySelectorAll('.photo-select-checkbox');
+        allPhotosSelected = !allPhotosSelected;
+        
+        checkboxes.forEach(cb => cb.checked = allPhotosSelected);
+        
+        const btn = document.getElementById('btnToggleSelectPhotos');
+        btn.textContent = allPhotosSelected ? '⏹️️ Tout désélectionner' : '☑️ Tout sélectionner';
+    };
+
+    // 5. GALERIE: SUPPRIMER LA SÉLECTION
+    window.deleteSelectedPhotos = async function() {
+        const checkboxes = document.querySelectorAll('.photo-select-checkbox:checked');
+        const selectedIds = Array.from(checkboxes).map(cb => cb.getAttribute('data-id'));
+
+        if (selectedIds.length === 0) {
+            alert("Veuillez sélectionner au moins une photo à supprimer.");
+            return;
+        }
+
+        if (confirm(`Voulez-vous vraiment supprimer les ${selectedIds.length} photo(s) sélectionnée(s) ?`)) {
+            try {
+                const deletePromises = selectedIds.map(id => remove(ref(db, `ideas/${id}`)));
+                await Promise.all(deletePromises);
+                
+                allPhotosSelected = false;
+                document.getElementById('btnToggleSelectPhotos').textContent = '☑️️ Tout sélectionner';
+                showMessage(`${selectedIds.length} photo(s) supprimée(s) !`);
+            } catch (error) {
+                alert("Erreur lors de la suppression: " + error.message);
+            }
+        }
+    };
+
+    // 6. TOGGLE CONFIRMATION
     window.toggleConfirm = async function(id, status) {
         try {
             const itemRef = ref(db, `ideas/${id}`);
@@ -497,7 +781,7 @@
         }
     };
 
-    // 4. TOUT SÉLECTIONNER / DESÉLECTIONNER
+    // 7. TOUT SÉLECTIONNER / DÉSÉLECTIONNER (IDEAS)
     window.toggleSelectAll = function() {
         const checkboxes = document.querySelectorAll('.select-checkbox');
         allSelected = !allSelected;
@@ -508,7 +792,7 @@
         btn.textContent = allSelected ? '⏹️ Tout désélectionner' : '☑️ Tout sélectionner';
     };
 
-    // 5. SUPPRIMER LA SÉLECTION
+    // 8. SUPPRIMER LA SÉLECTION (IDEAS)
     window.deleteSelected = async function() {
         const checkboxes = document.querySelectorAll('.select-checkbox:checked');
         const selectedIds = Array.from(checkboxes).map(cb => cb.getAttribute('data-id'));
@@ -532,7 +816,7 @@
         }
     };
 
-    // 6. EXPORT EN PDF (Sélection ou Tout)
+    // 9. EXPORT EN PDF
     window.exportSelectedToPDF = function() {
         const checkboxes = document.querySelectorAll('.select-checkbox:checked');
         const selectedIds = Array.from(checkboxes).map(cb => cb.getAttribute('data-id'));
@@ -561,6 +845,7 @@
 
             const titre = item.titre || "Sans titre";
             const description = item.description || "";
+            const imageUrl = item.image || "";
             const isConfirmed = item.confirmed || false;
             const dateStr = item.timestamp ? new Date(item.timestamp).toLocaleDateString('fr-BE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
 
@@ -570,6 +855,7 @@
                 <div class="pdf-item-title">${isConfirmed ? '✓ ' : ''}${escapeHtml(titre)}</div>
                 <div class="pdf-item-date">${dateStr}</div>
                 ${description ? `<div class="pdf-item-desc">${escapeHtml(description)}</div>` : ''}
+                ${imageUrl ? `<div><img src="${imageUrl}" class="pdf-item-img"></div>` : ''}
             `;
             pdfContent.appendChild(itemDiv);
         });
@@ -593,7 +879,7 @@
         });
     };
 
-    // 7. FORM SUBMIT (ADD OR UPDATE)
+    // 10. FORM SUBMIT (ADD OR UPDATE)
     const form = document.getElementById("ideaForm");
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -608,16 +894,21 @@
         try {
             if (editId) {
                 const itemRef = ref(db, `ideas/${editId}`);
-                await update(itemRef, {
+                const updatePayload = {
                     titre: titre,
                     description: description
-                });
+                };
+                if (currentBase64Image) {
+                    updatePayload.image = currentBase64Image;
+                }
+                await update(itemRef, updatePayload);
                 showMessage("Idée mise à jour avec succès !");
             } else {
                 const newRef = push(ideasRef);
                 await set(newRef, {
                     titre: titre,
                     description: description,
+                    image: currentBase64Image,
                     confirmed: false,
                     timestamp: Date.now()
                 });
@@ -632,11 +923,12 @@
         }
     });
 
-    // 8. EDIT IDEA
-    window.editIdea = function(id, titre, description) {
+    // 11. EDIT IDEA
+    window.editIdea = function(id, titre, description, image) {
         document.getElementById("editIdeaId").value = id;
         document.getElementById("ideaTitre").value = titre;
         document.getElementById("ideaDescription").value = description;
+        currentBase64Image = image || "";
 
         document.getElementById("formTitle").textContent = "Modifier l'Idée";
         document.getElementById("submitBtn").textContent = "Mettre à jour l'idée";
@@ -645,7 +937,7 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    // 9. DELETE SINGLE IDEA
+    // 12. DELETE SINGLE IDEA
     window.deleteIdea = async function(id) {
         if (confirm("Voulez-vous vraiment supprimer cette idée ?")) {
             try {
@@ -658,10 +950,11 @@
         }
     };
 
-    // 10. RESET FORM
+    // 13. RESET FORM
     window.resetForm = function() {
         form.reset();
         document.getElementById("editIdeaId").value = "";
+        currentBase64Image = "";
         document.getElementById("formTitle").textContent = "Nouvelle Idée";
         document.getElementById("submitBtn").textContent = "Enregistrer l'idée";
         document.getElementById("cancelBtn").style.display = "none";
