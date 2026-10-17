@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="fr-BE">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Au Bonheur Des Anges - Dashboard PC</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- html2pdf for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.20);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --glass-blur: 16px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #fbeef7; /* Oude zachte achtergrondkleur */
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #202124;
+        }
+
+        /* Glassmorphism Classes */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);
+        }
+
+        .glass-input {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid var(--glass-border);
+            color: #202124;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .glass-input::placeholder {
+            color: rgba(32, 33, 36, 0.5);
+        }
+
+        .glass-input:focus {
+            background: rgba(255, 255, 255, 0.85);
+            border-color: #8e44ad;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(142, 68, 173, 0.15);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(142, 68, 173, 0.2);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(142, 68, 173, 0.4);
+        }
+
+        select option {
+            background-color: #ffffff;
+            color: #202124;
+        }
+    </style>
+</head>
+<body class="flex min-h-screen overflow-x-hidden">
+
+    <!-- ================= SIDEBAR NAVIGATIE (VAST LINKS VOOR PC) ================= -->
+    <aside class="w-64 glass-card m-4 mr-0 flex flex-col justify-between p-5 z-20 shrink-0 hidden md:flex">
+        <div>
+            <!-- Logo & Brand Header -->
+            <div class="flex items-center gap-3 pb-6 border-b border-purple-900/10">
+                <img src="logo.jpg" alt="Logo" class="w-12 h-12 rounded-full object-cover border-2 border-white/60 shadow-md" onerror="this.src='https://via.placeholder.com/48?text=ABDA'">
+                <div>
+                    <h1 class="font-bold text-sm leading-tight text-[#8e44ad]">Au Bonheur Des Anges</h1>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span id="statusDot" class="w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm"></span>
+                        <span id="statusText" class="text-xs text-gray-600 font-medium">Hors ligne</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="mt-6 flex flex-col gap-2">
+                <button onclick="showSection('order-section')" id="nav-order-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all bg-[#8e44ad]/15 text-[#8e44ad] shadow-sm">
+                    <i class="fa-solid fa-cart-plus text-lg w-6"></i>
+                    <span>Commander</span>
+                </button>
+                <button onclick="showSection('list-section')" id="nav-list-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm text-gray-700 hover:bg-white/30 hover:text-[#8e44ad] transition-all">
+                    <i class="fa-solid fa-list-check text-lg w-6"></i>
+                    <span>Liste Commandes</span>
+                </button>
+                <button onclick="showSection('pdf-section')" id="nav-pdf-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm text-gray-700 hover:bg-white/30 hover:text-[#8e44ad] transition-all">
+                    <i class="fa-solid fa-file-pdf text-lg w-6"></i>
+                    <span>Liste PDF</span>
+                </button>
+                <button onclick="showSection('notebook-section')" id="nav-notebook-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm text-gray-700 hover:bg-white/30 hover:text-[#8e44ad] transition-all">
+                    <i class="fa-solid fa-book text-lg w-6"></i>
+                    <span>Mes Idées & Notes</span>
+                </button>
+                <button onclick="showSection('info-section')" id="nav-info-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm text-gray-700 hover:bg-white/30 hover:text-[#8e44ad] transition-all">
+                    <i class="fa-solid fa-circle-info text-lg w-6"></i>
+                    <span>Information</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Sidebar Footer & Quick Actions -->
+        <div class="pt-4 border-t border-purple-900/10 flex flex-col gap-2">
+            <button onclick="openProductModal()" class="w-full py-2.5 px-4 rounded-xl bg-[#8e44ad] hover:bg-[#7d3c98] text-white font-semibold text-xs transition-all flex items-center justify-center gap-2 shadow-md">
+                <i class="fa-solid fa-boxes-stacked"></i>
+                <span>Gérer Produits</span>
+            </button>
+            <button onclick="openSettingsModal()" class="w-full py-2 px-4 rounded-xl bg-white/40 hover:bg-white/60 text-gray-700 font-medium text-xs transition-all flex items-center justify-center gap-2 border border-white/50">
+                <i class="fa-solid fa-sliders"></i>
+                <span>Réglages Style</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- ================= HOOFDINHOUD (MAIN WORKSPACE) ================= -->
+    <main class="flex-1 p-4 md:p-6 overflow-y-auto max-w-7xl mx-auto w-full">
+
+        <!-- Top Header Bar (Mobiel & Statestieken) -->
+        <header class="glass-card p-4 mb-6 flex flex-wrap justify-between items-center gap-4">
+            <div>
+                <h2 class="text-xl font-bold text-[#8e44ad]">Tableau de Bord Beheer</h2>
+                <p class="text-xs text-gray-600">Gestion centralisée pour version PC</p>
+            </div>
+
+            <!-- Mobile Menu Toggles -->
+            <div class="flex items-center gap-2 md:hidden">
+                <button onclick="openProductModal()" class="p-2.5 rounded-xl bg-[#8e44ad] text-white text-xs"><i class="fa-solid fa-boxes-stacked"></i></button>
+                <button onclick="openSettingsModal()" class="p-2.5 rounded-xl bg-white/50 text-gray-700 text-xs"><i class="fa-solid fa-sliders"></i></button>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="flex items-center gap-4 text-xs">
+                <div class="bg-white/40 px-3 py-2 rounded-xl border border-white/60 shadow-sm">
+                    <span class="text-gray-600">Total Commandes:</span>
+                    <span id="statTotalOrders" class="font-bold text-[#8e44ad] ml-1">0</span>
+                </div>
+                <div class="bg-white/40 px-3 py-2 rounded-xl border border-white/60 shadow-sm">
+                    <span class="text-gray-600">Chiffre d'affaires:</span>
+                    <span id="statTotalRevenue" class="font-bold text-emerald-600 ml-1">€ 0.00</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- SECTIE 1: COMMANDER -->
+        <section id="order-section" class="dashboard-section space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Formulier -->
+                <div class="lg:col-span-7 glass-card p-6">
+                    <div class="flex justify-between items-center pb-4 mb-6 border-b border-purple-900/10">
+                        <h3 class="font-bold uppercase tracking-wider text-sm text-[#8e44ad] flex items-center gap-2">
+                            <i class="fa-solid fa-plus-circle"></i> Nouvelle Commande
+                        </h3>
+                        <button onclick="clearFormDraft()" class="text-xs text-red-600 hover:text-red-800 flex items-center gap-1 font-semibold">
+                            <i class="fa-solid fa-trash"></i> Effacer brouillon
+                        </button>
+                    </div>
+
+                    <form id="orderForm" class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Nom du client *</label>
+                                <input type="text" id="naam" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm" placeholder="ex: Marie Dupont" required>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Adresse de livraison</label>
+                                <input type="text" id="adres" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm" placeholder="ex: Rue de la Paix 10">
+                            </div>
+                        </div>
+
+                        <!-- Product selection met Automatische Categorieën -->
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-xs font-semibold text-gray-700">Choisir un produit *</label>
+                                <button type="button" onclick="openProductModal()" class="text-xs text-[#8e44ad] underline font-medium hover:text-[#6c3483]">
+                                    + Gérer / Ajouter produits
+                                </button>
+                            </div>
+                            <select id="text" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm" required onchange="updateDefaultPrice()">
+                                <option value="" data-price="">-- Chargement des produits... --</option>
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Quantité *</label>
+                                <input type="number" id="aantal" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm" value="1" min="1" required oninput="calculateTotal()">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Prix unitaire (€) *</label>
+                                <input type="number" step="0.01" id="prijs" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm" placeholder="0.00" required oninput="calculateTotal()">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Date de livraison / commande *</label>
+                                <input type="date" id="datum" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm" required>
+                            </div>
+                            <div class="flex items-center gap-3 pt-4">
+                                <input type="checkbox" id="betaald" class="w-5 h-5 accent-[#8e44ad] rounded cursor-pointer">
+                                <label for="betaald" class="text-sm font-semibold cursor-pointer text-gray-800">Commande déjà payée</label>
+                            </div>
+                        </div>
+
+                        <!-- Total Display Card -->
+                        <div class="bg-white/40 p-4 rounded-xl border border-white/60 flex justify-between items-center mt-4 shadow-sm">
+                            <span class="text-sm font-medium text-gray-700">Total Calculé:</span>
+                            <span class="text-2xl font-extrabold text-[#8e44ad]">€ <span id="totalAmount">0.00</span></span>
+                        </div>
+
+                        <button type="submit" id="submitBtn" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#9b51e0] to-[#8e44ad] hover:from-[#a55eea] hover:to-[#7d3c98] font-bold text-white shadow-lg transition-all">
+                            Enregistrer la commande
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Info Sidebar Panel -->
+                <div class="lg:col-span-5 space-y-6">
+                    <div class="glass-card p-6">
+                        <h3 class="font-bold uppercase tracking-wider text-sm text-[#8e44ad] mb-4 pb-2 border-b border-purple-900/10">
+                            Guide Rapide PC
+                        </h3>
+                        <ul class="space-y-3 text-xs text-gray-700">
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
+                                <span>Les produits sont automatiquement triés par catégories dans le menu déroulant.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
+                                <span>Cliquez sur <strong>Gérer Produits</strong> pour ajouter facilement un nouvel article à la liste sans retaper la catégorie à chaque fois.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
+                                <span>Toutes vos commandes saisies sont synchronisées instantanément avec Firebase.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTIE 2: LISTE COMMANDES -->
+        <section id="list-section" class="dashboard-section space-y-6 hidden">
+            <div class="glass-card p-6">
+                <!-- Toolbar -->
+                <div class="flex flex-wrap justify-between items-center gap-4 mb-6 pb-4 border-b border-purple-900/10">
+                    <div class="flex items-center gap-2 flex-1 max-w-md">
+                        <div class="relative w-full">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-400 text-sm"></i>
+                            <input type="text" id="searchInput" onkeyup="filterItems()" class="w-full glass-input pl-10 pr-4 py-2 rounded-xl text-sm" placeholder="Rechercher nom, adresse, produit...">
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="shareList()" class="px-4 py-2 rounded-xl bg-white/50 hover:bg-white/80 text-xs font-bold transition-all flex items-center gap-2 border border-white/60">
+                            <i class="fa-solid fa-share-nodes"></i> Partager
+                        </button>
+                        <button onclick="exportToPDF()" id="pdfBtn" class="px-4 py-2 rounded-xl bg-[#8e44ad] hover:bg-[#7d3c98] text-xs font-bold text-white transition-all flex items-center gap-2 shadow-md">
+                            <i class="fa-solid fa-file-pdf"></i> Imprimer / PDF
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Select Toolbar -->
+                <div class="flex justify-between items-center bg-white/40 px-4 py-2.5 rounded-xl mb-4 border border-white/60 text-xs shadow-sm">
+                    <label class="flex items-center gap-2 cursor-pointer font-semibold text-gray-800">
+                        <input type="checkbox" id="selectAllCheckbox" onclick="toggleSelectAll(this)" class="w-4 h-4 accent-[#8e44ad] rounded">
+                        <span>Tout sélectionner</span>
+                    </label>
+                    <button id="deleteSelectedBtn" onclick="deleteSelected()" class="hidden px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold transition-all">
+                        Supprimer Sélection (<span id="selectedCount">0</span>)
+                    </button>
+                </div>
+
+                <!-- List Content -->
+                <div id="pdfContent">
+                    <div id="loadingText" class="text-center py-8 text-gray-500 text-sm">Récupération des données depuis la base de données...</div>
+                    <ul id="itemsList" class="space-y-3"></ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTIE 3: LISTE PDF VIEWER -->
+        <section id="pdf-section" class="dashboard-section space-y-6 hidden">
+            <div class="glass-card p-6 h-[80vh] flex flex-col">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold uppercase tracking-wider text-sm text-[#8e44ad]">Tarifs & Prix Boutique PDF</h3>
+                    <a href="Prix boutique Au bonheur des Anges.  2026.pdf" download class="px-4 py-1.5 rounded-xl bg-[#8e44ad] text-xs font-bold text-white hover:bg-[#7d3c98]">Télécharger PDF</a>
+                </div>
+                <div class="flex-1 rounded-xl overflow-hidden bg-white/40 border border-white/60">
+                    <embed src="Prix boutique Au bonheur des Anges.  2026.pdf" type="application/pdf" class="w-full h-full">
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTIE 4: NOTEBOOK -->
+        <section id="notebook-section" class="dashboard-section space-y-6 hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Formulier voor ideeën -->
+                <div class="lg:col-span-5 glass-card p-6">
+                    <h3 id="formTitleIdea" class="font-bold uppercase tracking-wider text-sm text-[#8e44ad] mb-4 pb-2 border-b border-purple-900/10">
+                        Nouvelle Idée
+                    </h3>
+                    <form id="ideaForm" class="space-y-4">
+                        <input type="hidden" id="editIdeaId" value="">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Titre de l'idée *</label>
+                            <input type="text" id="ideaTitre" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm" placeholder="ex: Nouveau mug personnalisé" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Description / Notes</label>
+                            <textarea id="ideaDescription" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm h-24" placeholder="Détails de l'idée..."></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Photo (Optionnel)</label>
+                            <input type="file" id="ideaPhoto" accept="image/*" class="w-full glass-input rounded-xl px-4 py-2 text-xs">
+                        </div>
+                        <button type="submit" id="submitBtnIdea" class="w-full py-3 rounded-xl bg-[#8e44ad] hover:bg-[#7d3c98] font-bold text-white shadow-lg text-sm">
+                            Enregistrer l'idée
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Ideeën overzicht -->
+                <div class="lg:col-span-7 glass-card p-6 space-y-4">
+                    <h3 class="font-bold uppercase tracking-wider text-sm text-[#8e44ad] pb-2 border-b border-purple-900/10">
+                        Mes Idées & Prototypes
+                    </h3>
+                    <div id="ideasContainer" class="space-y-3">
+                        <div class="text-center py-6 text-gray-500 text-sm">Chargement des idées...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTIE 5: INFO -->
+        <section id="info-section" class="dashboard-section space-y-6 hidden">
+            <div class="glass-card p-6 max-w-2xl mx-auto space-y-6">
+                <div class="text-center space-y-2">
+                    <img src="logo.jpg" alt="Logo" class="w-24 h-24 rounded-full mx-auto border-2 border-white/60 shadow-lg object-cover" onerror="this.src='https://via.placeholder.com/96'">
+                    <h2 class="text-xl font-bold text-[#8e44ad]">Au bonheur des Anges</h2>
+                    <span class="inline-block bg-[#8e44ad]/15 text-[#8e44ad] border border-[#8e44ad]/30 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider">Application PC</span>
+                </div>
+                <div class="space-y-3 text-sm text-gray-700">
+                    <p>Cette application PC permet de gérer vos commandes, produits et prototypes en temps réel avec synchronisation Firebase Cloud.</p>
+                    <hr class="border-purple-900/10">
+                    <div class="flex justify-between items-center text-xs text-gray-500">
+                        <span>Version 26.2 (PC Edition)</span>
+                        <span>Mise à jour: 2026</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================= MODALS & POPUPS ================= -->
+
+    <!-- PRODUKTEN BEHEER MODAL -->
+    <div id="productModal" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="glass-card w-full max-w-2xl p-6 rounded-2xl relative max-h-[90vh] overflow-y-auto bg-white/95">
+            <div class="flex justify-between items-center pb-4 mb-4 border-b border-purple-900/10">
+                <h3 class="font-bold text-lg text-[#8e44ad] flex items-center gap-2">
+                    <i class="fa-solid fa-boxes-stacked"></i> Gestion des Produits & Catégories
+                </h3>
+                <button onclick="closeProductModal()" class="text-gray-500 hover:text-gray-800 text-xl font-bold">&times;</button>
+            </div>
+
+            <!-- Formulier Toevoegen / Bewerken Product -->
+            <form id="productForm" class="space-y-4 mb-6 bg-white/50 p-4 rounded-xl border border-white/60 shadow-sm">
+                <input type="hidden" id="editProductId" value="">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1 text-gray-700">Catégorie *</label>
+                        <select id="categorieSelect" class="w-full glass-input rounded-xl px-3 py-2 text-xs" required>
+                            <option value="Sublimation">Sublimation</option>
+                            <option value="Créations 3D">Créations 3D</option>
+                            <option value="Déco pour Noël">Déco pour Noël</option>
+                            <option value="Photo Design">Photo Design</option>
+                            <option value="Autre">Autre</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1 text-gray-700">Nom du produit *</label>
+                        <input type="text" id="productNaam" class="w-full glass-input rounded-xl px-3 py-2 text-xs" placeholder="ex: Mug photo" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1 text-gray-700">Prix (€) *</label>
+                        <input type="number" step="0.01" id="productPrijs" class="w-full glass-input rounded-xl px-3 py-2 text-xs" placeholder="0.00" required>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="addNewCategoryPrompt()" class="px-3 py-1.5 rounded-lg bg-white hover:bg-gray-100 text-xs font-semibold border border-gray-300 text-gray-700 shadow-sm">
+                        + Nouvelle Catégorie
+                    </button>
+                    <button type="submit" id="submitProductBtn" class="px-4 py-1.5 rounded-lg bg-[#8e44ad] hover:bg-[#7d3c98] text-xs font-bold text-white shadow-md">
+                        Enregistrer Produit
+                    </button>
+                </div>
+            </form>
+
+            <!-- Tabel van bestaande producten -->
+            <div class="overflow-x-auto rounded-xl border border-purple-900/10">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-purple-900/5 text-[#8e44ad] border-b border-purple-900/10 font-bold">
+                        <tr>
+                            <th class="p-3">Catégorie</th>
+                            <th class="p-3">Nom</th>
+                            <th class="p-3">Prix</th>
+                            <th class="p-3 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productsTableBody" class="divide-y divide-purple-900/10">
+                        <tr>
+                            <td colspan="4" class="p-4 text-center text-gray-500">Chargement...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- INSTELLINGEN MODAL -->
+    <div id="settingsModal" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="glass-card w-full max-w-md p-6 rounded-2xl relative space-y-4 bg-white/95">
+            <div class="flex justify-between items-center pb-2 border-b border-purple-900/10">
+                <h3 class="font-bold text-lg text-[#8e44ad]">Réglages du style Glassmorphism</h3>
+                <button onclick="closeSettingsModal()" class="text-gray-500 hover:text-gray-800 text-xl font-bold">&times;</button>
+            </div>
+            
+            <div>
+                <label class="block text-xs font-semibold mb-2 flex justify-between text-gray-700">
+                    <span>Transparence des cartes:</span>
+                    <span id="opacityVal">20%</span>
+                </label>
+                <input type="range" id="opacitySlider" min="0.05" max="0.85" step="0.05" value="0.20" class="w-full accent-[#8e44ad] cursor-pointer" oninput="updateOpacity(this.value)">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold mb-2 text-gray-700">Changer l'image d'arrière-plan (.jpg, .png, .heic)</label>
+                <input type="file" id="bgInput" accept="image/*" class="w-full glass-input rounded-xl p-2 text-xs">
+            </div>
+
+            <button onclick="removeCustomBackground()" class="w-full py-2 rounded-xl bg-red-600 hover:bg-red-700 text-xs font-bold text-white shadow-md">
+                Réinitialiser l'arrière-plan
+            </button>
+        </div>
+    </div>
+
+    <!-- Lightbox voor afbeeldingen -->
+    <div id="lightboxModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4" onclick="closeLightbox()">
+        <img id="lightboxImage" class="max-w-full max-h-[85vh] rounded-xl object-contain shadow-2xl" src="" alt="Agrandissement">
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toastNotification" class="fixed bottom-5 right-5 z-50 bg-emerald-600 text-white font-semibold text-xs px-4 py-3 rounded-xl shadow-xl hidden transition-all">
+        <span id="toastText">Opération réussie !</span>
+    </div>
+
+    <!-- ================= FIREBASE & APP SCRIPT ================= -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getDatabase, ref, push, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "JOUW_API_KEY", 
+            authDomain: "cloudstockage-b1580.firebaseapp.com",
+            databaseURL: "https://cloudstockage-b1580-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "cloudstockage-b1580",
+            storageBucket: "cloudstockage-b1580.appspot.com",
+            messagingSenderId: "524333606775",
+            appId: "JOUW_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let allOrders = [];
+        let allProducts = {};
+        let allIdeas = {};
+        let currentBase64Image = "";
+
+        // UI Navigatie Tussen Secties
+        window.showSection = function(sectionId) {
+            document.querySelectorAll('.dashboard-section').forEach(sec => sec.classList.add('hidden'));
+            document.getElementById(sectionId).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-[#8e44ad]/15', 'text-[#8e44ad]', 'shadow-sm');
+                btn.classList.add('text-gray-700');
+            });
+
+            const activeBtn = document.getElementById(`nav-${sectionId}`);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-[#8e44ad]/15', 'text-[#8e44ad]', 'shadow-sm');
+                activeBtn.classList.remove('text-gray-700');
+            }
+        };
+
+        // Firebase Status Listener
+        const connectedRef = ref(db, ".info/connected");
+        onValue(connectedRef, (snap) => {
+            const statusDot = document.getElementById("statusDot");
+            const statusText = document.getElementById("statusText");
+            if (snap.val() === true) {
+                statusDot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm animate-pulse";
+                statusText.textContent = "En ligne";
+                statusText.className = "text-xs text-emerald-700 font-medium";
+            } else {
+                statusDot.className = "w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm";
+                statusText.textContent = "Hors ligne";
+                statusText.className = "text-xs text-gray-600 font-medium";
+            }
+        });
+
+        // Dynamic Opacity Controller
+        window.updateOpacity = function(val) {
+            document.documentElement.style.setProperty('--glass-bg', `rgba(255, 255, 255, ${val})`);
+            document.getElementById('opacityVal').textContent = Math.round(val * 100) + "%";
+            localStorage.setItem("appGlassOpacity", val);
+        };
+
+        // Background handler
+        document.addEventListener("DOMContentLoaded", () => {
+            const savedBg = localStorage.getItem("customAppBackground");
+            if (savedBg) applyBackground(savedBg);
+
+            const savedOpacity = localStorage.getItem("appGlassOpacity") || "0.20";
+            document.getElementById("opacitySlider").value = savedOpacity;
+            updateOpacity(savedOpacity);
+
+            document.getElementById("datum").value = new Date().toISOString().split('T')[0];
+            loadCustomCategories();
+        });
+
+        function applyBackground(dataUrl) {
+            document.body.style.backgroundImage = `url('${dataUrl}')`;
+            document.body.style.backgroundSize = "cover";
+            document.body.style.backgroundPosition = "center";
+            document.body.style.backgroundAttachment = "fixed";
+        }
+
+        window.removeCustomBackground = function() {
+            localStorage.removeItem("customAppBackground");
+            document.body.style.backgroundImage = "none";
+            document.body.style.backgroundColor = "#fbeef7";
+            closeSettingsModal();
+        };
+
+        // Modal Controls
+        window.openProductModal = () => document.getElementById("productModal").classList.remove("hidden");
+        window.closeProductModal = () => document.getElementById("productModal").classList.add("hidden");
+        window.openSettingsModal = () => document.getElementById("settingsModal").classList.remove("hidden");
+        window.closeSettingsModal = () => document.getElementById("settingsModal").classList.add("hidden");
+        window.closeLightbox = () => document.getElementById("lightboxModal").classList.add("hidden");
+
+        window.showToast = function(msg) {
+            const toast = document.getElementById("toastNotification");
+            document.getElementById("toastText").textContent = msg;
+            toast.classList.remove("hidden");
+            setTimeout(() => toast.classList.add("hidden"), 3500);
+        };
+
+        // --- PRODUCTEN & CATEGORIEËN LADEN ---
+        function loadCustomCategories() {
+            const customCats = JSON.parse(localStorage.getItem("customCategories") || "[]");
+            const select = document.getElementById("categorieSelect");
+            customCats.forEach(cat => {
+                if (!select.querySelector(`option[value="${cat}"]`)) {
+                    select.add(new Option(cat, cat));
+                }
+            });
+        }
+
+        window.addNewCategoryPrompt = function() {
+            const newCat = prompt("Entrez la nouvelle catégorie :");
+            if (newCat && newCat.trim()) {
+                const clean = newCat.trim();
+                const select = document.getElementById("categorieSelect");
+                select.add(new Option(clean, clean));
+                select.value = clean;
+
+                const customCats = JSON.parse(localStorage.getItem("customCategories") || "[]");
+                customCats.push(clean);
+                localStorage.setItem("customCategories", JSON.stringify(customCats));
+            }
+        };
+
+        // Products Firebase Listener
+        const productsRef = ref(db, 'products');
+        onValue(productsRef, (snapshot) => {
+            const selectMenu = document.getElementById("text");
+            const tableBody = document.getElementById("productsTableBody");
+
+            selectMenu.innerHTML = '<option value="" data-price="">-- Sélectionner un produit --</option>';
+            tableBody.innerHTML = '';
+
+            if (snapshot.exists()) {
+                allProducts = snapshot.val();
+                const categories = {};
+
+                Object.keys(allProducts).forEach(key => {
+                    const item = allProducts[key];
+                    const cat = item.categorie || "Autre";
+                    if (!categories[cat]) categories[cat] = [];
+                    categories[cat].push({ id: key, ...item });
+                });
+
+                // Populate Dropdown in Form
+                Object.keys(categories).sort().forEach(catName => {
+                    const optGroup = document.createElement("optgroup");
+                    optGroup.label = catName;
+
+                    categories[catName].forEach(prod => {
+                        const option = document.createElement("option");
+                        option.value = prod.naam;
+                        option.setAttribute("data-price", prod.prijs);
+                        option.textContent = `${prod.naam} - ${parseFloat(prod.prijs).toFixed(2)} €`;
+                        optGroup.appendChild(option);
+
+                        // Populate Table in Product Modal
+                        const tr = document.createElement("tr");
+                        tr.innerHTML = `
+                            <td class="p-3"><span class="bg-[#8e44ad]/10 px-2 py-1 rounded text-[#8e44ad] font-semibold">${escapeHtml(prod.categorie || 'Autre')}</span></td>
+                            <td class="p-3 font-semibold text-gray-800">${escapeHtml(prod.naam)}</td>
+                            <td class="p-3 text-emerald-600 font-bold">${parseFloat(prod.prijs).toFixed(2)} €</td>
+                            <td class="p-3 text-right">
+                                <button onclick="deleteProductFromDb('${prod.id}')" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        `;
+                        tableBody.appendChild(tr);
+                    });
+                    selectMenu.appendChild(optGroup);
+                });
+            } else {
+                selectMenu.innerHTML = '<option value="" data-price="">-- Aucun produit trouvé --</option>';
+                tableBody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500">Aucun produit</td></tr>';
+            }
+        });
+
+        // Submit New Product
+        document.getElementById("productForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const cat = document.getElementById("categorieSelect").value;
+            const naam = document.getElementById("productNaam").value.trim();
+            const prijs = parseFloat(document.getElementById("productPrijs").value) || 0;
+
+            try {
+                await set(push(ref(db, 'products')), {
+                    categorie: cat,
+                    naam: naam,
+                    prijs: prijs,
+                    timestamp: Date.now()
+                });
+                showToast("Produit ajouté avec succès !");
+                document.getElementById("productForm").reset();
+            } catch (err) {
+                alert("Erreur: " + err.message);
+            }
+        });
+
+        window.deleteProductFromDb = async function(id) {
+            if (confirm("Voulez-vous supprimer ce produit ?")) {
+                await remove(ref(db, `products/${id}`));
+                showToast("Produit supprimé !");
+            }
+        };
+
+        // --- ORDER FORM LOGIC ---
+        window.updateDefaultPrice = function() {
+            const select = document.getElementById("text");
+            const selectedOpt = select.options[select.selectedIndex];
+            const price = selectedOpt.getAttribute("data-price");
+            if (price) {
+                document.getElementById("prijs").value = price;
+                calculateTotal();
+            }
+        };
+
+        window.calculateTotal = function() {
+            const aantal = parseInt(document.getElementById("aantal").value) || 0;
+            const prijs = parseFloat(document.getElementById("prijs").value) || 0;
+            document.getElementById("totalAmount").textContent = (aantal * prijs).toFixed(2);
+        };
+
+        window.clearFormDraft = function() {
+            document.getElementById("orderForm").reset();
+            document.getElementById("datum").value = new Date().toISOString().split('T')[0];
+            document.getElementById("totalAmount").textContent = "0.00";
+        };
+
+        document.getElementById("orderForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const text = document.getElementById("text").value;
+            if (!text) {
+                alert("Veuillez sélectionner un produit.");
+                return;
+            }
+
+            const newOrder = {
+                naam: document.getElementById("naam").value.trim(),
+                adres: document.getElementById("adres").value.trim(),
+                text: text,
+                aantal: parseInt(document.getElementById("aantal").value) || 1,
+                prijs: parseFloat(document.getElementById("prijs").value) || 0,
+                datum: document.getElementById("datum").value,
+                betaald: document.getElementById("betaald").checked,
+                terugbetaald: false,
+                timestamp: Date.now()
+            };
+
+            try {
+                await set(push(ref(db, 'items')), newOrder);
+                showToast("Commande enregistrée avec succès !");
+                clearFormDraft();
+            } catch (err) {
+                alert("Erreur lors de l'enregistrement: " + err.message);
+            }
+        });
+
+        // --- LISTE COMMANDES LISTENER ---
+        const itemsRef = ref(db, 'items');
+        onValue(itemsRef, (snapshot) => {
+            document.getElementById("loadingText").style.display = "none";
+            const data = snapshot.val();
+            
+            if (!data) {
+                allOrders = [];
+            } else {
+                allOrders = Object.keys(data).map(key => ({
+                    id: key,
+                    ...data[key]
+                })).reverse();
+            }
+
+            updateDashboardStats();
+            filterItems();
+        });
+
+        function updateDashboardStats() {
+            document.getElementById("statTotalOrders").textContent = allOrders.length;
+            const totalRevenue = allOrders.reduce((sum, item) => sum + ((item.aantal || 1) * (item.prijs || 0)), 0);
+            document.getElementById("statTotalRevenue").textContent = "€ " + totalRevenue.toFixed(2);
+        }
+
+        window.filterItems = function() {
+            const query = document.getElementById("searchInput").value.toLowerCase();
+            const filtered = allOrders.filter(item => 
+                (item.naam || '').toLowerCase().includes(query) ||
+                (item.adres || '').toLowerCase().includes(query) ||
+                (item.text || '').toLowerCase().includes(query)
+            );
+            renderList(filtered);
+        };
+
+        function renderList(items) {
+            const list = document.getElementById("itemsList");
+            list.innerHTML = '';
+
+            if (items.length === 0) {
+                list.innerHTML = '<li class="text-center py-6 text-gray-500">Aucune commande trouvée</li>';
+                return;
+            }
+
+            items.forEach((item) => {
+                const li = document.createElement("li");
+                li.className = 'glass-card p-4 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm';
+
+                const total = ((item.aantal || 1) * (item.prijs || 0)).toFixed(2);
+                const statusPaid = item.betaald ? '<span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-700 border border-emerald-400/30 font-bold text-[10px]">Payé</span>' : '<span class="px-2 py-0.5 rounded bg-red-500/20 text-red-700 border border-red-400/30 font-bold text-[10px]">Non Payé</span>';
+
+                li.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" class="item-checkbox w-4 h-4 accent-[#8e44ad] rounded cursor-pointer" value="${item.id}" onchange="updateSelectionUI()">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h4 class="font-bold text-gray-900 text-base">${escapeHtml(item.naam || 'Inconnu')}</h4>
+                                ${statusPaid}
+                            </div>
+                            <p class="text-xs text-[#8e44ad] font-medium mt-0.5">${escapeHtml(item.text || '')}</p>
+                            ${item.adres ? `<p class="text-xs text-gray-600">📍 ${escapeHtml(item.adres)}</p>` : ''}
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 w-full md:w-auto justify-between border-t md:border-0 border-purple-900/10 pt-2 md:pt-0">
+                        <div class="text-right">
+                            <span class="text-xs text-gray-500 block">${item.aantal || 1}x €${parseFloat(item.prijs || 0).toFixed(2)}</span>
+                            <span class="text-base font-extrabold text-emerald-600">€ ${total}</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="deleteItem('${item.id}')" class="p-2 rounded-lg bg-red-500/10 text-red-600 hover:bg-red-500 hover:text-white transition-all text-xs">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        window.toggleSelectAll = function(source) {
+            document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = source.checked);
+            updateSelectionUI();
+        };
+
+        window.updateSelectionUI = function() {
+            const selected = document.querySelectorAll('.item-checkbox:checked');
+            const deleteBtn = document.getElementById('deleteSelectedBtn');
+            const countSpan = document.getElementById('selectedCount');
+
+            if (selected.length > 0) {
+                deleteBtn.classList.remove('hidden');
+                countSpan.textContent = selected.length;
+            } else {
+                deleteBtn.classList.add('hidden');
+            }
+        };
+
+        window.deleteSelected = async function() {
+            const selected = document.querySelectorAll('.item-checkbox:checked');
+            if (confirm(`Supprimer les ${selected.length} commandes sélectionnées ?`)) {
+                const updates = {};
+                selected.forEach(cb => updates[`items/${cb.value}`] = null);
+                await update(ref(db), updates);
+                showToast("Commandes supprimées !");
+            }
+        };
+
+        window.deleteItem = async function(id) {
+            if (confirm("Supprimer définitivement cette commande ?")) {
+                await remove(ref(db, `items/${id}`));
+                showToast("Commande supprimée !");
+            }
+        };
+
+        window.exportToPDF = function() {
+            const element = document.getElementById('pdfContent');
+            const options = {
+                margin: 10,
+                filename: 'Au_bonheur_des_Anges_Commandes.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(options).from(element).save();
+        };
+
+        window.shareList = async function() {
+            if (navigator.share) {
+                await navigator.share({ title: 'Au bonheur des Anges', url: window.location.href });
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                showToast("Lien copié dans le presse-papier !");
+            }
+        };
+
+        // --- IDEAS / NOTEBOOK LISTENER ---
+        const ideasRef = ref(db, 'ideas');
+        onValue(ideasRef, (snapshot) => {
+            const container = document.getElementById("ideasContainer");
+            container.innerHTML = "";
+
+            if (snapshot.exists()) {
+                allIdeas = snapshot.val();
+                Object.keys(allIdeas).reverse().forEach(id => {
+                    const item = allIdeas[id];
+                    const div = document.createElement("div");
+                    div.className = "glass-card p-4 rounded-xl flex flex-col gap-2 shadow-sm";
+                    div.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-bold text-gray-900 text-sm">${escapeHtml(item.titre || 'Sans titre')}</h4>
+                            <button onclick="deleteIdea('${id}')" class="text-xs text-red-600 hover:text-red-800"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                        ${item.description ? `<p class="text-xs text-gray-700">${escapeHtml(item.description)}</p>` : ''}
+                        ${item.image ? `<img src="${item.image}" class="h-32 object-cover rounded-lg cursor-pointer mt-2 border border-white/60" onclick="openLightbox('${item.image}')">` : ''}
+                    `;
+                    container.appendChild(div);
+                });
+            } else {
+                container.innerHTML = '<div class="text-center py-6 text-gray-500">Aucune idée enregistrée</div>';
+            }
+        });
+
+        document.getElementById("ideaForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const titre = document.getElementById("ideaTitre").value.trim();
+            const desc = document.getElementById("ideaDescription").value.trim();
+
+            try {
+                await set(push(ideasRef), {
+                    titre: titre,
+                    description: desc,
+                    image: currentBase64Image || "",
+                    timestamp: Date.now()
+                });
+                showToast("Nouvelle idée enregistrée !");
+                document.getElementById("ideaForm").reset();
+                currentBase64Image = "";
+            } catch (err) {
+                alert("Erreur: " + err.message);
+            }
+        });
+
+        document.getElementById("ideaPhoto").addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => currentBase64Image = event.target.result;
+                reader.readAsDataURL(file);
+            }
+        });
+
+        window.deleteIdea = async function(id) {
+            if (confirm("Supprimer cette idée ?")) {
+                await remove(ref(db, `ideas/${id}`));
+                showToast("Idée supprimée !");
+            }
+        };
+
+        window.openLightbox = function(src) {
+            document.getElementById("lightboxImage").src = src;
+            document.getElementById("lightboxModal").classList.remove("hidden");
+        };
+
+        function escapeHtml(str) {
+            return str ? str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;") : '';
+        }
+    </script>
+</body>
+</html>
