@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Au Bonheur Des Anges - Dashboard PC</title>
+    <title>Au Bonheur Des Anges - Dashboard</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome icons -->
@@ -22,13 +22,12 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #fbeef7; /* Oude zachte achtergrondkleur */
+            background-color: #fbeef7; /* Oude zachte achtergrondkleur[cite: 1, 2, 3, 4, 5] */
             background-attachment: fixed;
             min-height: 100vh;
             color: #202124;
         }
 
-        /* Glassmorphism Classes */
         .glass-card {
             background: var(--glass-bg);
             backdrop-filter: blur(var(--glass-blur));
@@ -57,7 +56,23 @@
             box-shadow: 0 0 0 3px rgba(142, 68, 173, 0.15);
         }
 
-        /* Custom Scrollbar */
+        .editing-mode {
+            border: 2px dashed #8e44ad !important;
+            background: rgba(142, 68, 173, 0.05) !important;
+        }
+
+        /* Klasse om PC-sidebar te verbergen in mobiele modus */
+        body.mobile-view-active aside {
+            display: none !important;
+        }
+        body.mobile-view-active main {
+            max-width: 100% !important;
+            padding-bottom: 6rem !important;
+        }
+        body.mobile-view-active nav.fixed.bottom-0 {
+            display: flex !important;
+        }
+
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -81,10 +96,21 @@
 </head>
 <body class="flex min-h-screen overflow-x-hidden">
 
-    <!-- ================= SIDEBAR NAVIGATIE (VAST LINKS VOOR PC) ================= -->
+    <!-- ONDERHOUDSPAGINA OVERLAY -->
+    <div id="maintenanceOverlay" style="display: none;" class="fixed inset-0 z-[99999] bg-[#fbeef7] flex items-center justify-center p-4">
+        <div class="glass-card p-8 text-center max-w-md shadow-2xl space-y-4 bg-white/80">
+            <div class="w-16 h-16 bg-[#8e44ad]/20 text-[#8e44ad] rounded-full flex items-center justify-center mx-auto text-2xl">
+                <i class="fa-solid fa-screwdriver-wrench"></i>
+            </div>
+            <h1 class="text-xl font-bold text-[#8e44ad]">🛠️ Maintenance en cours</h1>
+            <p class="text-sm text-gray-700 leading-relaxed">Le système <strong>Au bonheur des Anges</strong> est temporairement en cours de mise à jour. Merci de votre patience.</p>
+            <button onclick="requestAdminAccess()" class="mt-4 px-4 py-2 bg-[#8e44ad] text-white text-xs rounded-xl font-bold shadow-md cursor-pointer">Accès Admin (Code requis)</button>
+        </div>
+    </div>
+
+    <!-- ================= SIDEBAR NAVIGATIE (PC) ================= -->
     <aside class="w-64 glass-card m-4 mr-0 flex flex-col justify-between p-5 z-20 shrink-0 hidden md:flex">
         <div>
-            <!-- Logo & Brand Header -->
             <div class="flex items-center gap-3 pb-6 border-b border-purple-900/10">
                 <img src="logo.jpg" alt="Logo" class="w-12 h-12 rounded-full object-cover border-2 border-white/60 shadow-md" onerror="this.src='https://via.placeholder.com/48?text=ABDA'">
                 <div>
@@ -96,88 +122,88 @@
                 </div>
             </div>
 
-            <!-- Navigation Links -->
             <nav class="mt-6 flex flex-col gap-2">
-                <button onclick="showSection('order-section')" id="nav-order-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all bg-[#8e44ad]/15 text-[#8e44ad] shadow-sm">
+                <button onclick="showSection('order-section')" id="nav-order-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all bg-[#8e44ad]/15 text-[#8e44ad] shadow-sm cursor-pointer">
                     <i class="fa-solid fa-cart-plus text-lg w-6"></i>
                     <span>Commander</span>
                 </button>
-                <button onclick="showSection('list-section')" id="nav-list-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm text-gray-700 hover:bg-white/30 hover:text-[#8e44ad] transition-all">
+                <button onclick="showSection('list-section')" id="nav-list-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm text-gray-700 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
                     <i class="fa-solid fa-list-check text-lg w-6"></i>
                     <span>Liste Commandes</span>
                 </button>
-                <button onclick="showSection('pdf-section')" id="nav-pdf-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm text-gray-700 hover:bg-white/30 hover:text-[#8e44ad] transition-all">
+                <button onclick="showSection('pdf-section')" id="nav-pdf-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm text-gray-700 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
                     <i class="fa-solid fa-file-pdf text-lg w-6"></i>
                     <span>Liste PDF</span>
                 </button>
-                <button onclick="showSection('notebook-section')" id="nav-notebook-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm text-gray-700 hover:bg-white/30 hover:text-[#8e44ad] transition-all">
+                <button onclick="showSection('notebook-section')" id="nav-notebook-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm text-gray-700 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
                     <i class="fa-solid fa-book text-lg w-6"></i>
                     <span>Mes Idées & Notes</span>
                 </button>
-                <button onclick="showSection('info-section')" id="nav-info-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm text-gray-700 hover:bg-white/30 hover:text-[#8e44ad] transition-all">
+                <button onclick="showSection('info-section')" id="nav-info-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm text-gray-700 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
                     <i class="fa-solid fa-circle-info text-lg w-6"></i>
                     <span>Information</span>
                 </button>
             </nav>
         </div>
 
-        <!-- Sidebar Footer & Quick Actions -->
         <div class="pt-4 border-t border-purple-900/10 flex flex-col gap-2">
-            <button onclick="openProductModal()" class="w-full py-2.5 px-4 rounded-xl bg-[#8e44ad] hover:bg-[#7d3c98] text-white font-semibold text-xs transition-all flex items-center justify-center gap-2 shadow-md">
+            <button onclick="openProductModal()" class="w-full py-2.5 px-4 rounded-xl bg-[#8e44ad] hover:bg-[#7d3c98] text-white font-semibold text-xs transition-all flex items-center justify-center gap-2 shadow-md cursor-pointer">
                 <i class="fa-solid fa-boxes-stacked"></i>
                 <span>Gérer Produits</span>
             </button>
-            <button onclick="openSettingsModal()" class="w-full py-2 px-4 rounded-xl bg-white/40 hover:bg-white/60 text-gray-700 font-medium text-xs transition-all flex items-center justify-center gap-2 border border-white/50">
+            <button onclick="openSettingsModal()" class="w-full py-2 px-4 rounded-xl bg-white/40 hover:bg-white/60 text-gray-700 font-medium text-xs transition-all flex items-center justify-center gap-2 border border-white/50 cursor-pointer">
                 <i class="fa-solid fa-sliders"></i>
                 <span>Réglages Style</span>
+            </button>
+           <a href="index.html" class="btn-link">----📱 Vue Mobile ----</a>
+
             </button>
         </div>
     </aside>
 
     <!-- ================= HOOFDINHOUD (MAIN WORKSPACE) ================= -->
-    <main class="flex-1 p-4 md:p-6 overflow-y-auto max-w-7xl mx-auto w-full">
+    <main class="flex-1 p-4 md:p-6 pb-24 md:pb-6 overflow-y-auto max-w-7xl mx-auto w-full">
 
-        <!-- Top Header Bar (Mobiel & Statestieken) -->
         <header class="glass-card p-4 mb-6 flex flex-wrap justify-between items-center gap-4">
             <div>
                 <h2 class="text-xl font-bold text-[#8e44ad]">Tableau de Bord Beheer</h2>
-                <p class="text-xs text-gray-600">Gestion centralisée pour version PC</p>
+                <p class="text-xs text-gray-600">Gestion centralisée</p>
             </div>
 
-            <!-- Mobile Menu Toggles -->
+            <!-- Mobiele actieknoppen bovenaan -->
             <div class="flex items-center gap-2 md:hidden">
-                <button onclick="openProductModal()" class="p-2.5 rounded-xl bg-[#8e44ad] text-white text-xs"><i class="fa-solid fa-boxes-stacked"></i></button>
-                <button onclick="openSettingsModal()" class="p-2.5 rounded-xl bg-white/50 text-gray-700 text-xs"><i class="fa-solid fa-sliders"></i></button>
+                <button onclick="openProductModal()" class="p-2.5 rounded-xl bg-[#8e44ad] text-white text-xs cursor-pointer" title="Produits"><i class="fa-solid fa-boxes-stacked"></i></button>
+                <button onclick="openSettingsModal()" class="p-2.5 rounded-xl bg-white/50 text-gray-700 text-xs cursor-pointer" title="Réglages"><i class="fa-solid fa-sliders"></i></button>
+                <button onclick="toggleMobileView()" class="p-2.5 rounded-xl bg-purple-100 text-[#8e44ad] text-xs cursor-pointer" title="Retour PC"><i class="fa-solid fa-desktop"></i></button>
             </div>
 
-            <!-- Stats Bar -->
             <div class="flex items-center gap-4 text-xs">
                 <div class="bg-white/40 px-3 py-2 rounded-xl border border-white/60 shadow-sm">
-                    <span class="text-gray-600">Total Commandes:</span>
+                    <span class="text-gray-600">Total:</span>
                     <span id="statTotalOrders" class="font-bold text-[#8e44ad] ml-1">0</span>
                 </div>
                 <div class="bg-white/40 px-3 py-2 rounded-xl border border-white/60 shadow-sm">
-                    <span class="text-gray-600">Chiffre d'affaires:</span>
+                    <span class="text-gray-600">CA:</span>
                     <span id="statTotalRevenue" class="font-bold text-emerald-600 ml-1">€ 0.00</span>
                 </div>
             </div>
         </header>
 
-        <!-- SECTIE 1: COMMANDER -->
+        <!-- SECTIE 1: COMMANDER / BEWERKEN KADER -->
         <section id="order-section" class="dashboard-section space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- Formulier -->
-                <div class="lg:col-span-7 glass-card p-6">
+                <div id="formCardContainer" class="lg:col-span-7 glass-card p-6 transition-all">
                     <div class="flex justify-between items-center pb-4 mb-6 border-b border-purple-900/10">
-                        <h3 class="font-bold uppercase tracking-wider text-sm text-[#8e44ad] flex items-center gap-2">
+                        <h3 id="formSectionTitle" class="font-bold uppercase tracking-wider text-sm text-[#8e44ad] flex items-center gap-2">
                             <i class="fa-solid fa-plus-circle"></i> Nouvelle Commande
                         </h3>
-                        <button onclick="clearFormDraft()" class="text-xs text-red-600 hover:text-red-800 flex items-center gap-1 font-semibold">
-                            <i class="fa-solid fa-trash"></i> Effacer brouillon
+                        <button onclick="clearFormDraft()" class="text-xs text-red-600 hover:text-red-800 flex items-center gap-1 font-semibold cursor-pointer">
+                            <i class="fa-solid fa-trash"></i> Annuler / Effacer
                         </button>
                     </div>
 
                     <form id="orderForm" class="space-y-4">
+                        <input type="hidden" id="editOrderId" value="">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Nom du client *</label>
@@ -189,15 +215,14 @@
                             </div>
                         </div>
 
-                        <!-- Product selection met Automatische Categorieën -->
                         <div>
                             <div class="flex justify-between items-center mb-1">
                                 <label class="block text-xs font-semibold text-gray-700">Choisir un produit *</label>
-                                <button type="button" onclick="openProductModal()" class="text-xs text-[#8e44ad] underline font-medium hover:text-[#6c3483]">
+                                <button type="button" onclick="openProductModal()" class="text-xs text-[#8e44ad] underline font-medium hover:text-[#6c3483] cursor-pointer">
                                     + Gérer / Ajouter produits
                                 </button>
                             </div>
-                            <select id="text" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm" required onchange="updateDefaultPrice()">
+                            <select id="text" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm cursor-pointer" required onchange="updateDefaultPrice()">
                                 <option value="" data-price="">-- Chargement des produits... --</option>
                             </select>
                         </div>
@@ -216,7 +241,7 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Date de livraison / commande *</label>
-                                <input type="date" id="datum" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm" required>
+                                <input type="date" id="datum" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm cursor-pointer" required>
                             </div>
                             <div class="flex items-center gap-3 pt-4">
                                 <input type="checkbox" id="betaald" class="w-5 h-5 accent-[#8e44ad] rounded cursor-pointer">
@@ -224,36 +249,30 @@
                             </div>
                         </div>
 
-                        <!-- Total Display Card -->
                         <div class="bg-white/40 p-4 rounded-xl border border-white/60 flex justify-between items-center mt-4 shadow-sm">
                             <span class="text-sm font-medium text-gray-700">Total Calculé:</span>
                             <span class="text-2xl font-extrabold text-[#8e44ad]">€ <span id="totalAmount">0.00</span></span>
                         </div>
 
-                        <button type="submit" id="submitBtn" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#9b51e0] to-[#8e44ad] hover:from-[#a55eea] hover:to-[#7d3c98] font-bold text-white shadow-lg transition-all">
+                        <button type="submit" id="submitBtn" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#9b51e0] to-[#8e44ad] hover:from-[#a55eea] hover:to-[#7d3c98] font-bold text-white shadow-lg transition-all cursor-pointer">
                             Enregistrer la commande
                         </button>
                     </form>
                 </div>
 
-                <!-- Info Sidebar Panel -->
                 <div class="lg:col-span-5 space-y-6">
                     <div class="glass-card p-6">
                         <h3 class="font-bold uppercase tracking-wider text-sm text-[#8e44ad] mb-4 pb-2 border-b border-purple-900/10">
-                            Guide Rapide PC
+                            Guide Rapide
                         </h3>
                         <ul class="space-y-3 text-xs text-gray-700">
                             <li class="flex items-start gap-2">
                                 <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
-                                <span>Les produits sont automatiquement triés par catégories dans le menu déroulant.</span>
+                                <span>Gebruik de knop <strong>Vue Mobile</strong> in de zijbalk om direct naar de mobiele weergave te schakelen op je PC.</span>
                             </li>
                             <li class="flex items-start gap-2">
                                 <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
-                                <span>Cliquez sur <strong>Gérer Produits</strong> pour ajouter facilement un nouvel article à la liste sans retaper la catégorie à chaque fois.</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
-                                <span>Toutes vos commandes saisies sont synchronisées instantanément avec Firebase.</span>
+                                <span>Klik op het potlood-icoon bij een bestelling in de lijst om deze te bewerken in het kader.</span>
                             </li>
                         </ul>
                     </div>
@@ -264,7 +283,6 @@
         <!-- SECTIE 2: LISTE COMMANDES -->
         <section id="list-section" class="dashboard-section space-y-6 hidden">
             <div class="glass-card p-6">
-                <!-- Toolbar -->
                 <div class="flex flex-wrap justify-between items-center gap-4 mb-6 pb-4 border-b border-purple-900/10">
                     <div class="flex items-center gap-2 flex-1 max-w-md">
                         <div class="relative w-full">
@@ -273,29 +291,27 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-3">
-                        <button onclick="shareList()" class="px-4 py-2 rounded-xl bg-white/50 hover:bg-white/80 text-xs font-bold transition-all flex items-center gap-2 border border-white/60">
+                        <button onclick="shareList()" class="px-4 py-2 rounded-xl bg-white/50 hover:bg-white/80 text-xs font-bold transition-all flex items-center gap-2 border border-white/60 cursor-pointer">
                             <i class="fa-solid fa-share-nodes"></i> Partager
                         </button>
-                        <button onclick="exportToPDF()" id="pdfBtn" class="px-4 py-2 rounded-xl bg-[#8e44ad] hover:bg-[#7d3c98] text-xs font-bold text-white transition-all flex items-center gap-2 shadow-md">
-                            <i class="fa-solid fa-file-pdf"></i> Imprimer / PDF
+                        <button onclick="exportToPDF()" id="pdfBtn" class="px-4 py-2 rounded-xl bg-[#8e44ad] hover:bg-[#7d3c98] text-xs font-bold text-white transition-all flex items-center gap-2 shadow-md cursor-pointer">
+                            <i class="fa-solid fa-file-pdf"></i> PDF
                         </button>
                     </div>
                 </div>
 
-                <!-- Select Toolbar -->
                 <div class="flex justify-between items-center bg-white/40 px-4 py-2.5 rounded-xl mb-4 border border-white/60 text-xs shadow-sm">
                     <label class="flex items-center gap-2 cursor-pointer font-semibold text-gray-800">
-                        <input type="checkbox" id="selectAllCheckbox" onclick="toggleSelectAll(this)" class="w-4 h-4 accent-[#8e44ad] rounded">
+                        <input type="checkbox" id="selectAllCheckbox" onclick="toggleSelectAll(this)" class="w-4 h-4 accent-[#8e44ad] rounded cursor-pointer">
                         <span>Tout sélectionner</span>
                     </label>
-                    <button id="deleteSelectedBtn" onclick="deleteSelected()" class="hidden px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold transition-all">
-                        Supprimer Sélection (<span id="selectedCount">0</span>)
+                    <button id="deleteSelectedBtn" onclick="deleteSelected()" class="hidden px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold transition-all cursor-pointer">
+                        Supprimer (<span id="selectedCount">0</span>)
                     </button>
                 </div>
 
-                <!-- List Content -->
                 <div id="pdfContent">
-                    <div id="loadingText" class="text-center py-8 text-gray-500 text-sm">Récupération des données depuis la base de données...</div>
+                    <div id="loadingText" class="text-center py-8 text-gray-500 text-sm">Récupération des données...</div>
                     <ul id="itemsList" class="space-y-3"></ul>
                 </div>
             </div>
@@ -303,12 +319,12 @@
 
         <!-- SECTIE 3: LISTE PDF VIEWER -->
         <section id="pdf-section" class="dashboard-section space-y-6 hidden">
-            <div class="glass-card p-6 h-[80vh] flex flex-col">
+            <div class="glass-card p-6 h-[75vh] flex flex-col">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="font-bold uppercase tracking-wider text-sm text-[#8e44ad]">Tarifs & Prix Boutique PDF</h3>
-                    <a href="Prix boutique Au bonheur des Anges.  2026.pdf" download class="px-4 py-1.5 rounded-xl bg-[#8e44ad] text-xs font-bold text-white hover:bg-[#7d3c98]">Télécharger PDF</a>
+                    <a href="Prix boutique Au bonheur des Anges.  2026.pdf" download class="px-4 py-1.5 rounded-xl bg-[#8e44ad] text-xs font-bold text-white hover:bg-[#7d3c98]">Télécharger</a>
                 </div>
-                <div class="flex-1 rounded-xl overflow-hidden bg-white/40 border border-white/60">
+                <div class="flex-1 rounded-xl overflow-hidden bg-white/40 border border-white/65">
                     <embed src="Prix boutique Au bonheur des Anges.  2026.pdf" type="application/pdf" class="w-full h-full">
                 </div>
             </div>
@@ -317,7 +333,6 @@
         <!-- SECTIE 4: NOTEBOOK -->
         <section id="notebook-section" class="dashboard-section space-y-6 hidden">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- Formulier voor ideeën -->
                 <div class="lg:col-span-5 glass-card p-6">
                     <h3 id="formTitleIdea" class="font-bold uppercase tracking-wider text-sm text-[#8e44ad] mb-4 pb-2 border-b border-purple-900/10">
                         Nouvelle Idée
@@ -326,29 +341,28 @@
                         <input type="hidden" id="editIdeaId" value="">
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 mb-1">Titre de l'idée *</label>
-                            <input type="text" id="ideaTitre" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm" placeholder="ex: Nouveau mug personnalisé" required>
+                            <input type="text" id="ideaTitre" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm" placeholder="ex: Nouveau mug" required>
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 mb-1">Description / Notes</label>
-                            <textarea id="ideaDescription" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm h-24" placeholder="Détails de l'idée..."></textarea>
+                            <textarea id="ideaDescription" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm h-24" placeholder="Détails..."></textarea>
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 mb-1">Photo (Optionnel)</label>
-                            <input type="file" id="ideaPhoto" accept="image/*" class="w-full glass-input rounded-xl px-4 py-2 text-xs">
+                            <input type="file" id="ideaPhoto" accept="image/*" class="w-full glass-input rounded-xl px-4 py-2 text-xs cursor-pointer">
                         </div>
-                        <button type="submit" id="submitBtnIdea" class="w-full py-3 rounded-xl bg-[#8e44ad] hover:bg-[#7d3c98] font-bold text-white shadow-lg text-sm">
+                        <button type="submit" id="submitBtnIdea" class="w-full py-3 rounded-xl bg-[#8e44ad] hover:bg-[#7d3c98] font-bold text-white shadow-lg text-sm cursor-pointer">
                             Enregistrer l'idée
                         </button>
                     </form>
                 </div>
 
-                <!-- Ideeën overzicht -->
                 <div class="lg:col-span-7 glass-card p-6 space-y-4">
                     <h3 class="font-bold uppercase tracking-wider text-sm text-[#8e44ad] pb-2 border-b border-purple-900/10">
                         Mes Idées & Prototypes
                     </h3>
                     <div id="ideasContainer" class="space-y-3">
-                        <div class="text-center py-6 text-gray-500 text-sm">Chargement des idées...</div>
+                        <div class="text-center py-6 text-gray-500 text-sm">Chargement...</div>
                     </div>
                 </div>
             </div>
@@ -356,24 +370,39 @@
 
         <!-- SECTIE 5: INFO -->
         <section id="info-section" class="dashboard-section space-y-6 hidden">
-            <div class="glass-card p-6 max-w-2xl mx-auto space-y-6">
-                <div class="text-center space-y-2">
-                    <img src="logo.jpg" alt="Logo" class="w-24 h-24 rounded-full mx-auto border-2 border-white/60 shadow-lg object-cover" onerror="this.src='https://via.placeholder.com/96'">
-                    <h2 class="text-xl font-bold text-[#8e44ad]">Au bonheur des Anges</h2>
-                    <span class="inline-block bg-[#8e44ad]/15 text-[#8e44ad] border border-[#8e44ad]/30 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider">Application PC</span>
-                </div>
-                <div class="space-y-3 text-sm text-gray-700">
-                    <p>Cette application PC permet de gérer vos commandes, produits et prototypes en temps réel avec synchronisation Firebase Cloud.</p>
-                    <hr class="border-purple-900/10">
-                    <div class="flex justify-between items-center text-xs text-gray-500">
-                        <span>Version 26.2 (PC Edition)</span>
-                        <span>Mise à jour: 2026</span>
-                    </div>
-                </div>
+            <div class="glass-card p-6 max-w-2xl mx-auto space-y-6 text-center">
+                <img src="logo.jpg" alt="Logo" class="w-24 h-24 rounded-full mx-auto border-2 border-white/60 shadow-lg object-cover" onerror="this.src='https://via.placeholder.com/96'">
+                <h2 class="text-xl font-bold text-[#8e44ad]">Au bonheur des Anges</h2>
+                <span class="inline-block bg-[#8e44ad]/15 text-[#8e44ad] border border-[#8e44ad]/30 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider">Application Responsive</span>
+                <p class="text-sm text-gray-700">Gestion centralisée des commandes et produits avec synchronisation Firebase Cloud.</p>
             </div>
         </section>
 
     </main>
+
+    <!-- ================= MOBIELE NAVIGATIE BALK (ONDERAN) ================= -->
+    <nav class="fixed bottom-0 left-0 right-0 glass-card m-2 p-2 justify-around items-center z-30 hidden md:hidden bg-white/85 shadow-lg border border-white/60" id="mobileNavBottom">
+        <button onclick="showSection('order-section')" id="mob-nav-order-section" class="mob-nav-btn flex flex-col items-center p-2 text-[#8e44ad] text-xs font-semibold cursor-pointer">
+            <i class="fa-solid fa-cart-plus text-base"></i>
+            <span class="text-[10px]">Commander</span>
+        </button>
+        <button onclick="showSection('list-section')" id="mob-nav-list-section" class="mob-nav-btn flex flex-col items-center p-2 text-gray-600 text-xs font-semibold cursor-pointer">
+            <i class="fa-solid fa-list-check text-base"></i>
+            <span class="text-[10px]">Listes</span>
+        </button>
+        <button onclick="showSection('pdf-section')" id="mob-nav-pdf-section" class="mob-nav-btn flex flex-col items-center p-2 text-gray-600 text-xs font-semibold cursor-pointer">
+            <i class="fa-solid fa-file-pdf text-base"></i>
+            <span class="text-[10px]">PDF</span>
+        </button>
+        <button onclick="showSection('notebook-section')" id="mob-nav-notebook-section" class="mob-nav-btn flex flex-col items-center p-2 text-gray-600 text-xs font-semibold cursor-pointer">
+            <i class="fa-solid fa-book text-base"></i>
+            <span class="text-[10px]">Notes</span>
+        </button>
+        <button onclick="showSection('info-section')" id="mob-nav-info-section" class="mob-nav-btn flex flex-col items-center p-2 text-gray-600 text-xs font-semibold cursor-pointer">
+            <i class="fa-solid fa-circle-info text-base"></i>
+            <span class="text-[10px]">Info</span>
+        </button>
+    </nav>
 
     <!-- ================= MODALS & POPUPS ================= -->
 
@@ -384,16 +413,15 @@
                 <h3 class="font-bold text-lg text-[#8e44ad] flex items-center gap-2">
                     <i class="fa-solid fa-boxes-stacked"></i> Gestion des Produits & Catégories
                 </h3>
-                <button onclick="closeProductModal()" class="text-gray-500 hover:text-gray-800 text-xl font-bold">&times;</button>
+                <button onclick="closeProductModal()" class="text-gray-500 hover:text-gray-800 text-xl font-bold cursor-pointer">&times;</button>
             </div>
 
-            <!-- Formulier Toevoegen / Bewerken Product -->
             <form id="productForm" class="space-y-4 mb-6 bg-white/50 p-4 rounded-xl border border-white/60 shadow-sm">
                 <input type="hidden" id="editProductId" value="">
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
                         <label class="block text-xs font-semibold mb-1 text-gray-700">Catégorie *</label>
-                        <select id="categorieSelect" class="w-full glass-input rounded-xl px-3 py-2 text-xs" required>
+                        <select id="categorieSelect" class="w-full glass-input rounded-xl px-3 py-2 text-xs cursor-pointer" required>
                             <option value="Sublimation">Sublimation</option>
                             <option value="Créations 3D">Créations 3D</option>
                             <option value="Déco pour Noël">Déco pour Noël</option>
@@ -411,16 +439,15 @@
                     </div>
                 </div>
                 <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="addNewCategoryPrompt()" class="px-3 py-1.5 rounded-lg bg-white hover:bg-gray-100 text-xs font-semibold border border-gray-300 text-gray-700 shadow-sm">
+                    <button type="button" onclick="addNewCategoryPrompt()" class="px-3 py-1.5 rounded-lg bg-white hover:bg-gray-100 text-xs font-semibold border border-gray-300 text-gray-700 shadow-sm cursor-pointer">
                         + Nouvelle Catégorie
                     </button>
-                    <button type="submit" id="submitProductBtn" class="px-4 py-1.5 rounded-lg bg-[#8e44ad] hover:bg-[#7d3c98] text-xs font-bold text-white shadow-md">
-                        Enregistrer Produit
+                    <button type="submit" id="submitProductBtn" class="px-4 py-1.5 rounded-lg bg-[#8e44ad] hover:bg-[#7d3c98] text-xs font-bold text-white shadow-md cursor-pointer">
+                        Enregistrer
                     </button>
                 </div>
             </form>
 
-            <!-- Tabel van bestaande producten -->
             <div class="overflow-x-auto rounded-xl border border-purple-900/10">
                 <table class="w-full text-left text-xs">
                     <thead class="bg-purple-900/5 text-[#8e44ad] border-b border-purple-900/10 font-bold">
@@ -432,9 +459,7 @@
                         </tr>
                     </thead>
                     <tbody id="productsTableBody" class="divide-y divide-purple-900/10">
-                        <tr>
-                            <td colspan="4" class="p-4 text-center text-gray-500">Chargement...</td>
-                        </tr>
+                        <tr><td colspan="4" class="p-4 text-center text-gray-500">Chargement...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -445,8 +470,8 @@
     <div id="settingsModal" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-md flex items-center justify-center p-4 hidden">
         <div class="glass-card w-full max-w-md p-6 rounded-2xl relative space-y-4 bg-white/95">
             <div class="flex justify-between items-center pb-2 border-b border-purple-900/10">
-                <h3 class="font-bold text-lg text-[#8e44ad]">Réglages du style Glassmorphism</h3>
-                <button onclick="closeSettingsModal()" class="text-gray-500 hover:text-gray-800 text-xl font-bold">&times;</button>
+                <h3 class="font-bold text-lg text-[#8e44ad]">Réglages</h3>
+                <button onclick="closeSettingsModal()" class="text-gray-500 hover:text-gray-800 text-xl font-bold cursor-pointer">&times;</button>
             </div>
             
             <div>
@@ -458,23 +483,27 @@
             </div>
 
             <div>
-                <label class="block text-xs font-semibold mb-2 text-gray-700">Changer l'image d'arrière-plan (.jpg, .png, .heic)</label>
-                <input type="file" id="bgInput" accept="image/*" class="w-full glass-input rounded-xl p-2 text-xs">
+                <label class="block text-xs font-semibold mb-2 text-gray-700">Image d'arrière-plan</label>
+                <input type="file" id="bgInput" accept="image/*" class="w-full glass-input rounded-xl p-2 text-xs cursor-pointer">
             </div>
 
-            <button onclick="removeCustomBackground()" class="w-full py-2 rounded-xl bg-red-600 hover:bg-red-700 text-xs font-bold text-white shadow-md">
+            <button onclick="toggleMaintenanceMode()" class="w-full py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-xs font-bold text-white shadow-md cursor-pointer">
+                🛠️ Activer / Désactiver la Maintenance
+            </button>
+
+            <button onclick="removeCustomBackground()" class="w-full py-2 rounded-xl bg-red-600 hover:bg-red-700 text-xs font-bold text-white shadow-md cursor-pointer">
                 Réinitialiser l'arrière-plan
             </button>
         </div>
     </div>
 
-    <!-- Lightbox voor afbeeldingen -->
+    <!-- Lightbox -->
     <div id="lightboxModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4" onclick="closeLightbox()">
         <img id="lightboxImage" class="max-w-full max-h-[85vh] rounded-xl object-contain shadow-2xl" src="" alt="Agrandissement">
     </div>
 
     <!-- Notification Toast -->
-    <div id="toastNotification" class="fixed bottom-5 right-5 z-50 bg-emerald-600 text-white font-semibold text-xs px-4 py-3 rounded-xl shadow-xl hidden transition-all">
+    <div id="toastNotification" class="fixed bottom-16 right-5 z-50 bg-emerald-600 text-white font-semibold text-xs px-4 py-3 rounded-xl shadow-xl hidden transition-all">
         <span id="toastText">Opération réussie !</span>
     </div>
 
@@ -501,7 +530,74 @@
         let allIdeas = {};
         let currentBase64Image = "";
 
-        // UI Navigatie Tussen Secties
+        const ADMIN_PIN = "1234";
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const isMaintenanceOn = localStorage.getItem("appMaintenanceMode") === "true";
+            const isAdminUnlocked = sessionStorage.getItem("adminUnlocked") === "true";
+
+            if (isMaintenanceOn && !isAdminUnlocked) {
+                document.getElementById("maintenanceOverlay").style.display = "flex";
+            }
+
+            // Check of mobiele weergave handmatig was ingeschakeld op PC
+            if (localStorage.getItem("manualMobileView") === "true") {
+                document.body.classList.add("mobile-view-active");
+                document.getElementById("mobileNavBottom").style.display = "flex";
+                document.getElementById("mobileToggleText").textContent = "Vue PC (Activer)";
+            }
+        });
+
+        window.toggleMobileView = function() {
+            const isActive = document.body.classList.toggle("mobile-view-active");
+            const navBottom = document.getElementById("mobileNavBottom");
+            const toggleText = document.getElementById("mobileToggleText");
+
+            if (isActive) {
+                navBottom.style.display = "flex";
+                toggleText.textContent = "Vue PC (Activer)";
+                localStorage.setItem("manualMobileView", "true");
+                showToast("Mode mobile activé.");
+            } else {
+                navBottom.style.display = "none";
+                toggleText.textContent = "Vue Mobile (Activer)";
+                localStorage.setItem("manualMobileView", "false");
+                showToast("Mode PC activé.");
+            }
+        };
+
+        window.requestAdminAccess = function() {
+            const enteredPin = prompt("Entrez le code secret administrateur :");
+            if (enteredPin === ADMIN_PIN) {
+                sessionStorage.setItem("adminUnlocked", "true");
+                document.getElementById("maintenanceOverlay").style.display = "none";
+                showToast("Accès administrateur autorisé !");
+            } else if (enteredPin !== null) {
+                alert("Code secret incorrect !");
+            }
+        };
+
+        window.toggleMaintenanceMode = function() {
+            const current = localStorage.getItem("appMaintenanceMode") === "true";
+            if (!current) {
+                const pin = prompt("Entrez le code secret pour activer la maintenance :");
+                if (pin !== ADMIN_PIN) {
+                    if (pin !== null) alert("Code incorrect !");
+                    return;
+                }
+                localStorage.setItem("appMaintenanceMode", "true");
+                sessionStorage.removeItem("adminUnlocked");
+                document.getElementById("maintenanceOverlay").style.display = "flex";
+                showToast("Mode maintenance activé.");
+            } else {
+                localStorage.setItem("appMaintenanceMode", "false");
+                sessionStorage.setItem("adminUnlocked", "true");
+                document.getElementById("maintenanceOverlay").style.display = "none";
+                showToast("Mode maintenance désactivé.");
+            }
+            closeSettingsModal();
+        };
+
         window.showSection = function(sectionId) {
             document.querySelectorAll('.dashboard-section').forEach(sec => sec.classList.add('hidden'));
             document.getElementById(sectionId).classList.remove('hidden');
@@ -510,15 +606,23 @@
                 btn.classList.remove('bg-[#8e44ad]/15', 'text-[#8e44ad]', 'shadow-sm');
                 btn.classList.add('text-gray-700');
             });
-
             const activeBtn = document.getElementById(`nav-${sectionId}`);
             if (activeBtn) {
                 activeBtn.classList.add('bg-[#8e44ad]/15', 'text-[#8e44ad]', 'shadow-sm');
                 activeBtn.classList.remove('text-gray-700');
             }
+
+            document.querySelectorAll('.mob-nav-btn').forEach(btn => {
+                btn.classList.remove('text-[#8e44ad]');
+                btn.classList.add('text-gray-600');
+            });
+            const activeMobBtn = document.getElementById(`mob-nav-${sectionId}`);
+            if (activeMobBtn) {
+                activeMobBtn.classList.add('text-[#8e44ad]');
+                activeMobBtn.classList.remove('text-gray-600');
+            }
         };
 
-        // Firebase Status Listener
         const connectedRef = ref(db, ".info/connected");
         onValue(connectedRef, (snap) => {
             const statusDot = document.getElementById("statusDot");
@@ -534,14 +638,12 @@
             }
         });
 
-        // Dynamic Opacity Controller
         window.updateOpacity = function(val) {
             document.documentElement.style.setProperty('--glass-bg', `rgba(255, 255, 255, ${val})`);
             document.getElementById('opacityVal').textContent = Math.round(val * 100) + "%";
             localStorage.setItem("appGlassOpacity", val);
         };
 
-        // Background handler
         document.addEventListener("DOMContentLoaded", () => {
             const savedBg = localStorage.getItem("customAppBackground");
             if (savedBg) applyBackground(savedBg);
@@ -568,7 +670,6 @@
             closeSettingsModal();
         };
 
-        // Modal Controls
         window.openProductModal = () => document.getElementById("productModal").classList.remove("hidden");
         window.closeProductModal = () => document.getElementById("productModal").classList.add("hidden");
         window.openSettingsModal = () => document.getElementById("settingsModal").classList.remove("hidden");
@@ -582,7 +683,6 @@
             setTimeout(() => toast.classList.add("hidden"), 3500);
         };
 
-        // --- PRODUCTEN & CATEGORIEËN LADEN ---
         function loadCustomCategories() {
             const customCats = JSON.parse(localStorage.getItem("customCategories") || "[]");
             const select = document.getElementById("categorieSelect");
@@ -607,7 +707,6 @@
             }
         };
 
-        // Products Firebase Listener
         const productsRef = ref(db, 'products');
         onValue(productsRef, (snapshot) => {
             const selectMenu = document.getElementById("text");
@@ -627,7 +726,6 @@
                     categories[cat].push({ id: key, ...item });
                 });
 
-                // Populate Dropdown in Form
                 Object.keys(categories).sort().forEach(catName => {
                     const optGroup = document.createElement("optgroup");
                     optGroup.label = catName;
@@ -639,14 +737,13 @@
                         option.textContent = `${prod.naam} - ${parseFloat(prod.prijs).toFixed(2)} €`;
                         optGroup.appendChild(option);
 
-                        // Populate Table in Product Modal
                         const tr = document.createElement("tr");
                         tr.innerHTML = `
                             <td class="p-3"><span class="bg-[#8e44ad]/10 px-2 py-1 rounded text-[#8e44ad] font-semibold">${escapeHtml(prod.categorie || 'Autre')}</span></td>
                             <td class="p-3 font-semibold text-gray-800">${escapeHtml(prod.naam)}</td>
                             <td class="p-3 text-emerald-600 font-bold">${parseFloat(prod.prijs).toFixed(2)} €</td>
                             <td class="p-3 text-right">
-                                <button onclick="deleteProductFromDb('${prod.id}')" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash"></i></button>
+                                <button onclick="deleteProductFromDb('${prod.id}')" class="text-red-500 hover:text-red-700 cursor-pointer"><i class="fa-solid fa-trash"></i></button>
                             </td>
                         `;
                         tableBody.appendChild(tr);
@@ -659,7 +756,6 @@
             }
         });
 
-        // Submit New Product
         document.getElementById("productForm").addEventListener("submit", async (e) => {
             e.preventDefault();
             const cat = document.getElementById("categorieSelect").value;
@@ -687,7 +783,6 @@
             }
         };
 
-        // --- ORDER FORM LOGIC ---
         window.updateDefaultPrice = function() {
             const select = document.getElementById("text");
             const selectedOpt = select.options[select.selectedIndex];
@@ -706,8 +801,33 @@
 
         window.clearFormDraft = function() {
             document.getElementById("orderForm").reset();
+            document.getElementById("editOrderId").value = "";
             document.getElementById("datum").value = new Date().toISOString().split('T')[0];
             document.getElementById("totalAmount").textContent = "0.00";
+            document.getElementById("formSectionTitle").innerHTML = '<i class="fa-solid fa-plus-circle"></i> Nouvelle Commande';
+            document.getElementById("submitBtn").textContent = "Enregistrer la commande";
+            document.getElementById("formCardContainer").classList.remove("editing-mode");
+        };
+
+        window.editOrder = function(id) {
+            const order = allOrders.find(o => o.id === id);
+            if (!order) return;
+
+            document.getElementById("editOrderId").value = order.id;
+            document.getElementById("naam").value = order.naam || "";
+            document.getElementById("adres").value = order.adres || "";
+            document.getElementById("text").value = order.text || "";
+            document.getElementById("aantal").value = order.aantal || 1;
+            document.getElementById("prijs").value = order.prijs || 0;
+            document.getElementById("datum").value = order.datum || new Date().toISOString().split('T')[0];
+            document.getElementById("betaald").checked = !!order.betaald;
+
+            calculateTotal();
+            document.getElementById("formSectionTitle").innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Modifier la commande';
+            document.getElementById("submitBtn").textContent = "Mettre à jour la commande";
+            document.getElementById("formCardContainer").classList.add("editing-mode");
+
+            showSection('order-section');
         };
 
         document.getElementById("orderForm").addEventListener("submit", async (e) => {
@@ -718,7 +838,8 @@
                 return;
             }
 
-            const newOrder = {
+            const editId = document.getElementById("editOrderId").value;
+            const orderData = {
                 naam: document.getElementById("naam").value.trim(),
                 adres: document.getElementById("adres").value.trim(),
                 text: text,
@@ -731,15 +852,20 @@
             };
 
             try {
-                await set(push(ref(db, 'items')), newOrder);
-                showToast("Commande enregistrée avec succès !");
+                if (editId) {
+                    await update(ref(db, `items/${editId}`), orderData);
+                    showToast("Commande mise à jour avec succès !");
+                } else {
+                    await set(push(ref(db, 'items')), orderData);
+                    showToast("Commande enregistrée avec succès !");
+                }
                 clearFormDraft();
+                showSection('list-section');
             } catch (err) {
                 alert("Erreur lors de l'enregistrement: " + err.message);
             }
         });
 
-        // --- LISTE COMMANDES LISTENER ---
         const itemsRef = ref(db, 'items');
         onValue(itemsRef, (snapshot) => {
             document.getElementById("loadingText").style.display = "none";
@@ -808,7 +934,10 @@
                             <span class="text-base font-extrabold text-emerald-600">€ ${total}</span>
                         </div>
                         <div class="flex gap-2">
-                            <button onclick="deleteItem('${item.id}')" class="p-2 rounded-lg bg-red-500/10 text-red-600 hover:bg-red-500 hover:text-white transition-all text-xs">
+                            <button onclick="editOrder('${item.id}')" class="p-2 rounded-lg bg-[#8e44ad]/10 text-[#8e44ad] hover:bg-[#8e44ad] hover:text-white transition-all text-xs cursor-pointer" title="Modifier">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button onclick="deleteItem('${item.id}')" class="p-2 rounded-lg bg-red-500/10 text-red-600 hover:bg-red-500 hover:text-white transition-all text-xs cursor-pointer" title="Supprimer">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </div>
@@ -870,11 +999,10 @@
                 await navigator.share({ title: 'Au bonheur des Anges', url: window.location.href });
             } else {
                 navigator.clipboard.writeText(window.location.href);
-                showToast("Lien copié dans le presse-papier !");
+                showToast("Lien copié !");
             }
         };
 
-        // --- IDEAS / NOTEBOOK LISTENER ---
         const ideasRef = ref(db, 'ideas');
         onValue(ideasRef, (snapshot) => {
             const container = document.getElementById("ideasContainer");
@@ -889,7 +1017,7 @@
                     div.innerHTML = `
                         <div class="flex justify-between items-start">
                             <h4 class="font-bold text-gray-900 text-sm">${escapeHtml(item.titre || 'Sans titre')}</h4>
-                            <button onclick="deleteIdea('${id}')" class="text-xs text-red-600 hover:text-red-800"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="deleteIdea('${id}')" class="text-xs text-red-600 hover:text-red-800 cursor-pointer"><i class="fa-solid fa-trash"></i></button>
                         </div>
                         ${item.description ? `<p class="text-xs text-gray-700">${escapeHtml(item.description)}</p>` : ''}
                         ${item.image ? `<img src="${item.image}" class="h-32 object-cover rounded-lg cursor-pointer mt-2 border border-white/60" onclick="openLightbox('${item.image}')">` : ''}
