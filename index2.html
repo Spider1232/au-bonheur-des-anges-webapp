@@ -61,17 +61,6 @@
             background: rgba(142, 68, 173, 0.05) !important;
         }
 
-        body.mobile-view-active aside {
-            display: none !important;
-        }
-        body.mobile-view-active main {
-            max-width: 100% !important;
-            padding-bottom: 6rem !important;
-        }
-        body.mobile-view-active nav.fixed.bottom-0 {
-            display: flex !important;
-        }
-
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -95,7 +84,7 @@
 </head>
 <body class="flex min-h-screen overflow-x-hidden">
 
-    <!-- MAINTENANCE OVERLAY -->
+    <!-- ONDERHOUDSPAGINA OVERLAY -->
     <div id="maintenanceOverlay" style="display: none;" class="fixed inset-0 z-[99999] bg-[#fbeef7] flex items-center justify-center p-4">
         <div class="glass-card p-8 text-center max-w-md shadow-2xl space-y-4 bg-white/80">
             <div class="w-16 h-16 bg-[#8e44ad]/20 text-[#8e44ad] rounded-full flex items-center justify-center mx-auto text-2xl">
@@ -107,11 +96,11 @@
         </div>
     </div>
 
-    <!-- SIDEBAR NAVIGATION (PC) -->
+    <!-- ================= SIDEBAR NAVIGATIE (PC) ================= -->
     <aside class="w-64 glass-card m-4 mr-0 flex flex-col justify-between p-5 z-20 shrink-0 hidden md:flex">
         <div>
             <div class="flex items-center gap-3 pb-6 border-b border-purple-900/10">
-                <img src="logo.jpg" alt="Logo" class="w-12 h-12 rounded-full object-cover border-2 border-white/60 shadow-md" onerror="this.src='https://via.placeholder.com/48?text=ABDA'">
+                <img src="logo.jpg" alt="Logo Au Bonheur Des Anges" class="w-12 h-12 rounded-full object-cover border-2 border-white/60 shadow-md" onerror="this.src='https://via.placeholder.com/48?text=ABDA'">
                 <div>
                     <h1 class="font-bold text-sm leading-tight text-[#8e44ad]">Au Bonheur Des Anges</h1>
                     <div class="flex items-center gap-2 mt-1">
@@ -154,30 +143,37 @@
                 <i class="fa-solid fa-sliders"></i>
                 <span>Réglages Style</span>
             </button>
-            <a href="index.html" class="w-full py-2 px-4 rounded-xl bg-purple-100/60 hover:bg-purple-100 text-[#8e44ad] font-medium text-xs transition-all flex items-center justify-center gap-2 border border-purple-200 no-underline cursor-pointer">
-                <i class="fa-solid fa-mobile-screen"></i>
-                <span>📱 Vue Mobile (index.html)</span>
-            </a>
         </div>
     </aside>
 
-    <!-- MAIN WORKSPACE -->
-    <main class="flex-1 p-4 md:p-6 pb-24 md:pb-6 overflow-y-auto max-w-7xl mx-auto w-full">
+    <!-- ================= HOOFDINHOUD (MAIN WORKSPACE) ================= -->
+    <main class="flex-1 p-4 md:p-6 pb-28 md:pb-6 overflow-y-auto max-w-7xl mx-auto w-full">
 
         <header class="glass-card p-4 mb-6 flex flex-wrap justify-between items-center gap-4">
-            <div>
-                <h2 class="text-xl font-bold text-[#8e44ad]">Tableau de Bord</h2>
-                <p class="text-xs text-gray-600">Gestion centralisée Au Bonheur Des Anges</p>
+            <div class="flex items-center gap-3">
+                <!-- Mobiel / Header Logo -->
+                <img src="logo.jpg" alt="Logo" class="w-10 h-10 rounded-full object-cover border-2 border-white/60 shadow-md md:hidden" onerror="this.src='https://via.placeholder.com/40?text=ABDA'">
+                <div>
+                    <h2 class="text-xl font-bold text-[#8e44ad]">Tableau de Bord</h2>
+                    <p class="text-xs text-gray-600">Gestion centralisée</p>
+                </div>
             </div>
 
-            <!-- Mobile Action Header Buttons + Link naar index.html -->
+            <!-- Mobiele actieknoppen bovenaan (inclusief index.html knop) -->
             <div class="flex items-center gap-2 md:hidden">
-                <a href="index.html" class="p-2.5 rounded-xl bg-purple-100 text-[#8e44ad] text-xs flex items-center justify-center cursor-pointer shadow-sm" title="Vers index.html"><i class="fa-solid fa-house"></i></a>
+                <a href="index.html" class="p-2.5 rounded-xl bg-white/70 text-[#8e44ad] text-xs font-bold border border-white/80 shadow-sm flex items-center gap-1" title="Accueil index.html">
+                    <i class="fa-solid fa-house"></i>
+                </a>
                 <button onclick="openProductModal()" class="p-2.5 rounded-xl bg-[#8e44ad] text-white text-xs cursor-pointer" title="Produits"><i class="fa-solid fa-boxes-stacked"></i></button>
                 <button onclick="openSettingsModal()" class="p-2.5 rounded-xl bg-white/50 text-gray-700 text-xs cursor-pointer" title="Réglages"><i class="fa-solid fa-sliders"></i></button>
             </div>
 
             <div class="flex items-center gap-4 text-xs">
+                <!-- PC / Desktop Home / Index Knop -->
+                <a href="index.html" class="hidden md:flex items-center gap-2 px-3 py-2 bg-white/60 hover:bg-white/90 text-[#8e44ad] rounded-xl border border-white/60 shadow-sm font-semibold transition-all">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Accueil (index.html)</span>
+                </a>
                 <div class="bg-white/40 px-3 py-2 rounded-xl border border-white/60 shadow-sm">
                     <span class="text-gray-600">Total:</span>
                     <span id="statTotalOrders" class="font-bold text-[#8e44ad] ml-1">0</span>
@@ -189,7 +185,7 @@
             </div>
         </header>
 
-        <!-- SECTION 1: ORDER FORM -->
+        <!-- SECTIE 1: COMMANDER / BEWERKEN KADER -->
         <section id="order-section" class="dashboard-section space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div id="formCardContainer" class="lg:col-span-7 glass-card p-6 transition-all">
@@ -268,11 +264,11 @@
                         <ul class="space-y-3 text-xs text-gray-700">
                             <li class="flex items-start gap-2">
                                 <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
-                                <span>Utilisez le bouton <strong>Vue Mobile</strong> en bas de la barre latérale pour basculer la disposition.</span>
+                                <span>Utilisez la barre de navigation en bas sur mobile pour basculer facilement entre les écrans.</span>
                             </li>
                             <li class="flex items-start gap-2">
                                 <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
-                                <span>Cliquez sur l'icône de crayon d'une commande existante pour la modifier directement.</span>
+                                <span>Cliquez sur l'icône de modification (stylo) dans la liste pour charger une commande directement dans le formulaire de gauche.</span>
                             </li>
                         </ul>
                     </div>
@@ -280,9 +276,10 @@
             </div>
         </section>
 
-        <!-- SECTION 2: LISTE COMMANDES -->
+        <!-- SECTIE 2: LISTE COMMANDES MET EXPORT & PDF ONDER DE LIJST -->
         <section id="list-section" class="dashboard-section space-y-6 hidden">
             <div class="glass-card p-6">
+                <!-- Top Zoekbalk -->
                 <div class="flex flex-wrap justify-between items-center gap-4 mb-6 pb-4 border-b border-purple-900/10">
                     <div class="flex items-center gap-2 flex-1 max-w-md">
                         <div class="relative w-full">
@@ -290,16 +287,9 @@
                             <input type="text" id="searchInput" onkeyup="filterItems()" class="w-full glass-input pl-10 pr-4 py-2 rounded-xl text-sm" placeholder="Rechercher nom, adresse, produit...">
                         </div>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <button onclick="shareList()" class="px-4 py-2 rounded-xl bg-white/50 hover:bg-white/80 text-xs font-bold transition-all flex items-center gap-2 border border-white/60 cursor-pointer">
-                            <i class="fa-solid fa-share-nodes"></i> Partager
-                        </button>
-                        <button onclick="exportToPDF()" id="pdfBtn" class="px-4 py-2 rounded-xl bg-[#8e44ad] hover:bg-[#7d3c98] text-xs font-bold text-white transition-all flex items-center gap-2 shadow-md cursor-pointer">
-                            <i class="fa-solid fa-file-pdf"></i> PDF
-                        </button>
-                    </div>
                 </div>
 
+                <!-- Selectie balk -->
                 <div class="flex justify-between items-center bg-white/40 px-4 py-2.5 rounded-xl mb-4 border border-white/60 text-xs shadow-sm">
                     <label class="flex items-center gap-2 cursor-pointer font-semibold text-gray-800">
                         <input type="checkbox" id="selectAllCheckbox" onclick="toggleSelectAll(this)" class="w-4 h-4 accent-[#8e44ad] rounded cursor-pointer">
@@ -310,14 +300,31 @@
                     </button>
                 </div>
 
-                <div id="pdfContent">
+                <!-- PDF Content & Bestellijst -->
+                <div id="pdfContent" class="space-y-4">
                     <div id="loadingText" class="text-center py-8 text-gray-500 text-sm">Récupération des données...</div>
                     <ul id="itemsList" class="space-y-3"></ul>
                 </div>
+
+                <!-- EXPORT EN PDF KNOPPEN ONDER DE LIJST -->
+                <div class="mt-8 pt-6 border-t border-purple-900/10 flex flex-wrap items-center justify-between gap-4">
+                    <div class="text-xs text-gray-600">
+                        <i class="fa-solid fa-circle-info text-[#8e44ad]"></i> Actions sur l'ensemble de la liste des commandes :
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="shareList()" class="px-4 py-2.5 rounded-xl bg-white/70 hover:bg-white text-xs font-bold transition-all flex items-center gap-2 border border-white/60 shadow-sm cursor-pointer">
+                            <i class="fa-solid fa-share-nodes text-[#8e44ad]"></i> Partager
+                        </button>
+                        <button onclick="exportToPDF()" id="pdfBtn" class="px-5 py-2.5 rounded-xl bg-[#8e44ad] hover:bg-[#7d3c98] text-xs font-bold text-white transition-all flex items-center gap-2 shadow-md cursor-pointer">
+                            <i class="fa-solid fa-file-pdf"></i> Télécharger en PDF
+                        </button>
+                    </div>
+                </div>
+
             </div>
         </section>
 
-        <!-- SECTION 3: LISTE PDF VIEWER -->
+        <!-- SECTIE 3: LISTE PDF VIEWER -->
         <section id="pdf-section" class="dashboard-section space-y-6 hidden">
             <div class="glass-card p-6 h-[75vh] flex flex-col">
                 <div class="flex justify-between items-center mb-4">
@@ -330,7 +337,7 @@
             </div>
         </section>
 
-        <!-- SECTION 4: NOTEBOOK -->
+        <!-- SECTIE 4: NOTEBOOK -->
         <section id="notebook-section" class="dashboard-section space-y-6 hidden">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div class="lg:col-span-5 glass-card p-6">
@@ -368,20 +375,25 @@
             </div>
         </section>
 
-        <!-- SECTION 5: INFO -->
+        <!-- SECTIE 5: INFO -->
         <section id="info-section" class="dashboard-section space-y-6 hidden">
             <div class="glass-card p-6 max-w-2xl mx-auto space-y-6 text-center">
-                <img src="logo.jpg" alt="Logo" class="w-24 h-24 rounded-full mx-auto border-2 border-white/60 shadow-lg object-cover" onerror="this.src='https://via.placeholder.com/96'">
+                <img src="logo.jpg" alt="Logo Au Bonheur Des Anges" class="w-24 h-24 rounded-full mx-auto border-2 border-white/60 shadow-lg object-cover" onerror="this.src='https://via.placeholder.com/96'">
                 <h2 class="text-xl font-bold text-[#8e44ad]">Au bonheur des Anges</h2>
                 <span class="inline-block bg-[#8e44ad]/15 text-[#8e44ad] border border-[#8e44ad]/30 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider">Application Responsive</span>
                 <p class="text-sm text-gray-700">Gestion centralisée des commandes et produits avec synchronisation Firebase Cloud.</p>
+                <div class="pt-4">
+                    <a href="index.html" class="inline-flex items-center gap-2 px-6 py-3 bg-[#8e44ad] text-white rounded-xl text-sm font-bold shadow-md hover:bg-[#7d3c98] transition-all">
+                        <i class="fa-solid fa-house"></i> Retour à l'accueil (index.html)
+                    </a>
+                </div>
             </div>
         </section>
 
     </main>
 
-    <!-- MOBILE NAVIGATION BAR (BOTTOM) -->
-    <nav class="fixed bottom-0 left-0 right-0 glass-card m-2 p-2 justify-around items-center z-30 flex md:hidden bg-white/85 shadow-lg border border-white/60" id="mobileNavBottom">
+    <!-- ================= MOBIELE NAVIGATIE BALK (ONDERAN) ================= -->
+    <nav class="fixed bottom-0 left-0 right-0 glass-card m-2 p-2 flex justify-around items-center z-30 md:hidden bg-white/85 shadow-lg border border-white/60">
         <button onclick="showSection('order-section')" id="mob-nav-order-section" class="mob-nav-btn flex flex-col items-center p-2 text-[#8e44ad] text-xs font-semibold cursor-pointer">
             <i class="fa-solid fa-cart-plus text-base"></i>
             <span class="text-[10px]">Commander</span>
@@ -404,7 +416,9 @@
         </button>
     </nav>
 
-    <!-- MODALS -->
+    <!-- ================= MODALS & POPUPS ================= -->
+
+    <!-- PRODUKTEN BEHEER MODAL -->
     <div id="productModal" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-md flex items-center justify-center p-4 hidden">
         <div class="glass-card w-full max-w-2xl p-6 rounded-2xl relative max-h-[90vh] overflow-y-auto bg-white/95">
             <div class="flex justify-between items-center pb-4 mb-4 border-b border-purple-900/10">
@@ -464,6 +478,7 @@
         </div>
     </div>
 
+    <!-- INSTELLINGEN MODAL -->
     <div id="settingsModal" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-md flex items-center justify-center p-4 hidden">
         <div class="glass-card w-full max-w-md p-6 rounded-2xl relative space-y-4 bg-white/95">
             <div class="flex justify-between items-center pb-2 border-b border-purple-900/10">
@@ -481,7 +496,7 @@
 
             <div>
                 <label class="block text-xs font-semibold mb-2 text-gray-700">Image d'arrière-plan</label>
-                <input type="file" id="bgInput" accept="image/*" class="w-full glass-input rounded-xl p-2 text-xs cursor-pointer" onchange="handleBgUpload(event)">
+                <input type="file" id="bgInput" accept="image/*" class="w-full glass-input rounded-xl p-2 text-xs cursor-pointer">
             </div>
 
             <button onclick="toggleMaintenanceMode()" class="w-full py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-xs font-bold text-white shadow-md cursor-pointer">
@@ -500,461 +515,553 @@
     </div>
 
     <!-- Notification Toast -->
-    <div id="toastNotification" class="fixed bottom-16 right-5 z-50 bg-emerald-600 text-white font-semibold text-xs px-4 py-3 rounded-xl shadow-xl hidden transition-all">
+    <div id="toastNotification" class="fixed bottom-20 right-5 z-50 bg-emerald-600 text-white font-semibold text-xs px-4 py-3 rounded-xl shadow-xl hidden transition-all">
         <span id="toastText">Opération réussie !</span>
     </div>
 
-    <!-- FIREBASE & APP LOGIC -->
+    <!-- ================= FIREBASE & APP SCRIPT ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getDatabase, ref, push, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyD...",
+            apiKey: "JOUW_API_KEY", 
             authDomain: "cloudstockage-b1580.firebaseapp.com",
             databaseURL: "https://cloudstockage-b1580-default-rtdb.europe-west1.firebasedatabase.app",
             projectId: "cloudstockage-b1580",
             storageBucket: "cloudstockage-b1580.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:abcdef"
+            messagingSenderId: "524333606775",
+            appId: "JOUW_APP_ID"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        window.allProducts = [];
-        window.allOrders = {};
+        let allOrders = [];
+        let allProducts = {};
+        let allIdeas = {};
+        let currentBase64Image = "";
 
-        const connectedRef = ref(db, ".info/connected");
-        onValue(connectedRef, (snap) => {
-            const dot = document.getElementById("statusDot");
-            const text = document.getElementById("statusText");
-            if (snap.val() === true) {
-                dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm";
-                text.textContent = "En ligne";
-            } else {
-                dot.className = "w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm";
-                text.textContent = "Hors ligne";
+        const ADMIN_PIN = "1234";
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const isMaintenanceOn = localStorage.getItem("appMaintenanceMode") === "true";
+            const isAdminUnlocked = sessionStorage.getItem("adminUnlocked") === "true";
+
+            if (isMaintenanceOn && !isAdminUnlocked) {
+                document.getElementById("maintenanceOverlay").style.display = "flex";
             }
         });
 
-        document.getElementById("datum").valueAsDate = new Date();
-
-        window.loadDatabaseData = function() {
-            onValue(ref(db, "products"), (snapshot) => {
-                const data = snapshot.val();
-                window.allProducts = [];
-                let select = document.getElementById("text");
-                let tbody = document.getElementById("productsTableBody");
-                select.innerHTML = '<option value="" data-price="">-- Choisir un produit --</option>';
-                tbody.innerHTML = "";
-
-                if (data) {
-                    Object.keys(data).forEach(key => {
-                        let p = data[key];
-                        p.id = key;
-                        window.allProducts.push(p);
-
-                        let opt = document.createElement("option");
-                        opt.value = p.naam;
-                        opt.setAttribute("data-price", p.prijs);
-                        opt.textContent = `${p.naam} - € ${parseFloat(p.prijs).toFixed(2)} (${p.categorie || 'Autre'})`;
-                        select.appendChild(opt);
-
-                        let tr = document.createElement("tr");
-                        tr.innerHTML = `
-                            <td class="p-3 font-medium text-gray-700">${p.categorie || 'Autre'}</td>
-                            <td class="p-3 text-gray-900">${p.naam}</td>
-                            <td class="p-3 font-semibold text-[#8e44ad]">€ ${parseFloat(p.prijs).toFixed(2)}</td>
-                            <td class="p-3 text-right space-x-2">
-                                <button onclick="editProduct('${key}', '${p.naam}', '${p.prijs}', '${p.categorie || 'Autre'}')" class="text-blue-600 hover:text-blue-800 cursor-pointer"><i class="fa-solid fa-pen"></i></button>
-                                <button onclick="deleteProduct('${key}')" class="text-red-600 hover:text-red-800 cursor-pointer"><i class="fa-solid fa-trash"></i></button>
-                            </td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
-                } else {
-                    tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-500">Aucun produit enregistré.</td></tr>`;
-                }
-            });
-
-            onValue(ref(db, "orders"), (snapshot) => {
-                const data = snapshot.val();
-                window.allOrders = data || {};
-                let listEl = document.getElementById("itemsList");
-                document.getElementById("loadingText").style.display = "none";
-                listEl.innerHTML = "";
-
-                let totalOrders = 0;
-                let totalRevenue = 0;
-
-                if (data) {
-                    Object.keys(data).forEach(id => {
-                        let o = data[id];
-                        totalOrders++;
-                        let subtotal = (parseFloat(o.prijs) || 0) * (parseInt(o.aantal) || 1);
-                        if (o.betaald) totalRevenue += subtotal;
-
-                        let li = document.createElement("li");
-                        li.className = "glass-card p-4 flex flex-wrap justify-between items-center gap-3 bg-white/40";
-                        li.setAttribute("data-search", `${o.naam} ${o.adres} ${o.text}`.toLowerCase());
-                        li.innerHTML = `
-                            <div class="flex items-center gap-3">
-                                <input type="checkbox" class="order-checkbox w-4 h-4 accent-[#8e44ad] rounded cursor-pointer" data-id="${id}" onclick="updateSelectedCount()">
-                                <div>
-                                    <h4 class="font-bold text-sm text-[#8e44ad]">${o.naam}</h4>
-                                    <p class="text-xs text-gray-600"><i class="fa-solid fa-box mr-1"></i> ${o.text} (Qté: ${o.aantal}) • <i class="fa-solid fa-location-dot ml-1"></i> ${o.adres || 'Non spécifiée'}</p>
-                                    <p class="text-[11px] text-gray-500 mt-0.5"><i class="fa-solid fa-calendar mr-1"></i> ${o.datum}</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <div class="text-right">
-                                    <span class="block font-extrabold text-sm text-gray-900">€ ${subtotal.toFixed(2)}</span>
-                                    <span class="text-[10px] px-2 py-0.5 rounded-full font-bold ${o.betaald ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
-                                        ${o.betaald ? 'Payé' : 'En attente'}
-                                    </span>
-                                </div>
-                                <div class="flex items-center gap-1">
-                                    <button onclick="editOrder('${id}')" class="p-2 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-200 cursor-pointer" title="Modifier"><i class="fa-solid fa-pen text-xs"></i></button>
-                                    <button onclick="deleteSingleOrder('${id}')" class="p-2 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 cursor-pointer" title="Supprimer"><i class="fa-solid fa-trash text-xs"></i></button>
-                                </div>
-                            </div>
-                        `;
-                        listEl.appendChild(li);
-                    });
-                } else {
-                    listEl.innerHTML = `<div class="text-center py-8 text-gray-500 text-sm">Aucune commande pour le moment.</div>`;
-                }
-
-                document.getElementById("statTotalOrders").textContent = totalOrders;
-                document.getElementById("statTotalRevenue").textContent = `€ ${totalRevenue.toFixed(2)}`;
-            });
-
-            onValue(ref(db, "ideas"), (snapshot) => {
-                const data = snapshot.val();
-                let container = document.getElementById("ideasContainer");
-                container.innerHTML = "";
-
-                if (data) {
-                    Object.keys(data).forEach(id => {
-                        let item = data[id];
-                        let div = document.createElement("div");
-                        div.className = "bg-white/50 p-4 rounded-xl border border-white/60 space-y-2 shadow-sm";
-                        div.innerHTML = `
-                            <div class="flex justify-between items-start">
-                                <h4 class="font-bold text-sm text-[#8e44ad]">${item.titre}</h4>
-                                <div class="space-x-1">
-                                    <button onclick="editIdea('${id}', '${item.titre}', ${JSON.stringify(item.description || '')})" class="text-blue-600 hover:text-blue-800 text-xs cursor-pointer"><i class="fa-solid fa-pen"></i></button>
-                                    <button onclick="deleteIdea('${id}')" class="text-red-600 hover:text-red-800 text-xs cursor-pointer"><i class="fa-solid fa-trash"></i></button>
-                                </div>
-                            </div>
-                            <p class="text-xs text-gray-700 leading-relaxed">${item.description || ''}</p>
-                            ${item.photo ? `<img src="${item.photo}" class="w-full h-32 object-cover rounded-lg cursor-pointer mt-2" onclick="openLightbox('${item.photo}')">` : ''}
-                        `;
-                        container.appendChild(div);
-                    });
-                } else {
-                    container.innerHTML = `<div class="text-center py-6 text-gray-500 text-sm">Aucune idée enregistrée.</div>`;
-                }
-            });
-        };
-
-        loadDatabaseData();
-
-        window.calculateTotal = function() {
-            let qty = parseFloat(document.getElementById("aantal").value) || 0;
-            let price = parseFloat(document.getElementById("prijs").value) || 0;
-            document.getElementById("totalAmount").textContent = (qty * price).toFixed(2);
-        };
-
-        window.updateDefaultPrice = function() {
-            let select = document.getElementById("text");
-            let selectedOpt = select.options[select.selectedIndex];
-            let price = selectedOpt.getAttribute("data-price");
-            if (price) {
-                document.getElementById("prijs").value = price;
-                calculateTotal();
+        window.requestAdminAccess = function() {
+            const enteredPin = prompt("Entrez le code secret administrateur :");
+            if (enteredPin === ADMIN_PIN) {
+                sessionStorage.setItem("adminUnlocked", "true");
+                document.getElementById("maintenanceOverlay").style.display = "none";
+                showToast("Accès administrateur autorisé !");
+            } else if (enteredPin !== null) {
+                alert("Code secret incorrect !");
             }
         };
 
-        document.getElementById("orderForm").addEventListener("submit", function(e) {
-            e.preventDefault();
-            let editId = document.getElementById("editOrderId").value;
-            let orderData = {
-                naam: document.getElementById("naam").value,
-                adres: document.getElementById("adres").value,
-                text: document.getElementById("text").value,
-                aantal: document.getElementById("aantal").value,
-                prijs: document.getElementById("prijs").value,
-                datum: document.getElementById("datum").value,
-                betaald: document.getElementById("betaald").checked
-            };
-
-            if (editId) {
-                set(ref(db, `orders/${editId}`), orderData).then(() => {
-                    showToast("Commande mise à jour avec succès !");
-                    clearFormDraft();
-                });
+        window.toggleMaintenanceMode = function() {
+            const current = localStorage.getItem("appMaintenanceMode") === "true";
+            if (!current) {
+                const pin = prompt("Entrez le code secret pour activer la maintenance :");
+                if (pin !== ADMIN_PIN) {
+                    if (pin !== null) alert("Code incorrect !");
+                    return;
+                }
+                localStorage.setItem("appMaintenanceMode", "true");
+                sessionStorage.removeItem("adminUnlocked");
+                document.getElementById("maintenanceOverlay").style.display = "flex";
+                showToast("Mode maintenance activé.");
             } else {
-                push(ref(db, "orders"), orderData).then(() => {
-                    showToast("Nouvelle commande enregistrée !");
-                    clearFormDraft();
-                });
+                localStorage.setItem("appMaintenanceMode", "false");
+                sessionStorage.setItem("adminUnlocked", "true");
+                document.getElementById("maintenanceOverlay").style.display = "none";
+                showToast("Mode maintenance désactivé.");
             }
-        });
-
-        window.clearFormDraft = function() {
-            document.getElementById("orderForm").reset();
-            document.getElementById("editOrderId").value = "";
-            document.getElementById("formSectionTitle").innerHTML = `<i class="fa-solid fa-plus-circle"></i> Nouvelle Commande`;
-            document.getElementById("datum").valueAsDate = new Date();
-            document.getElementById("totalAmount").textContent = "0.00";
-            document.getElementById("formCardContainer").classList.remove("editing-mode");
-        };
-
-        window.editOrder = function(id) {
-            let o = window.allOrders[id];
-            if (!o) return;
-            document.getElementById("editOrderId").value = id;
-            document.getElementById("naam").value = o.naam || "";
-            document.getElementById("adres").value = o.adres || "";
-            document.getElementById("text").value = o.text || "";
-            document.getElementById("aantal").value = o.aantal || 1;
-            document.getElementById("prijs").value = o.prijs || 0;
-            document.getElementById("datum").value = o.datum || "";
-            document.getElementById("betaald").checked = !!o.betaald;
-            calculateTotal();
-
-            document.getElementById("formSectionTitle").innerHTML = `<i class="fa-solid fa-pen"></i> Modifier Commande (#${id.slice(-4)})`;
-            document.getElementById("formCardContainer").classList.add("editing-mode");
-            showSection('order-section');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        };
-
-        window.deleteSingleOrder = function(id) {
-            if (confirm("Voulez-vous vraiment supprimer cette commande ?")) {
-                remove(ref(db, `orders/${id}`)).then(() => showToast("Commande supprimée."));
-            }
-        };
-
-        document.getElementById("productForm").addEventListener("submit", function(e) {
-            e.preventDefault();
-            let editId = document.getElementById("editProductId").value;
-            let pData = {
-                categorie: document.getElementById("categorieSelect").value,
-                naam: document.getElementById("productNaam").value,
-                prijs: parseFloat(document.getElementById("productPrijs").value) || 0
-            };
-
-            if (editId) {
-                set(ref(db, `products/${editId}`), pData).then(() => {
-                    showToast("Produit mis à jour !");
-                    document.getElementById("productForm").reset();
-                    document.getElementById("editProductId").value = "";
-                });
-            } else {
-                push(ref(db, "products"), pData).then(() => {
-                    showToast("Produit ajouté !");
-                    document.getElementById("productForm").reset();
-                });
-            }
-        });
-
-        window.editProduct = function(id, naam, prijs, cat) {
-            document.getElementById("editProductId").value = id;
-            document.getElementById("productNaam").value = naam;
-            document.getElementById("productPrijs").value = prijs;
-            document.getElementById("categorieSelect").value = cat;
-        };
-
-        window.deleteProduct = function(id) {
-            if (confirm("Supprimer ce produit ?")) {
-                remove(ref(db, `products/${id}`)).then(() => showToast("Produit supprimé."));
-            }
-        };
-
-        window.addNewCategoryPrompt = function() {
-            let cat = prompt("Nom de la nouvelle catégorie :");
-            if (cat && cat.trim() !== "") {
-                let select = document.getElementById("categorieSelect");
-                let opt = document.createElement("option");
-                opt.value = cat.trim();
-                opt.textContent = cat.trim();
-                select.appendChild(opt);
-                select.value = cat.trim();
-            }
-        };
-
-        document.getElementById("ideaForm").addEventListener("submit", function(e) {
-            e.preventDefault();
-            let editId = document.getElementById("editIdeaId").value;
-            let titre = document.getElementById("ideaTitre").value;
-            let desc = document.getElementById("ideaDescription").value;
-            let fileInput = document.getElementById("ideaPhoto");
-
-            const saveIdea = (photoUrl = "") => {
-                let ideaData = { titre, description: desc, photo: photoUrl };
-                if (editId) {
-                    update(ref(db, `ideas/${editId}`), ideaData).then(() => {
-                        showToast("Idée mise à jour !");
-                        document.getElementById("ideaForm").reset();
-                        document.getElementById("editIdeaId").value = "";
-                    });
-                } else {
-                    push(ref(db, "ideas"), ideaData).then(() => {
-                        showToast("Idée enregistrée !");
-                        document.getElementById("ideaForm").reset();
-                    });
-                }
-            };
-
-            if (fileInput.files && fileInput.files[0]) {
-                let reader = new FileReader();
-                reader.onload = function(e) { saveIdea(e.target.result); };
-                reader.readAsDataURL(fileInput.files[0]);
-            } else {
-                saveIdea();
-            }
-        });
-
-        window.deleteIdea = function(id) {
-            if (confirm("Supprimer cette idée ?")) {
-                remove(ref(db, `ideas/${id}`)).then(() => showToast("Idée supprimée."));
-            }
+            closeSettingsModal();
         };
 
         window.showSection = function(sectionId) {
-            document.querySelectorAll(".dashboard-section").forEach(sec => sec.classList.add("hidden"));
-            document.getElementById(sectionId).classList.remove("hidden");
+            document.querySelectorAll('.dashboard-section').forEach(sec => sec.classList.add('hidden'));
+            document.getElementById(sectionId).classList.remove('hidden');
 
-            document.querySelectorAll(".nav-btn").forEach(btn => {
-                btn.className = "nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm text-gray-700 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer";
+            // PC Nav active update
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-[#8e44ad]/15', 'text-[#8e44ad]', 'shadow-sm');
+                btn.classList.add('text-gray-700');
             });
-            let activeNav = document.getElementById(`nav-${sectionId}`);
-            if (activeNav) activeNav.className = "nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all bg-[#8e44ad]/15 text-[#8e44ad] shadow-sm cursor-pointer";
+            const activeBtn = document.getElementById(`nav-${sectionId}`);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-[#8e44ad]/15', 'text-[#8e44ad]', 'shadow-sm');
+                activeBtn.classList.remove('text-gray-700');
+            }
 
-            document.querySelectorAll(".mob-nav-btn").forEach(btn => {
-                btn.className = "mob-nav-btn flex flex-col items-center p-2 text-gray-600 text-xs font-semibold cursor-pointer";
+            // Mobile Nav active update
+            document.querySelectorAll('.mob-nav-btn').forEach(btn => {
+                btn.classList.remove('text-[#8e44ad]');
+                btn.classList.add('text-gray-600');
             });
-            let activeMobNav = document.getElementById(`mob-nav-${sectionId}`);
-            if (activeMobNav) activeMobNav.className = "mob-nav-btn flex flex-col items-center p-2 text-[#8e44ad] text-xs font-semibold cursor-pointer";
+            const activeMobBtn = document.getElementById(`mob-nav-${sectionId}`);
+            if (activeMobBtn) {
+                activeMobBtn.classList.add('text-[#8e44ad]');
+                activeMobBtn.classList.remove('text-gray-600');
+            }
+        };
+
+        const connectedRef = ref(db, ".info/connected");
+        onValue(connectedRef, (snap) => {
+            const statusDot = document.getElementById("statusDot");
+            const statusText = document.getElementById("statusText");
+            if (snap.val() === true) {
+                statusDot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm animate-pulse";
+                statusText.textContent = "En ligne";
+                statusText.className = "text-xs text-emerald-700 font-medium";
+            } else {
+                statusDot.className = "w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm";
+                statusText.textContent = "Hors ligne";
+                statusText.className = "text-xs text-gray-600 font-medium";
+            }
+        });
+
+        window.updateOpacity = function(val) {
+            document.documentElement.style.setProperty('--glass-bg', `rgba(255, 255, 255, ${val})`);
+            document.getElementById('opacityVal').textContent = Math.round(val * 100) + "%";
+            localStorage.setItem("appGlassOpacity", val);
+        };
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const savedBg = localStorage.getItem("customAppBackground");
+            if (savedBg) applyBackground(savedBg);
+
+            const savedOpacity = localStorage.getItem("appGlassOpacity") || "0.20";
+            document.getElementById("opacitySlider").value = savedOpacity;
+            updateOpacity(savedOpacity);
+
+            document.getElementById("datum").value = new Date().toISOString().split('T')[0];
+            loadCustomCategories();
+        });
+
+        function applyBackground(dataUrl) {
+            document.body.style.backgroundImage = `url('${dataUrl}')`;
+            document.body.style.backgroundSize = "cover";
+            document.body.style.backgroundPosition = "center";
+            document.body.style.backgroundAttachment = "fixed";
+        }
+
+        window.removeCustomBackground = function() {
+            localStorage.removeItem("customAppBackground");
+            document.body.style.backgroundImage = "none";
+            document.body.style.backgroundColor = "#fbeef7";
+            closeSettingsModal();
         };
 
         window.openProductModal = () => document.getElementById("productModal").classList.remove("hidden");
         window.closeProductModal = () => document.getElementById("productModal").classList.add("hidden");
         window.openSettingsModal = () => document.getElementById("settingsModal").classList.remove("hidden");
         window.closeSettingsModal = () => document.getElementById("settingsModal").classList.add("hidden");
+        window.closeLightbox = () => document.getElementById("lightboxModal").classList.add("hidden");
+
+        window.showToast = function(msg) {
+            const toast = document.getElementById("toastNotification");
+            document.getElementById("toastText").textContent = msg;
+            toast.classList.remove("hidden");
+            setTimeout(() => toast.classList.add("hidden"), 3500);
+        };
+
+        function loadCustomCategories() {
+            const customCats = JSON.parse(localStorage.getItem("customCategories") || "[]");
+            const select = document.getElementById("categorieSelect");
+            customCats.forEach(cat => {
+                if (!select.querySelector(`option[value="${cat}"]`)) {
+                    select.add(new Option(cat, cat));
+                }
+            });
+        }
+
+        window.addNewCategoryPrompt = function() {
+            const newCat = prompt("Entrez la nouvelle catégorie :");
+            if (newCat && newCat.trim()) {
+                const clean = newCat.trim();
+                const select = document.getElementById("categorieSelect");
+                select.add(new Option(clean, clean));
+                select.value = clean;
+
+                const customCats = JSON.parse(localStorage.getItem("customCategories") || "[]");
+                customCats.push(clean);
+                localStorage.setItem("customCategories", JSON.stringify(customCats));
+            }
+        };
+
+        const productsRef = ref(db, 'products');
+        onValue(productsRef, (snapshot) => {
+            const selectMenu = document.getElementById("text");
+            const tableBody = document.getElementById("productsTableBody");
+
+            selectMenu.innerHTML = '<option value="" data-price="">-- Sélectionner un produit --</option>';
+            tableBody.innerHTML = '';
+
+            if (snapshot.exists()) {
+                allProducts = snapshot.val();
+                const categories = {};
+
+                Object.keys(allProducts).forEach(key => {
+                    const item = allProducts[key];
+                    const cat = item.categorie || "Autre";
+                    if (!categories[cat]) categories[cat] = [];
+                    categories[cat].push({ id: key, ...item });
+                });
+
+                Object.keys(categories).sort().forEach(catName => {
+                    const optGroup = document.createElement("optgroup");
+                    optGroup.label = catName;
+
+                    categories[catName].forEach(prod => {
+                        const option = document.createElement("option");
+                        option.value = prod.naam;
+                        option.setAttribute("data-price", prod.prijs);
+                        option.textContent = `${prod.naam} - ${parseFloat(prod.prijs).toFixed(2)} €`;
+                        optGroup.appendChild(option);
+
+                        const tr = document.createElement("tr");
+                        tr.innerHTML = `
+                            <td class="p-3"><span class="bg-[#8e44ad]/10 px-2 py-1 rounded text-[#8e44ad] font-semibold">${escapeHtml(prod.categorie || 'Autre')}</span></td>
+                            <td class="p-3 font-semibold text-gray-800">${escapeHtml(prod.naam)}</td>
+                            <td class="p-3 text-emerald-600 font-bold">${parseFloat(prod.prijs).toFixed(2)} €</td>
+                            <td class="p-3 text-right">
+                                <button onclick="deleteProductFromDb('${prod.id}')" class="text-red-500 hover:text-red-700 cursor-pointer"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        `;
+                        tableBody.appendChild(tr);
+                    });
+                    selectMenu.appendChild(optGroup);
+                });
+            } else {
+                selectMenu.innerHTML = '<option value="" data-price="">-- Aucun produit trouvé --</option>';
+                tableBody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500">Aucun produit</td></tr>';
+            }
+        });
+
+        document.getElementById("productForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const cat = document.getElementById("categorieSelect").value;
+            const naam = document.getElementById("productNaam").value.trim();
+            const prijs = parseFloat(document.getElementById("productPrijs").value) || 0;
+
+            try {
+                await set(push(ref(db, 'products')), {
+                    categorie: cat,
+                    naam: naam,
+                    prijs: prijs,
+                    timestamp: Date.now()
+                });
+                showToast("Produit ajouté avec succès !");
+                document.getElementById("productForm").reset();
+            } catch (err) {
+                alert("Erreur: " + err.message);
+            }
+        });
+
+        window.deleteProductFromDb = async function(id) {
+            if (confirm("Voulez-vous supprimer ce produit ?")) {
+                await remove(ref(db, `products/${id}`));
+                showToast("Produit supprimé !");
+            }
+        };
+
+        window.updateDefaultPrice = function() {
+            const select = document.getElementById("text");
+            const selectedOpt = select.options[select.selectedIndex];
+            const price = selectedOpt.getAttribute("data-price");
+            if (price) {
+                document.getElementById("prijs").value = price;
+                calculateTotal();
+            }
+        };
+
+        window.calculateTotal = function() {
+            const aantal = parseInt(document.getElementById("aantal").value) || 0;
+            const prijs = parseFloat(document.getElementById("prijs").value) || 0;
+            document.getElementById("totalAmount").textContent = (aantal * prijs).toFixed(2);
+        };
+
+        window.clearFormDraft = function() {
+            document.getElementById("orderForm").reset();
+            document.getElementById("editOrderId").value = "";
+            document.getElementById("datum").value = new Date().toISOString().split('T')[0];
+            document.getElementById("totalAmount").textContent = "0.00";
+            document.getElementById("formSectionTitle").innerHTML = '<i class="fa-solid fa-plus-circle"></i> Nouvelle Commande';
+            document.getElementById("submitBtn").textContent = "Enregistrer la commande";
+            document.getElementById("formCardContainer").classList.remove("editing-mode");
+        };
+
+        window.editOrder = function(id) {
+            const order = allOrders.find(o => o.id === id);
+            if (!order) return;
+
+            document.getElementById("editOrderId").value = order.id;
+            document.getElementById("naam").value = order.naam || "";
+            document.getElementById("adres").value = order.adres || "";
+            document.getElementById("text").value = order.text || "";
+            document.getElementById("aantal").value = order.aantal || 1;
+            document.getElementById("prijs").value = order.prijs || 0;
+            document.getElementById("datum").value = order.datum || new Date().toISOString().split('T')[0];
+            document.getElementById("betaald").checked = !!order.betaald;
+
+            calculateTotal();
+            document.getElementById("formSectionTitle").innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Modifier la commande';
+            document.getElementById("submitBtn").textContent = "Mettre à jour la commande";
+            document.getElementById("formCardContainer").classList.add("editing-mode");
+
+            showSection('order-section');
+        };
+
+        document.getElementById("orderForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const text = document.getElementById("text").value;
+            if (!text) {
+                alert("Veuillez sélectionner un produit.");
+                return;
+            }
+
+            const editId = document.getElementById("editOrderId").value;
+            const orderData = {
+                naam: document.getElementById("naam").value.trim(),
+                adres: document.getElementById("adres").value.trim(),
+                text: text,
+                aantal: parseInt(document.getElementById("aantal").value) || 1,
+                prijs: parseFloat(document.getElementById("prijs").value) || 0,
+                datum: document.getElementById("datum").value,
+                betaald: document.getElementById("betaald").checked,
+                terugbetaald: false,
+                timestamp: Date.now()
+            };
+
+            try {
+                if (editId) {
+                    await update(ref(db, `items/${editId}`), orderData);
+                    showToast("Commande mise à jour avec succès !");
+                } else {
+                    await set(push(ref(db, 'items')), orderData);
+                    showToast("Commande enregistrée avec succès !");
+                }
+                clearFormDraft();
+                showSection('list-section');
+            } catch (err) {
+                alert("Erreur lors de l'enregistrement: " + err.message);
+            }
+        });
+
+        const itemsRef = ref(db, 'items');
+        onValue(itemsRef, (snapshot) => {
+            document.getElementById("loadingText").style.display = "none";
+            const data = snapshot.val();
+            
+            if (!data) {
+                allOrders = [];
+            } else {
+                allOrders = Object.keys(data).map(key => ({
+                    id: key,
+                    ...data[key]
+                })).reverse();
+            }
+
+            updateDashboardStats();
+            filterItems();
+        });
+
+        function updateDashboardStats() {
+            document.getElementById("statTotalOrders").textContent = allOrders.length;
+            const totalRevenue = allOrders.reduce((sum, item) => sum + ((item.aantal || 1) * (item.prijs || 0)), 0);
+            document.getElementById("statTotalRevenue").textContent = "€ " + totalRevenue.toFixed(2);
+        }
+
+        window.filterItems = function() {
+            const query = document.getElementById("searchInput").value.toLowerCase();
+            const filtered = allOrders.filter(item => 
+                (item.naam || '').toLowerCase().includes(query) ||
+                (item.adres || '').toLowerCase().includes(query) ||
+                (item.text || '').toLowerCase().includes(query)
+            );
+            renderList(filtered);
+        };
+
+        function renderList(items) {
+            const list = document.getElementById("itemsList");
+            list.innerHTML = '';
+
+            if (items.length === 0) {
+                list.innerHTML = '<li class="text-center py-6 text-gray-500">Aucune commande trouvée</li>';
+                return;
+            }
+
+            items.forEach((item) => {
+                const li = document.createElement("li");
+                li.className = 'glass-card p-4 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm';
+
+                const total = ((item.aantal || 1) * (item.prijs || 0)).toFixed(2);
+                const statusPaid = item.betaald ? '<span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-700 border border-emerald-400/30 font-bold text-[10px]">Payé</span>' : '<span class="px-2 py-0.5 rounded bg-red-500/20 text-red-700 border border-red-400/30 font-bold text-[10px]">Non Payé</span>';
+
+                li.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" class="item-checkbox w-4 h-4 accent-[#8e44ad] rounded cursor-pointer" value="${item.id}" onchange="updateSelectionUI()">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h4 class="font-bold text-gray-900 text-base">${escapeHtml(item.naam || 'Inconnu')}</h4>
+                                ${statusPaid}
+                            </div>
+                            <p class="text-xs text-[#8e44ad] font-medium mt-0.5">${escapeHtml(item.text || '')}</p>
+                            ${item.adres ? `<p class="text-xs text-gray-600">📍 ${escapeHtml(item.adres)}</p>` : ''}
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 w-full md:w-auto justify-between border-t md:border-0 border-purple-900/10 pt-2 md:pt-0">
+                        <div class="text-right">
+                            <span class="text-xs text-gray-500 block">${item.aantal || 1}x €${parseFloat(item.prijs || 0).toFixed(2)}</span>
+                            <span class="text-base font-extrabold text-emerald-600">€ ${total}</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="editOrder('${item.id}')" class="p-2 rounded-lg bg-[#8e44ad]/10 text-[#8e44ad] hover:bg-[#8e44ad] hover:text-white transition-all text-xs cursor-pointer" title="Modifier">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button onclick="deleteItem('${item.id}')" class="p-2 rounded-lg bg-red-500/10 text-red-600 hover:bg-red-500 hover:text-white transition-all text-xs cursor-pointer" title="Supprimer">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        window.toggleSelectAll = function(source) {
+            document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = source.checked);
+            updateSelectionUI();
+        };
+
+        window.updateSelectionUI = function() {
+            const selected = document.querySelectorAll('.item-checkbox:checked');
+            const deleteBtn = document.getElementById('deleteSelectedBtn');
+            const countSpan = document.getElementById('selectedCount');
+
+            if (selected.length > 0) {
+                deleteBtn.classList.remove('hidden');
+                countSpan.textContent = selected.length;
+            } else {
+                deleteBtn.classList.add('hidden');
+            }
+        };
+
+        window.deleteSelected = async function() {
+            const selected = document.querySelectorAll('.item-checkbox:checked');
+            if (confirm(`Supprimer les ${selected.length} commandes sélectionnées ?`)) {
+                const updates = {};
+                selected.forEach(cb => updates[`items/${cb.value}`] = null);
+                await update(ref(db), updates);
+                showToast("Commandes supprimées !");
+            }
+        };
+
+        window.deleteItem = async function(id) {
+            if (confirm("Supprimer définitivement cette commande ?")) {
+                await remove(ref(db, `items/${id}`));
+                showToast("Commande supprimée !");
+            }
+        };
+
+        window.exportToPDF = function() {
+            const element = document.getElementById('pdfContent');
+            const options = {
+                margin: 10,
+                filename: 'Au_bonheur_des_Anges_Commandes.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(options).from(element).save();
+        };
+
+        window.shareList = async function() {
+            if (navigator.share) {
+                await navigator.share({ title: 'Au bonheur des Anges', url: window.location.href });
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                showToast("Lien copié !");
+            }
+        };
+
+        const ideasRef = ref(db, 'ideas');
+        onValue(ideasRef, (snapshot) => {
+            const container = document.getElementById("ideasContainer");
+            container.innerHTML = "";
+
+            if (snapshot.exists()) {
+                allIdeas = snapshot.val();
+                Object.keys(allIdeas).reverse().forEach(id => {
+                    const item = allIdeas[id];
+                    const div = document.createElement("div");
+                    div.className = "glass-card p-4 rounded-xl flex flex-col gap-2 shadow-sm";
+                    div.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-bold text-gray-900 text-sm">${escapeHtml(item.titre || 'Sans titre')}</h4>
+                            <button onclick="deleteIdea('${id}')" class="text-xs text-red-600 hover:text-red-800 cursor-pointer"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                        ${item.description ? `<p class="text-xs text-gray-700">${escapeHtml(item.description)}</p>` : ''}
+                        ${item.image ? `<img src="${item.image}" class="h-32 object-cover rounded-lg cursor-pointer mt-2 border border-white/60" onclick="openLightbox('${item.image}')">` : ''}
+                    `;
+                    container.appendChild(div);
+                });
+            } else {
+                container.innerHTML = '<div class="text-center py-6 text-gray-500">Aucune idée enregistrée</div>';
+            }
+        });
+
+        document.getElementById("ideaForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const titre = document.getElementById("ideaTitre").value.trim();
+            const desc = document.getElementById("ideaDescription").value.trim();
+
+            try {
+                await set(push(ideasRef), {
+                    titre: titre,
+                    description: desc,
+                    image: currentBase64Image || "",
+                    timestamp: Date.now()
+                });
+                showToast("Nouvelle idée enregistrée !");
+                document.getElementById("ideaForm").reset();
+                currentBase64Image = "";
+            } catch (err) {
+                alert("Erreur: " + err.message);
+            }
+        });
+
+        document.getElementById("ideaPhoto").addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => currentBase64Image = event.target.result;
+                reader.readAsDataURL(file);
+            }
+        });
+
+        window.deleteIdea = async function(id) {
+            if (confirm("Supprimer cette idée ?")) {
+                await remove(ref(db, `ideas/${id}`));
+                showToast("Idée supprimée !");
+            }
+        };
 
         window.openLightbox = function(src) {
             document.getElementById("lightboxImage").src = src;
             document.getElementById("lightboxModal").classList.remove("hidden");
         };
-        window.closeLightbox = () => document.getElementById("lightboxModal").classList.add("hidden");
 
-        window.showToast = function(msg) {
-            let toast = document.getElementById("toastNotification");
-            document.getElementById("toastText").textContent = msg;
-            toast.classList.remove("hidden");
-            setTimeout(() => toast.classList.add("hidden"), 3000);
-        };
-
-        window.updateOpacity = function(val) {
-            document.getElementById("opacityVal").textContent = `${Math.round(val * 100)}%`;
-            document.documentElement.style.setProperty('--glass-bg', `rgba(255, 255, 255, ${val})`);
-        };
-
-        window.handleBgUpload = function(e) {
-            if (e.target.files && e.target.files[0]) {
-                let reader = new FileReader();
-                reader.onload = function(evt) {
-                    document.body.style.backgroundImage = `url('${evt.target.result}')`;
-                    document.body.style.backgroundSize = "cover";
-                    document.body.style.backgroundPosition = "center";
-                    showToast("Arrière-plan mis à jour !");
-                };
-                reader.readAsDataURL(e.target.files[0]);
-            }
-        };
-
-        window.removeCustomBackground = function() {
-            document.body.style.backgroundImage = "none";
-            showToast("Arrière-plan réinitialisé.");
-        };
-
-        window.toggleMaintenanceMode = function() {
-            let overlay = document.getElementById("maintenanceOverlay");
-            overlay.style.display = overlay.style.display === "none" ? "flex" : "none";
-        };
-
-        window.requestAdminAccess = function() {
-            let code = prompt("Entrez le code administrateur :");
-            if (code === "1234") {
-                document.getElementById("maintenanceOverlay").style.display = "none";
-                showToast("Accès administrateur accordé !");
-            } else if (code !== null) {
-                alert("Code incorrect.");
-            }
-        };
-
-        window.filterItems = function() {
-            let query = document.getElementById("searchInput").value.toLowerCase();
-            document.querySelectorAll("#itemsList li").forEach(li => {
-                let text = li.getAttribute("data-search") || "";
-                li.style.display = text.includes(query) ? "flex" : "none";
-            });
-        };
-
-        window.toggleSelectAll = function(master) {
-            document.querySelectorAll(".order-checkbox").forEach(cb => cb.checked = master.checked);
-            updateSelectedCount();
-        };
-
-        window.updateSelectedCount = function() {
-            let checked = document.querySelectorAll(".order-checkbox:checked");
-            let btn = document.getElementById("deleteSelectedBtn");
-            document.getElementById("selectedCount").textContent = checked.length;
-            if (checked.length > 0) btn.classList.remove("hidden");
-            else btn.classList.add("hidden");
-        };
-
-        window.deleteSelected = function() {
-            let checked = document.querySelectorAll(".order-checkbox:checked");
-            if (checked.length > 0 && confirm(`Voulez-vous supprimer ces ${checked.length} commandes ?`)) {
-                let promises = [];
-                checked.forEach(cb => {
-                    let id = cb.getAttribute("data-id");
-                    promises.push(remove(ref(db, `orders/${id}`)));
-                });
-                Promise.all(promises).then(() => {
-                    showToast("Commandes sélectionnées supprimées.");
-                    document.getElementById("selectAllCheckbox").checked = false;
-                    document.getElementById("deleteSelectedBtn").classList.add("hidden");
-                });
-            }
-        };
-
-        window.exportToPDF = function() {
-            let element = document.getElementById("pdfContent");
-            let opt = {
-                margin: 10,
-                filename: 'commandes-au-bonheur-des-anges.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            html2pdf().from(element).set(opt).save();
-        };
-
-        window.shareList = function() {
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Au Bonheur Des Anges - Commandes',
-                    text: 'Voici la liste actuelle des commandes de la boutique.'
-                }).catch(console.error);
-            } else {
-                alert("Le partage natif n'est pas pris en charge par votre navigateur.");
-            }
-        };
+        function escapeHtml(str) {
+            return str ? str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;") : '';
+        }
     </script>
 </body>
 </html>
