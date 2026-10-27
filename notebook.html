@@ -634,6 +634,20 @@
     let allPhotosSelected = false;
     let currentBase64Image = "";
 
+    function escapeHtml(text) {
+        if (!text) return "";
+        return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(0, "&#039;");
+    }
+
+    function showMessage(msg) {
+        const alertBox = document.getElementById("alertSuccess");
+        alertBox.textContent = "✓ " + msg;
+        alertBox.style.display = "block";
+        setTimeout(() => {
+            alertBox.style.display = "none";
+        }, 3000);
+    }
+
     // Convert file naar Base64
     const photoInput = document.getElementById("ideaPhoto");
     photoInput.addEventListener("change", (e) => {
@@ -689,13 +703,13 @@
         }
     });
 
-    // Lightbox functies
+    // Lightbox functies corrigées
     window.openLightbox = function(src, title) {
         const modal = document.getElementById("lightboxModal");
         const img = document.getElementById("lightboxImage");
         const caption = document.getElementById("lightboxCaption");
         img.src = src;
-        caption.textContent = title || "";
+        caption.textContent = title && title !== "undefined" ? title : "";
         modal.classList.add("active");
     };
 
@@ -753,7 +767,7 @@
                     <span class="idea-date">${dateStr}</span>
                 </div>
                 ${description ? `<div class="idea-content">${escapeHtml(description)}</div>` : ''}
-                ${item.image ? `<img src="${item.image}" class="idea-image" alt="${escapeHtml(titre)}" onclick="window.openLightbox('${item.image}', '${escapeHtml(titre)}')">` : ''}
+                ${item.image ? `<img src="${item.image}" class="idea-image" alt="${escapeHtml(titre)}">` : ''}
                 <div class="idea-actions">
                     <button class="btn-action btn-confirm ${isConfirmed ? 'active' : ''}" data-id="${id}">
                         ${isConfirmed ? '✓ Confirmé' : '✓ Confirmer'}
@@ -762,6 +776,14 @@
                     <button class="btn-action btn-delete" data-id="${id}">🗑️ Supprimer</button>
                 </div>
             `;
+
+            // Ajout sécurisé des écouteurs d'événements pour l'image
+            const imgEl = div.querySelector('.idea-image');
+            if (imgEl) {
+                imgEl.addEventListener('click', () => {
+                    window.openLightbox(item.image, titre);
+                });
+            }
 
             div.querySelector('.btn-confirm').addEventListener('click', () => {
                 window.toggleConfirm(id, !isConfirmed);
@@ -777,7 +799,7 @@
         });
     };
 
-    // 3. RENDER FOTOGALERIJ
+    // 3. RENDER FOTOGALERIJ (Corrigé avec écouteur d'événements propre)
     window.renderPhotos = function() {
         const photoContainer = document.getElementById("photosContainer");
         photoContainer.innerHTML = "";
@@ -797,9 +819,16 @@
                 photoCard.className = "photo-card-item";
                 photoCard.innerHTML = `
                     <input type="checkbox" class="photo-select-checkbox" data-id="${id}">
-                    <img src="${item.image}" class="photo-thumb" alt="${escapeHtml(titre)}" onclick="window.openLightbox('${item.image}', '${escapeHtml(titre)}')">
+                    <img src="${item.image}" class="photo-thumb" alt="${escapeHtml(titre)}">
                     <div class="photo-title-caption">${escapeHtml(titre)}</div>
                 `;
+
+                // Attacher l'événement click proprement pour ouvrir la lightbox
+                const thumbImg = photoCard.querySelector('.photo-thumb');
+                thumbImg.addEventListener('click', () => {
+                    window.openLightbox(item.image, titre);
+                });
+
                 photoContainer.appendChild(photoCard);
             }
         });
@@ -876,6 +905,37 @@
         }
     };
 
+    window.deleteIdea = async function(id) {
+        if (confirm("Voulez-vous vraiment supprimer cette idée ?")) {
+            try {
+                await remove(ref(db, `ideas/${id}`));
+                showMessage("Idée supprimée !");
+            } catch (error) {
+                alert("Erreur: " + error.message);
+            }
+        }
+    };
+
+    window.editIdea = function(id, titre, description, image) {
+        document.getElementById("editIdeaId").value = id;
+        document.getElementById("ideaTitre").value = titre;
+        document.getElementById("ideaDescription").value = description;
+        document.getElementById("formTitle").textContent = "Modifier l'idée";
+        document.getElementById("submitBtn").textContent = "Mettre à jour";
+        document.getElementById("cancelBtn").style.display = "block";
+        currentBase64Image = image;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    window.resetForm = function() {
+        document.getElementById("ideaForm").reset();
+        document.getElementById("editIdeaId").value = "";
+        document.getElementById("formTitle").textContent = "Nouvelle Idée";
+        document.getElementById("submitBtn").textContent = "Enregistrer l'idée";
+        document.getElementById("cancelBtn").style.display = "none";
+        currentBase64Image = "";
+    };
+
     window.exportSelectedToPDF = function() {
         const checkboxes = document.querySelectorAll('.select-checkbox:checked');
         let idsToExport = Array.from(checkboxes).map(cb => cb.getAttribute('data-id'));
@@ -934,7 +994,7 @@
         });
     };
 
-    // 8. FORM SUBMIT (Inclusief correct opslaan van de foto naar Firebase)
+    // FORM SUBMIT
     const form = document.getElementById("ideaForm");
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -948,80 +1008,35 @@
 
         try {
             if (editId) {
-                const updatePayload = {
+                const updateData = {
                     titre: titre,
-                    description: description,
-                    isPhotoOnly: false
+                    description: description
                 };
                 if (currentBase64Image) {
-                    updatePayload.image = currentBase64Image;
+                    updateData.image = currentBase64Image;
                 }
-                await update(ref(db, `ideas/${editId}`), updatePayload);
+                await update(ref(db, `ideas/${editId}`), updateData);
                 showMessage("Idée mise à jour avec succès !");
             } else {
-                const newRef = push(ideasRef);
+                const newRef = push(ref(db, 'ideas'));
                 await set(newRef, {
                     titre: titre,
                     description: description,
-                    image: currentBase64Image || "", // Foto wordt nu correct opgeslagen!
+                    image: currentBase64Image || "",
                     isPhotoOnly: false,
                     confirmed: false,
                     timestamp: Date.now()
                 });
-                showMessage("Nouvelle idée ajoutée !");
+                showMessage("Idée enregistrée avec succès !");
             }
-
             window.resetForm();
         } catch (error) {
-            alert("Erreur: " + error.message);
+            alert("Erreur lors de l'enregistrement : " + error.message);
         } finally {
             submitBtn.disabled = false;
         }
     });
-
-    window.editIdea = function(id, titre, description, image) {
-        document.getElementById("editIdeaId").value = id;
-        document.getElementById("ideaTitre").value = titre;
-        document.getElementById("ideaDescription").value = description;
-        currentBase64Image = image || "";
-
-        document.getElementById("formTitle").textContent = "Modifier l'Idée";
-        document.getElementById("submitBtn").textContent = "Mettre à jour l'idée";
-        document.getElementById("cancelBtn").style.display = "block";
-
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    window.deleteIdea = async function(id) {
-        if (confirm("Voulez-vous vraiment supprimer cette idée ?")) {
-            try {
-                await remove(ref(db, `ideas/${id}`));
-                showMessage("Idée supprimée !");
-            } catch (error) {
-                alert("Erreur lors de la suppression: " + error.message);
-            }
-        }
-    };
-
-    window.resetForm = function() {
-        form.reset();
-        document.getElementById("editIdeaId").value = "";
-        currentBase64Image = "";
-        document.getElementById("formTitle").textContent = "Nouvelle Idée";
-        document.getElementById("submitBtn").textContent = "Enregistrer l'idée";
-        document.getElementById("cancelBtn").style.display = "none";
-    };
-
-    function showMessage(text) {
-        const alertBox = document.getElementById("alertSuccess");
-        alertBox.textContent = "✓ " + text;
-        alertBox.style.display = "block";
-        setTimeout(() => { alertBox.style.display = "none"; }, 3500);
-    }
-
-    function escapeHtml(str) {
-        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-    }
 </script>
+
 </body>
 </html>
