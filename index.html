@@ -169,7 +169,6 @@
             margin-top: 10px; 
         }
 
-        /* ELEGANTE & MODERNE PRODUCT BEHEER KNOP */
         .btn-product-toggle { 
             background: rgba(142, 68, 173, 0.12); 
             color: #8e44ad; 
@@ -229,9 +228,11 @@
         .status-paid { background: rgba(46, 204, 113, 0.2); color: #1e8449; }
         .status-unpaid { background: rgba(231, 76, 60, 0.2); color: #c0392b; }
         .status-refund { background: rgba(52, 152, 219, 0.2); color: #2980b9; }
+        .status-ready { background: rgba(241, 196, 15, 0.25); color: #d35400; }
 
-        .item-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; padding-top: 8px; border-top: 1px dashed rgba(142, 68, 173, 0.2); }
+        .item-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; padding-top: 8px; border-top: 1px dashed rgba(142, 68, 173, 0.2); flex-wrap: wrap; gap: 6px; }
         .btn-card-action { background: rgba(142, 68, 173, 0.15); border: none; color: #8e44ad; border-radius: 6px; padding: 5px 10px; font-size: 12px; font-weight: 600; cursor: pointer; }
+        .btn-card-ready { background: rgba(241, 196, 15, 0.2); color: #b7950b; }
         .btn-card-delete { color: #c0392b; background: rgba(231, 76, 60, 0.15); }
 
         /* Navigation Bar */
@@ -300,11 +301,8 @@
             <h2 class="section-title">Nouvelle Commande</h2>
             <div class="header-buttons">
                  <a href="index2.html" class="btn-header-icon" title="Version PC">💻</a>
-                <button type="button" class="btn-header-icon"
-               <h2></h2>
-               <a href="notebook.html" class="btn-header-icon" title="Bloc-notes">📝</a>
-                <button type="button" class="btn-header-icon"
-                onclick="document.getElementById('settingsModal').style.display='flex'">⚙️</button>                
+                 <a href="notebook.html" class="btn-header-icon" title="Bloc-notes">📝</a>
+                <button type="button" class="btn-header-icon" onclick="document.getElementById('settingsModal').style.display='flex'">⚙️</button>                
             </div>
         </div>
 
@@ -441,6 +439,12 @@
                 <div class="checkbox-group">
                     <input type="checkbox" id="editTerugbetaald">
                     <label for="editTerugbetaald">Remboursé</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="editKlaarstaand">
+                    <label for="editKlaarstaand">Prêt</label>
                 </div>
             </div>
             <button type="submit" class="btn-submit" style="margin-top: 10px;">Enregistrer les modifications</button>
@@ -598,10 +602,12 @@
                     <span class="badge badge-subtle">${i.aantal || 1}x €${parseFloat(i.prijs||0).toFixed(2)}</span>
                     <span class="badge ${i.betaald ? 'status-paid' : 'status-unpaid'}">${i.betaald ? 'Payé' : 'Non Payé'}</span>
                     ${i.terugbetaald ? '<span class="badge status-refund">Remboursé</span>' : ''}
+                    ${i.klaarstaand ? '<span class="badge status-ready">✨ Prêt</span>' : ''}
                 </div>
                 <div class="item-footer">
                     <span style="font-size:11px; color:#7f8c8d;">📅 ${i.datum || ''}</span>
-                    <div>
+                    <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                        <button class="btn-card-action btn-card-ready" onclick="window.markAsReady('${i.id}', ${!i.klaarstaand})">${i.klaarstaand ? 'Annuler prêt' : 'Prêt'}</button>
                         <button class="btn-card-action" onclick="window.openEditModal('${i.id}')">Modifier</button>
                         <button class="btn-card-action btn-card-delete" onclick="window.deleteItem('${i.id}')">Supprimer</button>
                     </div>
@@ -610,6 +616,15 @@
             list.appendChild(li);
         });
     }
+
+    // Mark as Ready Toggle Function
+    window.markAsReady = async function(id, newState) {
+        try {
+            await update(ref(db, `items/${id}`), { klaarstaand: newState });
+        } catch (err) {
+            alert("Erreur: " + err.message);
+        }
+    };
 
     // Modal Edit Open
     window.openEditModal = function(id) {
@@ -625,6 +640,7 @@
         document.getElementById('editDatum').value = item.datum || '';
         document.getElementById('editBetaald').checked = !!item.betaald;
         document.getElementById('editTerugbetaald').checked = !!item.terugbetaald;
+        document.getElementById('editKlaarstaand').checked = !!item.klaarstaand;
 
         document.getElementById('editModal').style.display = 'flex';
     };
@@ -641,7 +657,8 @@
             prijs: parseFloat(document.getElementById('editPrijs').value) || 0,
             datum: document.getElementById('editDatum').value,
             betaald: document.getElementById('editBetaald').checked,
-            terugbetaald: document.getElementById('editTerugbetaald').checked
+            terugbetaald: document.getElementById('editTerugbetaald').checked,
+            klaarstaand: document.getElementById('editKlaarstaand').checked
         };
 
         try {
@@ -671,6 +688,7 @@
             datum: document.getElementById("datum").value,
             betaald: document.getElementById("betaald").checked,
             terugbetaald: false,
+            klaarstaand: false,
             timestamp: Date.now()
         };
 
