@@ -645,7 +645,6 @@
             document.getElementById("datum").value = new Date().toISOString().split('T')[0];
         });
 
-        // 1. Firebase Listeners (Orders & Products)
         const itemsRef = ref(db, 'items');
         onValue(itemsRef, (snapshot) => {
             const data = snapshot.val();
@@ -664,7 +663,6 @@
             renderProductsTable();
         });
 
-        // 2. Product Beheer Logica
         document.getElementById("productForm").addEventListener("submit", (e) => {
             e.preventDefault();
             const categorie = document.getElementById("categorieSelect").value;
@@ -750,7 +748,6 @@
             document.getElementById("totalAmount").textContent = (aantal * prijs).toFixed(2);
         };
 
-        // 3. Bestelling Indienen (Order Form)
         document.getElementById("orderForm").addEventListener("submit", (e) => {
             e.preventDefault();
             const editId = document.getElementById("editOrderId").value;
@@ -781,12 +778,18 @@
         window.clearFormDraft = function() {
             document.getElementById("orderForm").reset();
             document.getElementById("editOrderId").value = "";
-            document.getElementById("formSectionTitleinnerHTML") = '<i class="fa-solid fa-plus-circle"></i> Nouvelle Commande';
+            document.getElementById("formSectionTitle").innerHTML = '<i class="fa-solid fa-plus-circle"></i> Nouvelle Commande';
             document.getElementById("datum").value = new Date().toISOString().split('T')[0];
             document.getElementById("totalAmount").textContent = "0.00";
         };
 
-        // 4. Lijst Filteren & Weergeven
+        // Functie om de status "Klaar / Prêt" te toggelen voor een bestelling
+        window.toggleReadyStatus = function(id, currentStatus) {
+            update(ref(db, `items/${id}`), { pret: !currentStatus }).then(() => {
+                showToast(!currentStatus ? "Commande marquée comme prête !" : "Commande marquée comme non prête");
+            });
+        };
+
         window.filterItems = function() {
             const query = document.getElementById("searchInput").value.toLowerCase();
             const filtered = allOrders.filter(item => 
@@ -804,6 +807,7 @@
             let normCount = 0;
 
             filtered.forEach(item => {
+                const isReady = !!item.pret;
                 const li = document.createElement("li");
                 li.className = "glass-card p-4 flex flex-wrap justify-between items-center gap-3 text-xs";
                 li.innerHTML = `
@@ -814,10 +818,16 @@
                             <br><span class="opacity-75">📅 ${item.datum} | 📍 ${item.adres || 'Aucune adresse'}</span>
                         </div>
                     </div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 flex-wrap">
                         <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${item.betaald ? 'bg-emerald-500/20 text-emerald-600' : 'bg-amber-500/20 text-amber-600'}">
                             ${item.betaald ? 'Payé' : 'Non payé'}
                         </span>
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${isReady ? 'bg-emerald-600 text-white shadow-sm' : 'bg-gray-500/20 text-gray-600'}">
+                            ${isReady ? '✅ Prêt' : '⏳ En cours'}
+                        </span>
+                        <button onclick="toggleReadyStatus('${item.id}', ${isReady})" class="px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-semibold cursor-pointer text-[11px]" title="Basculer statut prêt">
+                            <i class="fa-solid fa-check"></i> ${isReady ? 'Annuler prêt' : 'Prêt'}
+                        </button>
                         <button onclick="editOrder('${item.id}')" class="p-1.5 bg-sky-500/20 text-sky-600 rounded-lg cursor-pointer" title="Modifier"><i class="fa-solid fa-pen"></i></button>
                         <button onclick="deleteSingleOrder('${item.id}')" class="p-1.5 bg-red-500/20 text-red-600 rounded-lg cursor-pointer" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
                     </div>
@@ -863,7 +873,6 @@
             }
         };
 
-        // 5. Connectiviteit & Algemene Instellingen
         const connectedRef = ref(db, ".info/connected");
         onValue(connectedRef, (snap) => {
             const statusDot = document.getElementById("statusDot");
