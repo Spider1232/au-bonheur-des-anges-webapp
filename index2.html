@@ -126,17 +126,6 @@
 </head>
 <body class="flex min-h-screen overflow-x-hidden">
 
-    <!-- ONDERHOUDSPAGINA OVERLAY -->
-    <div id="maintenanceOverlay" style="display: none;" class="fixed inset-0 z-[99999] bg-[#fbeef7] flex items-center justify-center p-4">
-        <div class="glass-card p-8 text-center max-w-md shadow-2xl space-y-4 bg-white/80">
-            <div class="w-16 h-16 bg-[#8e44ad]/20 text-[#8e44ad] rounded-full flex items-center justify-center mx-auto text-2xl">
-                <i class="fa-solid fa-screwdriver-wrench"></i>
-            </div>
-            <h1 class="text-xl font-bold text-[#8e44ad]">🛠️ Maintenance en cours</h1>
-            <p class="text-sm text-gray-700 leading-relaxed">Le système <strong>Au bonheur des Anges</strong> est temporairement en cours de mise à jour. Merci de votre patience.</p>
-        </div>
-    </div>
-
     <!-- ================= SIDEBAR NAVIGATIE (PC) ================= -->
     <aside class="w-64 glass-card m-4 mr-0 flex flex-col justify-between p-5 z-20 shrink-0 hidden md:flex no-print">
         <div>
@@ -168,6 +157,10 @@
                     <i class="fa-solid fa-book text-lg w-6"></i>
                     <span>Mes Idées & Notes</span>
                 </button>
+                <button onclick="showSection('products-section')" id="nav-products-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm opacity-80 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
+                    <i class="fa-solid fa-boxes-stacked text-lg w-6"></i>
+                    <span>Gérer Produits</span>
+                </button>
                 <button onclick="showSection('settings-section')" id="nav-settings-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm opacity-80 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
                     <i class="fa-solid fa-sliders text-lg w-6"></i>
                     <span>Réglages Style</span>
@@ -177,13 +170,6 @@
                     <span>Information</span>
                 </button>
             </nav>
-        </div>
-
-        <div class="pt-4 border-t border-purple-900/10 flex flex-col gap-2">
-            <button onclick="openProductModal()" class="w-full py-2.5 px-4 rounded-xl bg-[#8e44ad] hover:bg-[#7d3c98] text-white font-semibold text-xs transition-all flex items-center justify-center gap-2 shadow-md cursor-pointer">
-                <i class="fa-solid fa-boxes-stacked"></i>
-                <span>Gérer Produits</span>
-            </button>
         </div>
     </aside>
 
@@ -199,19 +185,14 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-2 md:hidden">
-                <a href="index.html" class="p-2.5 rounded-xl bg-white/70 text-[#8e44ad] text-xs font-bold border border-white/80 shadow-sm flex items-center gap-1" title="Accueil">
+            <div class="flex items-center gap-2">
+                <a href="index.html" class="px-3 py-2 bg-white/60 hover:bg-white/90 text-[#8e44ad] rounded-xl border border-white/60 shadow-sm font-semibold text-xs flex items-center gap-1.5 transition-all">
                     <i class="fa-solid fa-house"></i>
+                    <span class="hidden sm:inline">Accueil</span>
                 </a>
-                <button onclick="openProductModal()" class="p-2.5 rounded-xl bg-[#8e44ad] text-white text-xs cursor-pointer" title="Produits"><i class="fa-solid fa-boxes-stacked"></i></button>
-                <button onclick="showSection('settings-section')" class="p-2.5 rounded-xl bg-white/50 text-gray-700 text-xs cursor-pointer" title="Réglages"><i class="fa-solid fa-sliders"></i></button>
             </div>
 
             <div class="flex items-center gap-4 text-xs">
-                <a href="index.html" class="hidden md:flex items-center gap-2 px-3 py-2 bg-white/60 hover:bg-white/90 text-[#8e44ad] rounded-xl border border-white/60 shadow-sm font-semibold transition-all">
-                    <i class="fa-solid fa-house"></i>
-                    <span>Accueil (index.html)</span>
-                </a>
                 <div class="glass-card px-3 py-2 rounded-xl shadow-sm">
                     <span class="opacity-75">Total:</span>
                     <span id="statTotalOrders" class="font-bold text-[#8e44ad] ml-1">0</span>
@@ -252,7 +233,7 @@
                         <div>
                             <div class="flex justify-between items-center mb-1">
                                 <label class="block text-xs font-semibold opacity-80">Choisir un produit *</label>
-                                <button type="button" onclick="openProductModal()" class="text-xs text-[#8e44ad] underline font-medium hover:text-[#6c3483] cursor-pointer">
+                                <button type="button" onclick="showSection('products-section')" class="text-xs text-[#8e44ad] underline font-medium hover:text-[#6c3483] cursor-pointer">
                                     + Gérer / Ajouter produits
                                 </button>
                             </div>
@@ -432,7 +413,6 @@
                 </h3>
 
                 <div class="space-y-4">
-                    <!-- Donkere Modus Schakelaar -->
                     <div class="flex items-center justify-between glass-card p-4 rounded-xl">
                         <div class="flex items-center gap-3">
                             <i class="fa-solid fa-moon text-lg text-[#8e44ad]"></i>
@@ -443,20 +423,6 @@
                         </div>
                         <button onclick="toggleDarkMode()" id="darkModeBtn" class="px-4 py-2 rounded-xl bg-[#8e44ad] text-white text-xs font-bold shadow-md cursor-pointer transition-all">
                             Activer Sombre
-                        </button>
-                    </div>
-
-                    <!-- Manuel Connexion / Hors-ligne (goOffline / goOnline) -->
-                    <div class="flex items-center justify-between glass-card p-4 rounded-xl">
-                        <div class="flex items-center gap-3">
-                            <i class="fa-solid fa-wifi text-lg text-[#8e44ad]"></i>
-                            <div>
-                                <h4 class="text-xs font-bold">Mode Réseau Firebase</h4>
-                                <p class="text-[11px] opacity-75">Basculer manuellement en ligne ou hors-ligne</p>
-                            </div>
-                        </div>
-                        <button onclick="toggleManualConnection()" id="networkToggleBtn" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md cursor-pointer transition-all">
-                            Forcer Hors-ligne
                         </button>
                     </div>
 
@@ -482,9 +448,6 @@
                     </div>
 
                     <div class="pt-4 border-t border-purple-900/10 space-y-3">
-                        <button onclick="toggleMaintenanceMode()" class="w-full py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-xs font-bold text-white shadow-md cursor-pointer">
-                            🛠️ Activer / Désactiver la Maintenance
-                        </button>
                         <button onclick="removeCustomBackground()" class="w-full py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-xs font-bold text-white shadow-md cursor-pointer">
                             Réinitialiser l'arrière-plan
                         </button>
@@ -504,6 +467,54 @@
                     <a href="index.html" class="inline-flex items-center gap-2 px-6 py-3 bg-[#8e44ad] text-white rounded-xl text-sm font-bold shadow-md hover:bg-[#7d3c98] transition-all">
                         <i class="fa-solid fa-house"></i> Retour à l'accueil (index.html)
                     </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTIE 7: GÉRER PRODUITS -->
+        <section id="products-section" class="dashboard-section space-y-6 hidden">
+            <div class="glass-card p-6">
+                <div class="flex flex-wrap justify-between items-center gap-3 mb-5 pb-4 border-b border-purple-900/10">
+                    <div>
+                        <h3 class="font-bold text-lg text-[#8e44ad] flex items-center gap-2"><i class="fa-solid fa-boxes-stacked"></i> Gestion des Produits & Catégories</h3>
+                        <p class="text-xs opacity-70 mt-1">Ajoutez, consultez et supprimez vos produits.</p>
+                    </div>
+                    <button onclick="showSection('order-section')" class="px-3 py-2 rounded-xl glass-card text-xs font-semibold cursor-pointer"><i class="fa-solid fa-arrow-left mr-1"></i> Retour</button>
+                </div>
+                <form id="productForm" class="space-y-4 mb-6 glass-card p-4 rounded-xl border shadow-sm">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold mb-1 opacity-80">Catégorie *</label>
+                            <select id="categorieSelect" class="w-full glass-input rounded-xl px-3 py-2 text-xs cursor-pointer" required>
+                                <option value="Sublimation">Sublimation</option>
+                                <option value="Créations 3D">Créations 3D</option>
+                                <option value="Déco pour Noël">Déco pour Noël</option>
+                                <option value="Photo Design">Photo Design</option>
+                                <option value="Autre">Autre</option>
+                            </select>
+                        </div>
+                        <div><label class="block text-xs font-semibold mb-1 opacity-80">Nom du produit *</label><input type="text" id="productNaam" class="w-full glass-input rounded-xl px-3 py-2 text-xs" placeholder="ex: Mug photo" required></div>
+                        <div><label class="block text-xs font-semibold mb-1 opacity-80">Prix (€) *</label><input type="number" min="0" step="0.01" id="productPrijs" class="w-full glass-input rounded-xl px-3 py-2 text-xs" placeholder="0.00" required></div>
+                    </div>
+                    <div class="flex justify-end gap-2 pt-2">
+                        <button type="button" onclick="addNewCategoryPrompt()" class="px-3 py-1.5 rounded-lg glass-card text-xs font-semibold border cursor-pointer">+ Nouvelle Catégorie</button>
+                        <button type="submit" class="px-4 py-1.5 rounded-lg bg-[#8e44ad] hover:bg-[#7d3c98] text-xs font-bold text-white shadow-md cursor-pointer">Enregistrer</button>
+                    </div>
+                </form>
+                <div class="overflow-x-auto rounded-xl border border-purple-900/10">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-purple-900/5 text-[#8e44ad] border-b border-purple-900/10 font-bold">
+                            <tr>
+                                <th class="p-3">Catégorie</th>
+                                <th class="p-3">Nom</th>
+                                <th class="p-3">Prix</th>
+                                <th class="p-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTableBody" class="divide-y divide-purple-900/10">
+                            <tr><td colspan="4" class="p-4 text-center opacity-60">Chargement...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </section>
@@ -528,64 +539,11 @@
             <i class="fa-solid fa-book text-base"></i>
             <span class="text-[10px]">Notes</span>
         </button>
-        <button onclick="showSection('settings-section')" id="mob-nav-settings-section" class="mob-nav-btn flex flex-col items-center p-2 opacity-70 text-xs font-semibold cursor-pointer">
-            <i class="fa-solid fa-sliders text-base"></i>
-            <span class="text-[10px]">Style</span>
+        <button onclick="showSection('products-section')" id="mob-nav-products-section" class="mob-nav-btn flex flex-col items-center p-2 opacity-70 text-xs font-semibold cursor-pointer" title="Produits">
+            <i class="fa-solid fa-boxes-stacked text-base"></i>
+            <span class="text-[10px]">Produits</span>
         </button>
     </nav>
-
-    <!-- MODAL PRODUCTEN -->
-    <div id="productModal" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-md flex items-center justify-center p-4 hidden">
-        <div class="glass-card w-full max-w-2xl p-6 rounded-2xl relative max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center pb-4 mb-4 border-b border-purple-900/10">
-                <h3 class="font-bold text-lg text-[#8e44ad] flex items-center gap-2">
-                    <i class="fa-solid fa-boxes-stacked"></i> Gestion des Produits & Catégories
-                </h3>
-                <button onclick="closeProductModal()" class="opacity-70 hover:opacity-100 text-xl font-bold cursor-pointer">&times;</button>
-            </div>
-            <form id="productForm" class="space-y-4 mb-6 glass-card p-4 rounded-xl border shadow-sm">
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                        <label class="block text-xs font-semibold mb-1 opacity-80">Catégorie *</label>
-                        <select id="categorieSelect" class="w-full glass-input rounded-xl px-3 py-2 text-xs cursor-pointer" required>
-                            <option value="Sublimation">Sublimation</option>
-                            <option value="Créations 3D">Créations 3D</option>
-                            <option value="Déco pour Noël">Déco pour Noël</option>
-                            <option value="Photo Design">Photo Design</option>
-                            <option value="Autre">Autre</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold mb-1 opacity-80">Nom du produit *</label>
-                        <input type="text" id="productNaam" class="w-full glass-input rounded-xl px-3 py-2 text-xs" placeholder="ex: Mug photo" required>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold mb-1 opacity-80">Prix (€) *</label>
-                        <input type="number" step="0.01" id="productPrijs" class="w-full glass-input rounded-xl px-3 py-2 text-xs" placeholder="0.00" required>
-                    </div>
-                </div>
-                <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="addNewCategoryPrompt()" class="px-3 py-1.5 rounded-lg glass-card text-xs font-semibold border cursor-pointer">+ Nouvelle Catégorie</button>
-                    <button type="submit" class="px-4 py-1.5 rounded-lg bg-[#8e44ad] hover:bg-[#7d3c98] text-xs font-bold text-white shadow-md cursor-pointer">Enregistrer</button>
-                </div>
-            </form>
-            <div class="overflow-x-auto rounded-xl border border-purple-900/10">
-                <table class="w-full text-left text-xs">
-                    <thead class="bg-purple-900/5 text-[#8e44ad] border-b border-purple-900/10 font-bold">
-                        <tr>
-                            <th class="p-3">Catégorie</th>
-                            <th class="p-3">Nom</th>
-                            <th class="p-3">Prix</th>
-                            <th class="p-3 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="productsTableBody" class="divide-y divide-purple-900/10">
-                        <tr><td colspan="4" class="p-4 text-center opacity-60">Chargement...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
 
     <div id="lightboxModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4" onclick="closeLightbox()">
         <img id="lightboxImage" class="max-w-full max-h-[85vh] rounded-xl object-contain shadow-2xl" src="" alt="Agrandissement">
@@ -598,7 +556,7 @@
     <!-- SCRIPT -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getDatabase, ref, push, set, onValue, update, remove, goOffline, goOnline } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+        import { getDatabase, ref, push, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "JOUW_API_KEY", 
@@ -612,19 +570,12 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
+        function escapeHTML(value) { return String(value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
 
         let allOrders = [];
         let allProducts = {};
-        let isManualOffline = false;
-        const ADMIN_PIN = "1234";
 
         document.addEventListener("DOMContentLoaded", () => {
-            const isMaintenanceOn = localStorage.getItem("appMaintenanceMode") === "true";
-            const isAdminUnlocked = sessionStorage.getItem("adminUnlocked") === "true";
-            if (isMaintenanceOn && !isAdminUnlocked) {
-                document.getElementById("maintenanceOverlay").style.display = "flex";
-            }
-
             const isDarkMode = localStorage.getItem("appDarkMode") === "true";
             if (isDarkMode) {
                 document.body.classList.add("dark-mode");
@@ -642,7 +593,7 @@
             document.getElementById("brightnessSlider").value = savedBrightness;
             updateBrightness(savedBrightness);
 
-            document.getElementById("datum").value = new Date().toISOString().split('T')[0];
+            document.getElementById("datum").value = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
         });
 
         const itemsRef = ref(db, 'items');
@@ -702,8 +653,8 @@
             for (const [id, prod] of Object.entries(allProducts)) {
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
-                    <td class="p-3">${prod.categorie || ''}</td>
-                    <td class="p-3 font-semibold">${prod.naam || ''}</td>
+                    <td class="p-3">${escapeHTML(prod.categorie || '')}</td>
+                    <td class="p-3 font-semibold">${escapeHTML(prod.naam || '')}</td>
                     <td class="p-3">€ ${parseFloat(prod.prijs || 0).toFixed(2)}</td>
                     <td class="p-3 text-right">
                         <button onclick="deleteProduct('${id}')" class="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold cursor-pointer">Supprimer</button>
@@ -779,11 +730,10 @@
             document.getElementById("orderForm").reset();
             document.getElementById("editOrderId").value = "";
             document.getElementById("formSectionTitle").innerHTML = '<i class="fa-solid fa-plus-circle"></i> Nouvelle Commande';
-            document.getElementById("datum").value = new Date().toISOString().split('T')[0];
+            document.getElementById("datum").value = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
             document.getElementById("totalAmount").textContent = "0.00";
         };
 
-        // Functie om de status "Klaar / Prêt" te toggelen voor een bestelling
         window.toggleReadyStatus = function(id, currentStatus) {
             update(ref(db, `items/${id}`), { pret: !currentStatus }).then(() => {
                 showToast(!currentStatus ? "Commande marquée comme prête !" : "Commande marquée comme non prête");
@@ -814,8 +764,8 @@
                     <div class="flex items-center gap-3">
                         <input type="checkbox" class="order-checkbox w-4 h-4 accent-[#8e44ad] rounded cursor-pointer" data-id="${item.id}">
                         <div>
-                            <strong>${item.naam}</strong> (${item.text} x${item.aantal}) - € ${(item.aantal * item.prijs).toFixed(2)}
-                            <br><span class="opacity-75">📅 ${item.datum} | 📍 ${item.adres || 'Aucune adresse'}</span>
+                            <strong>${escapeHTML(item.naam)}</strong> (${escapeHTML(item.text)} x${item.aantal}) - € ${(item.aantal * item.prijs).toFixed(2)}
+                            <br><span class="opacity-75">📅 ${escapeHTML(item.datum)} | 📍 ${escapeHTML(item.adres || 'Aucune adresse')}</span>
                         </div>
                     </div>
                     <div class="flex items-center gap-2 flex-wrap">
@@ -859,7 +809,7 @@
                 document.getElementById("text").value = item.text || "";
                 document.getElementById("aantal").value = item.aantal || 1;
                 document.getElementById("prijs").value = item.prijs || 0;
-                document.getElementById("datum").value = item.datum || new Date().toISOString().split('T')[0];
+                document.getElementById("datum").value = item.datum || new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
                 document.getElementById("betaald").checked = !!item.betaald;
                 document.getElementById("preorder").checked = !!item.preorder;
                 calculateTotal();
@@ -878,7 +828,7 @@
             const statusDot = document.getElementById("statusDot");
             const statusText = document.getElementById("statusText");
 
-            if (snap.val() === true && !isManualOffline) {
+            if (snap.val() === true) {
                 if (statusDot) { statusDot.classList.remove("bg-red-500"); statusDot.classList.add("bg-emerald-500"); }
                 if (statusText) statusText.textContent = "En ligne";
             } else {
@@ -887,24 +837,75 @@
             }
         });
 
-        window.toggleManualConnection = function() {
-            const btn = document.getElementById("networkToggleBtn");
-            if (!isManualOffline) {
-                goOffline(db);
-                isManualOffline = true;
-                btn.textContent = "Passer En ligne";
-                btn.classList.remove("bg-emerald-600", "hover:bg-emerald-700");
-                btn.classList.add("bg-amber-600", "hover:bg-amber-700");
-                showToast("Mode hors-ligne forcé activé");
-            } else {
-                goOnline(db);
-                isManualOffline = false;
-                btn.textContent = "Forcer Hors-ligne";
-                btn.classList.remove("bg-amber-600", "hover:bg-amber-700");
-                btn.classList.add("bg-emerald-600", "hover:bg-emerald-700");
-                showToast("Reconnexion au serveur...");
-            }
-        };
+        // Idées & notes avec photo
+        const ideasRef = ref(db, 'ideas');
+        let selectedIdeaImage = '';
+        const ideaPhotoInput = document.getElementById('ideaPhoto');
+        if (ideaPhotoInput) {
+            ideaPhotoInput.addEventListener('change', async () => {
+                const file = ideaPhotoInput.files && ideaPhotoInput.files[0];
+                if (!file) { selectedIdeaImage = ''; return; }
+                if (!file.type.startsWith('image/')) { showToast('Veuillez choisir une image.'); ideaPhotoInput.value = ''; return; }
+                try {
+                    selectedIdeaImage = await compressIdeaImage(file);
+                    let preview = document.getElementById('ideaPhotoPreview');
+                    if (!preview) {
+                        preview = document.createElement('img'); preview.id = 'ideaPhotoPreview';
+                        preview.className = 'mt-3 max-h-48 max-w-full rounded-xl object-contain border border-purple-900/10';
+                        ideaPhotoInput.parentElement.appendChild(preview);
+                    }
+                    preview.src = selectedIdeaImage;
+                    preview.classList.remove('hidden');
+                } catch (err) { console.error(err); showToast('Impossible de lire cette image.'); }
+            });
+        }
+        function compressIdeaImage(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onerror = reject;
+                reader.onload = () => {
+                    const img = new Image(); img.onerror = reject;
+                    img.onload = () => {
+                        const max = 1000, scale = Math.min(1, max / Math.max(img.width, img.height));
+                        const canvas = document.createElement('canvas'); canvas.width = Math.round(img.width * scale); canvas.height = Math.round(img.height * scale);
+                        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.72));
+                    };
+                    img.src = reader.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        document.getElementById('ideaForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const titre = document.getElementById('ideaTitre').value.trim();
+            const description = document.getElementById('ideaDescription').value.trim();
+            if (!titre) return;
+            const btn = e.currentTarget.querySelector('button[type="submit"]'); btn.disabled = true;
+            try {
+                const newRef = push(ideasRef);
+                await set(newRef, { titre, description, image: selectedIdeaImage || '', createdAt: Date.now() });
+                e.currentTarget.reset(); selectedIdeaImage = '';
+                const preview = document.getElementById('ideaPhotoPreview'); if (preview) { preview.src = ''; preview.classList.add('hidden'); }
+                showToast('Idée enregistrée !');
+            } catch (err) { console.error(err); showToast('Erreur lors de l’enregistrement.'); }
+            finally { btn.disabled = false; }
+        });
+        onValue(ideasRef, (snapshot) => {
+            const container = document.getElementById('ideasContainer');
+            const ideas = snapshot.val() || {};
+            const entries = Object.entries(ideas).sort((a,b) => (b[1].createdAt || 0) - (a[1].createdAt || 0));
+            if (!entries.length) { container.innerHTML = '<p class="text-center py-6 opacity-60 text-sm">Aucune idée enregistrée.</p>'; return; }
+            container.innerHTML = '';
+            entries.forEach(([id, idea]) => {
+                const card = document.createElement('article'); card.className = 'glass-card p-4 rounded-xl';
+                const title = document.createElement('h4'); title.className = 'font-bold text-sm text-[#8e44ad]'; title.textContent = idea.titre || 'Sans titre'; card.appendChild(title);
+                if (idea.description) { const desc = document.createElement('p'); desc.className = 'text-xs opacity-80 mt-2 whitespace-pre-wrap'; desc.textContent = idea.description; card.appendChild(desc); }
+                if (idea.image) { const img = document.createElement('img'); img.src = idea.image; img.alt = idea.titre || 'Photo idée'; img.className = 'mt-3 max-h-56 rounded-xl object-contain cursor-zoom-in'; img.addEventListener('click', () => { document.getElementById('lightboxImage').src = idea.image; document.getElementById('lightboxModal').classList.remove('hidden'); }); card.appendChild(img); }
+                const del = document.createElement('button'); del.type = 'button'; del.className = 'mt-3 px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-bold'; del.textContent = 'Supprimer'; del.addEventListener('click', async () => { if (confirm('Supprimer cette idée ?')) { try { await remove(ref(db, `ideas/${id}`)); showToast('Idée supprimée.'); } catch(err) { showToast('Suppression impossible.'); } } }); card.appendChild(del);
+                container.appendChild(card);
+            });
+        });
 
         window.toggleDarkMode = function() {
             const isDark = document.body.classList.toggle("dark-mode");
@@ -983,26 +984,6 @@
             showToast("Arrière-plan réinitialisé.");
         };
 
-        window.toggleMaintenanceMode = function() {
-            const current = localStorage.getItem("appMaintenanceMode") === "true";
-            if (!current) {
-                const pin = prompt("Entrez le code secret pour activer la maintenance :");
-                if (pin !== ADMIN_PIN) {
-                    if (pin !== null) alert("Code incorrect !");
-                    return;
-                }
-                localStorage.setItem("appMaintenanceMode", "true");
-                sessionStorage.removeItem("adminUnlocked");
-                document.getElementById("maintenanceOverlay").style.display = "flex";
-                showToast("Mode maintenance activé.");
-            } else {
-                localStorage.setItem("appMaintenanceMode", "false");
-                sessionStorage.setItem("adminUnlocked", "true");
-                document.getElementById("maintenanceOverlay").style.display = "none";
-                showToast("Mode maintenance désactivé.");
-            }
-        };
-
         window.showSection = function(sectionId) {
             document.querySelectorAll('.dashboard-section').forEach(sec => sec.classList.add('hidden'));
             document.getElementById(sectionId).classList.remove('hidden');
@@ -1035,8 +1016,6 @@
             setTimeout(() => toast.classList.add("hidden"), 3500);
         };
 
-        window.openProductModal = () => document.getElementById("productModal").classList.remove("hidden");
-        window.closeProductModal = () => document.getElementById("productModal").classList.add("hidden");
         window.closeLightbox = () => document.getElementById("lightboxModal").classList.add("hidden");
     </script>
 </body>
