@@ -217,6 +217,19 @@
             font-size: 13px;
         }
 
+        /* Categorie koppen in de lijst */
+        .category-header {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #8e44ad;
+            margin: 16px 0 8px 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
         /* Liste & Cartes styles */
         .list-container { padding: 0; margin: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
         .list-item { 
@@ -242,6 +255,7 @@
         .status-unpaid { background: rgba(231, 76, 60, 0.2); color: #c0392b; }
         .status-refund { background: rgba(52, 152, 219, 0.2); color: #2980b9; }
         .status-ready { background: rgba(241, 196, 15, 0.25); color: #d35400; }
+        .status-preorder { background: rgba(142, 68, 173, 0.2); color: #8e44ad; border: 1px solid rgba(142, 68, 173, 0.3); }
 
         .item-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; padding-top: 8px; border-top: 1px dashed rgba(142, 68, 173, 0.2); flex-wrap: wrap; gap: 6px; }
         .btn-card-action { background: rgba(142, 68, 173, 0.15); border: none; color: #8e44ad; border-radius: 6px; padding: 5px 10px; font-size: 12px; font-weight: 600; cursor: pointer; }
@@ -364,6 +378,13 @@
                 </div>
             </div>
 
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="preorder">
+                    <label for="preorder">📦 Pré-commande</label>
+                </div>
+            </div>
+
             <button type="submit" class="btn-submit" id="submitBtn">Enregistrer la commande</button>
             <button type="button" class="btn-reset" onclick="window.clearFormDraft()">🗑️ Effacer le brouillon</button>
 
@@ -387,7 +408,23 @@
             <h2 class="section-title">Commandes (<span id="orderCount">0</span>)</h2>
             <button class="btn-card-action" onclick="window.exportToPDF()">📄 Export PDF</button>
         </div>
-        <ul id="itemsList" class="list-container"></ul>
+        
+        <!-- Gescheiden container voor categorieën -->
+        <div id="itemsContainer">
+            <div id="preorderSection" style="display:none; margin-bottom: 16px;">
+                <div class="category-header">📦 Pré-commandes (<span id="preorderCount">0</span>)</div>
+                <ul id="preorderList" class="list-container"></ul>
+            </div>
+            
+            <div id="normalSection" style="display:none;">
+                <div class="category-header">🛍️ Commandes Normales (<span id="normalCount">0</span>)</div>
+                <ul id="normalList" class="list-container"></ul>
+            </div>
+
+            <div id="emptyMessage" style="text-align:center; padding: 20px; color: #7f8c8d; display:none;">
+                Aucune commande
+            </div>
+        </div>
     </div>
 </div>
 
@@ -458,6 +495,12 @@
                 <div class="checkbox-group">
                     <input type="checkbox" id="editKlaarstaand">
                     <label for="editKlaarstaand">Prêt</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="editPreorder">
+                    <label for="editPreorder">📦 Pré-commande</label>
                 </div>
             </div>
             <button type="submit" class="btn-submit" style="margin-top: 10px;">Enregistrer les modifications</button>
@@ -591,43 +634,75 @@
     };
 
     function renderList(items) {
-        const list = document.getElementById("itemsList");
+        const preorderList = document.getElementById("preorderList");
+        const normalList = document.getElementById("normalList");
+        const preorderSection = document.getElementById("preorderSection");
+        const normalSection = document.getElementById("normalSection");
+        const emptyMessage = document.getElementById("emptyMessage");
+        
         document.getElementById("orderCount").textContent = items.length;
-        list.innerHTML = '';
+        
+        preorderList.innerHTML = '';
+        normalList.innerHTML = '';
 
-        if (items.length === 0) {
-            list.innerHTML = '<li style="text-align:center; padding: 20px; color: #7f8c8d;">Aucune commande</li>';
-            return;
+        const preorders = items.filter(i => i.preorder);
+        const normals = items.filter(i => !i.preorder);
+
+        document.getElementById("preorderCount").textContent = preorders.length;
+        document.getElementById("normalCount").textContent = normals.length;
+
+        // Render Pre-orders
+        if (preorders.length > 0) {
+            preorderSection.style.display = "block";
+            preorders.forEach(i => preorderList.appendChild(createItemElement(i)));
+        } else {
+            preorderSection.style.display = "none";
         }
 
-        items.forEach(i => {
-            const li = document.createElement("li");
-            li.className = 'list-item';
-            const total = ((parseInt(i.aantal) || 0) * (parseFloat(i.prijs) || 0)).toFixed(2);
-            li.innerHTML = `
-                <div class="item-header">
-                    <h3 class="item-title">${escapeHtml(i.naam || 'Inconnu')}</h3>
-                    <div class="item-price">€${total}</div>
+        // Render Normal orders
+        if (normals.length > 0) {
+            normalSection.style.display = "block";
+            normals.forEach(i => normalList.appendChild(createItemElement(i)));
+        } else {
+            normalSection.style.display = "none";
+        }
+
+        // Empty state
+        if (items.length === 0) {
+            emptyMessage.style.display = "block";
+        } else {
+            emptyMessage.style.display = "none";
+        }
+    }
+
+    function createItemElement(i) {
+        const li = document.createElement("li");
+        li.className = 'list-item';
+        const total = ((parseInt(i.aantal) || 0) * (parseFloat(i.prijs) || 0)).toFixed(2);
+        li.innerHTML = `
+            <div class="item-header">
+                <h3 class="item-title">${escapeHtml(i.naam || 'Inconnu')}</h3>
+                <div class="item-price">€${total}</div>
+            </div>
+            ${i.adres ? `<div class="item-address">📍 ${escapeHtml(i.adres)}</div>` : ''}
+            <div class="item-description">${escapeHtml(i.text || '')}</div>
+            <div class="item-meta">
+                <span class="badge badge-subtle">${i.aantal || 1}x €${parseFloat(i.prijs||0).toFixed(2)}</span>
+                <span class="badge ${i.betaald ? 'status-paid' : 'status-unpaid'}">${i.betaald ? 'Payé' : 'Non Payé'}</span>
+                ${i.terugbetaald ? '<span class="badge status-refund">Remboursé</span>' : ''}
+                ${i.klaarstaand ? '<span class="badge status-ready">✨ Prêt</span>' : ''}
+                ${i.preorder ? '<span class="badge status-preorder">📦 Pré-commande</span>' : ''}
+            </div>
+            <div class="item-footer">
+                <span style="font-size:11px; color:#7f8c8d;">📅 ${i.datum || ''}</span>
+                <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                    <button class="btn-card-action btn-card-ready" onclick="window.markAsReady('${i.id}', ${!i.klaarstaand})">${i.klaarstaand ? 'Annuler prêt' : 'Prêt'}</button>
+                    <button class="btn-card-action" onclick="window.openEditModal('${i.id}')">Modifier</button>
+                    <button class="btn-card-action btn-card-delete" onclick="window.deleteItem('${i.id}')">Supprimer</button>
                 </div>
-                ${i.adres ? `<div class="item-address">📍 ${escapeHtml(i.adres)}</div>` : ''}
-                <div class="item-description">${escapeHtml(i.text || '')}</div>
-                <div class="item-meta">
-                    <span class="badge badge-subtle">${i.aantal || 1}x €${parseFloat(i.prijs||0).toFixed(2)}</span>
-                    <span class="badge ${i.betaald ? 'status-paid' : 'status-unpaid'}">${i.betaald ? 'Payé' : 'Non Payé'}</span>
-                    ${i.terugbetaald ? '<span class="badge status-refund">Remboursé</span>' : ''}
-                    ${i.klaarstaand ? '<span class="badge status-ready">✨ Prêt</span>' : ''}
-                </div>
-                <div class="item-footer">
-                    <span style="font-size:11px; color:#7f8c8d;">📅 ${i.datum || ''}</span>
-                    <div style="display: flex; gap: 4px; flex-wrap: wrap;">
-                        <button class="btn-card-action btn-card-ready" onclick="window.markAsReady('${i.id}', ${!i.klaarstaand})">${i.klaarstaand ? 'Annuler prêt' : 'Prêt'}</button>
-                        <button class="btn-card-action" onclick="window.openEditModal('${i.id}')">Modifier</button>
-                        <button class="btn-card-action btn-card-delete" onclick="window.deleteItem('${i.id}')">Supprimer</button>
-                    </div>
-                </div>
-            `;
-            list.appendChild(li);
-        });
+            </div>
+        `;
+        return li;
     }
 
     // Mark as Ready Toggle Function
@@ -654,6 +729,7 @@
         document.getElementById('editBetaald').checked = !!item.betaald;
         document.getElementById('editTerugbetaald').checked = !!item.terugbetaald;
         document.getElementById('editKlaarstaand').checked = !!item.klaarstaand;
+        document.getElementById('editPreorder').checked = !!item.preorder;
 
         document.getElementById('editModal').style.display = 'flex';
     };
@@ -671,7 +747,8 @@
             datum: document.getElementById('editDatum').value,
             betaald: document.getElementById('editBetaald').checked,
             terugbetaald: document.getElementById('editTerugbetaald').checked,
-            klaarstaand: document.getElementById('editKlaarstaand').checked
+            klaarstaand: document.getElementById('editKlaarstaand').checked,
+            preorder: document.getElementById('editPreorder').checked
         };
 
         try {
@@ -702,6 +779,7 @@
             betaald: document.getElementById("betaald").checked,
             terugbetaald: false,
             klaarstaand: false,
+            preorder: document.getElementById("preorder").checked,
             timestamp: Date.now()
         };
 
