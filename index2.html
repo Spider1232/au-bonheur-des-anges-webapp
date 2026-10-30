@@ -267,7 +267,7 @@
                         <ul class="space-y-3 text-xs text-gray-700">
                             <li class="flex items-start gap-2">
                                 <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
-                                <span>Cochez "📦 Pré-commande" pour séparer automatiquement vos préventes dans l'onglet Liste.</span>
+                                <span>Cochez "📦 Pré-commande" pour séparer automatiquement vos préventes dans l'onglet Liste et sur le PDF.</span>
                             </li>
                             <li class="flex items-start gap-2">
                                 <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
@@ -303,8 +303,8 @@
                     </button>
                 </div>
 
-                <!-- PDF Content & Opgesplitste Categorieën -->
-                <div id="pdfContent" class="space-y-6">
+                <!-- Opgesplitste Categorieën -->
+                <div class="space-y-6">
                     <div id="loadingText" class="text-center py-8 text-gray-500 text-sm">Récupération des données...</div>
 
                     <!-- Pré-commandes Sectie -->
@@ -1039,16 +1039,109 @@
             }
         };
 
+        // Garantie van nette, overzichtelijke tabellen in de PDF-export
         window.exportToPDF = function() {
-            const element = document.getElementById('pdfContent');
+            const currentQuery = document.getElementById("searchInput").value.toLowerCase();
+            const filteredOrders = allOrders.filter(item => 
+                (item.naam || '').toLowerCase().includes(currentQuery) ||
+                (item.adres || '').toLowerCase().includes(currentQuery) ||
+                (item.text || '').toLowerCase().includes(currentQuery)
+            );
+
+            const preorders = filteredOrders.filter(i => i.preorder);
+            const normals = filteredOrders.filter(i => !i.preorder);
+
+            let pdfHtml = `
+                <div style="font-family: Arial, sans-serif; padding: 20px; color: #202124; background: #ffffff;">
+                    <h2 style="text-align: center; color: #8e44ad; margin-bottom: 5px; font-size: 22px;">Au Bonheur Des Anges</h2>
+                    <p style="text-align: center; font-size: 12px; color: #666; margin-bottom: 25px;">Liste des Commandes & Pré-commandes</p>
+            `;
+
+            if (preorders.length > 0) {
+                pdfHtml += `
+                    <h3 style="background-color: #8e44ad; color: white; padding: 8px 12px; font-size: 14px; border-radius: 4px; margin-bottom: 10px;">📦 Pré-commandes (${preorders.length})</h3>
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 11px;">
+                        <thead>
+                            <tr style="background-color: #f3e5f5; color: #8e44ad; text-align: left;">
+                                <th style="padding: 8px; border-bottom: 2px solid #ddd;">Client / Adresse</th>
+                                <th style="padding: 8px; border-bottom: 2px solid #ddd;">Produit</th>
+                                <th style="padding: 8px; border-bottom: 2px solid #ddd;">Qté & Prix</th>
+                                <th style="padding: 8px; border-bottom: 2px solid #ddd;">Total</th>
+                                <th style="padding: 8px; border-bottom: 2px solid #ddd;">Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                preorders.forEach(item => {
+                    const total = ((item.aantal || 1) * (item.prijs || 0)).toFixed(2);
+                    const paidText = item.betaald ? 'Payé' : 'Non Payé';
+                    pdfHtml += `
+                        <tr>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>${escapeHtml(item.naam)}</strong>${item.adres ? '<br><span style="color:#666;">' + escapeHtml(item.adres) + '</span>' : ''}</td>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;">${escapeHtml(item.text)}</td>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;">${item.aantal || 1} x €${parseFloat(item.prijs || 0).toFixed(2)}</td>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold; color: #27ae60;">€${total}</td>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;">${paidText}</td>
+                        </tr>
+                    `;
+                });
+                pdfHtml += `</tbody></table>`;
+            }
+
+            if (normals.length > 0) {
+                pdfHtml += `
+                    <h3 style="background-color: #4a5568; color: white; padding: 8px 12px; font-size: 14px; border-radius: 4px; margin-bottom: 10px;">🛍️ Commandes Normales (${normals.length})</h3>
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 11px;">
+                        <thead>
+                            <tr style="background-color: #edf2f7; color: #2d3748; text-align: left;">
+                                <th style="padding: 8px; border-bottom: 2px solid #ddd;">Client / Adresse</th>
+                                <th style="padding: 8px; border-bottom: 2px solid #ddd;">Produit</th>
+                                <th style="padding: 8px; border-bottom: 2px solid #ddd;">Qté & Prix</th>
+                                <th style="padding: 8px; border-bottom: 2px solid #ddd;">Total</th>
+                                <th style="padding: 8px; border-bottom: 2px solid #ddd;">Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                normals.forEach(item => {
+                    const total = ((item.aantal || 1) * (item.prijs || 0)).toFixed(2);
+                    const paidText = item.betaald ? 'Payé' : 'Non Payé';
+                    pdfHtml += `
+                        <tr>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>${escapeHtml(item.naam)}</strong>${item.adres ? '<br><span style="color:#666;">' + escapeHtml(item.adres) + '</span>' : ''}</td>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;">${escapeHtml(item.text)}</td>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;">${item.aantal || 1} x €${parseFloat(item.prijs || 0).toFixed(2)}</td>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold; color: #27ae60;">€${total}</td>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;">${paidText}</td>
+                        </tr>
+                    `;
+                });
+                pdfHtml += `</tbody></table>`;
+            }
+
+            if (filteredOrders.length === 0) {
+                pdfHtml += `<p style="text-align: center; color: #666; padding: 20px;">Aucune commande trouvée.</p>`;
+            }
+
+            pdfHtml += `</div>`;
+
+            const container = document.createElement("div");
+            container.innerHTML = pdfHtml;
+
             const options = {
                 margin: 10,
                 filename: 'Au_bonheur_des_Anges_Commandes.pdf',
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
+                html2canvas: { scale: 2, useCORS: true },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
-            html2pdf().set(options).from(element).save();
+
+            html2pdf().set(options).from(container).save().then(() => {
+                showToast("PDF téléchargé avec succès !");
+            }).catch(err => {
+                console.error("PDF Error:", err);
+                alert("Erreur lors de la génération du PDF.");
+            });
         };
 
         window.shareList = async function() {
