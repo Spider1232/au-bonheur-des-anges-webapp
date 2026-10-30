@@ -151,7 +151,6 @@
 
         <header class="glass-card p-4 mb-6 flex flex-wrap justify-between items-center gap-4">
             <div class="flex items-center gap-3">
-                <!-- Mobiel / Header Logo -->
                 <img src="logo.jpg" alt="Logo" class="w-10 h-10 rounded-full object-cover border-2 border-white/60 shadow-md md:hidden" onerror="this.src='https://via.placeholder.com/40?text=ABDA'">
                 <div>
                     <h2 class="text-xl font-bold text-[#8e44ad]">Tableau de Bord</h2>
@@ -159,7 +158,6 @@
                 </div>
             </div>
 
-            <!-- Mobiele actieknoppen bovenaan (inclusief index.html knop) -->
             <div class="flex items-center gap-2 md:hidden">
                 <a href="index.html" class="p-2.5 rounded-xl bg-white/70 text-[#8e44ad] text-xs font-bold border border-white/80 shadow-sm flex items-center gap-1" title="Accueil index.html">
                     <i class="fa-solid fa-house"></i>
@@ -169,7 +167,6 @@
             </div>
 
             <div class="flex items-center gap-4 text-xs">
-                <!-- PC / Desktop Home / Index Knop -->
                 <a href="index.html" class="hidden md:flex items-center gap-2 px-3 py-2 bg-white/60 hover:bg-white/90 text-[#8e44ad] rounded-xl border border-white/60 shadow-sm font-semibold transition-all">
                     <i class="fa-solid fa-house"></i>
                     <span>Accueil (index.html)</span>
@@ -239,9 +236,15 @@
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Date de livraison / commande *</label>
                                 <input type="date" id="datum" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm cursor-pointer" required>
                             </div>
-                            <div class="flex items-center gap-3 pt-4">
-                                <input type="checkbox" id="betaald" class="w-5 h-5 accent-[#8e44ad] rounded cursor-pointer">
-                                <label for="betaald" class="text-sm font-semibold cursor-pointer text-gray-800">Commande déjà payée</label>
+                            <div class="space-y-2 pt-2">
+                                <div class="flex items-center gap-3">
+                                    <input type="checkbox" id="betaald" class="w-5 h-5 accent-[#8e44ad] rounded cursor-pointer">
+                                    <label for="betaald" class="text-sm font-semibold cursor-pointer text-gray-800">Commande déjà payée</label>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <input type="checkbox" id="preorder" class="w-5 h-5 accent-[#8e44ad] rounded cursor-pointer">
+                                    <label for="preorder" class="text-sm font-semibold cursor-pointer text-gray-800">📦 Pré-commande</label>
+                                </div>
                             </div>
                         </div>
 
@@ -264,11 +267,11 @@
                         <ul class="space-y-3 text-xs text-gray-700">
                             <li class="flex items-start gap-2">
                                 <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
-                                <span>Utilisez la barre de navigation en bas sur mobile pour basculer facilement entre les écrans.</span>
+                                <span>Cochez "📦 Pré-commande" pour séparer automatiquement vos préventes dans l'onglet Liste.</span>
                             </li>
                             <li class="flex items-start gap-2">
                                 <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
-                                <span>Cliquez sur l'icône de modification (stylo) dans la liste pour charger une commande directement dans le formulaire de gauche.</span>
+                                <span>Cliquez sur l'icône de modification (stylo) dans la liste pour charger une commande directement dans le formulaire.</span>
                             </li>
                         </ul>
                     </div>
@@ -276,7 +279,7 @@
             </div>
         </section>
 
-        <!-- SECTIE 2: LISTE COMMANDES MET EXPORT & PDF ONDER DE LIJST -->
+        <!-- SECTIE 2: LISTE COMMANDES (OPGESPLITST IN CATEGORIEËN) -->
         <section id="list-section" class="dashboard-section space-y-6 hidden">
             <div class="glass-card p-6">
                 <!-- Top Zoekbalk -->
@@ -300,10 +303,27 @@
                     </button>
                 </div>
 
-                <!-- PDF Content & Bestellijst -->
-                <div id="pdfContent" class="space-y-4">
+                <!-- PDF Content & Opgesplitste Categorieën -->
+                <div id="pdfContent" class="space-y-6">
                     <div id="loadingText" class="text-center py-8 text-gray-500 text-sm">Récupération des données...</div>
-                    <ul id="itemsList" class="space-y-3"></ul>
+
+                    <!-- Pré-commandes Sectie -->
+                    <div id="preorderSection" style="display:none;" class="space-y-3">
+                        <div class="text-xs font-bold uppercase tracking-wider text-[#8e44ad] pb-1 border-b border-[#8e44ad]/30 flex items-center gap-2">
+                            <span>📦 Pré-commandes</span> (<span id="preorderCount">0</span>)
+                        </div>
+                        <ul id="preorderList" class="space-y-3"></ul>
+                    </div>
+
+                    <!-- Commandes Normales Sectie -->
+                    <div id="normalSection" style="display:none;" class="space-y-3">
+                        <div class="text-xs font-bold uppercase tracking-wider text-[#8e44ad] pb-1 border-b border-[#8e44ad]/30 flex items-center gap-2">
+                            <span>🛍️ Commandes Normales</span> (<span id="normalCount">0</span>)
+                        </div>
+                        <ul id="normalList" class="space-y-3"></ul>
+                    </div>
+
+                    <div id="emptyMessage" class="text-center py-8 text-gray-500 text-sm" style="display:none;">Aucune commande trouvée</div>
                 </div>
 
                 <!-- EXPORT EN PDF KNOPPEN ONDER DE LIJST -->
@@ -589,7 +609,6 @@
             document.querySelectorAll('.dashboard-section').forEach(sec => sec.classList.add('hidden'));
             document.getElementById(sectionId).classList.remove('hidden');
 
-            // PC Nav active update
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.classList.remove('bg-[#8e44ad]/15', 'text-[#8e44ad]', 'shadow-sm');
                 btn.classList.add('text-gray-700');
@@ -600,7 +619,6 @@
                 activeBtn.classList.remove('text-gray-700');
             }
 
-            // Mobile Nav active update
             document.querySelectorAll('.mob-nav-btn').forEach(btn => {
                 btn.classList.remove('text-[#8e44ad]');
                 btn.classList.add('text-gray-600');
@@ -645,6 +663,24 @@
             loadCustomCategories();
         });
 
+        const bgInput = document.getElementById('bgInput');
+        if (bgInput) {
+            bgInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const imageUrl = event.target.result;
+                        applyBackground(imageUrl);
+                        localStorage.setItem("customAppBackground", imageUrl);
+                        closeSettingsModal();
+                        showToast("Arrière-plan mis à jour !");
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
         function applyBackground(dataUrl) {
             document.body.style.backgroundImage = `url('${dataUrl}')`;
             document.body.style.backgroundSize = "cover";
@@ -657,6 +693,7 @@
             document.body.style.backgroundImage = "none";
             document.body.style.backgroundColor = "#fbeef7";
             closeSettingsModal();
+            showToast("Arrière-plan réinitialisé.");
         };
 
         window.openProductModal = () => document.getElementById("productModal").classList.remove("hidden");
@@ -810,6 +847,7 @@
             document.getElementById("prijs").value = order.prijs || 0;
             document.getElementById("datum").value = order.datum || new Date().toISOString().split('T')[0];
             document.getElementById("betaald").checked = !!order.betaald;
+            document.getElementById("preorder").checked = !!order.preorder;
 
             calculateTotal();
             document.getElementById("formSectionTitle").innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Modifier la commande';
@@ -836,6 +874,7 @@
                 prijs: parseFloat(document.getElementById("prijs").value) || 0,
                 datum: document.getElementById("datum").value,
                 betaald: document.getElementById("betaald").checked,
+                preorder: document.getElementById("preorder").checked,
                 terugbetaald: false,
                 timestamp: Date.now()
             };
@@ -890,50 +929,79 @@
         };
 
         function renderList(items) {
-            const list = document.getElementById("itemsList");
-            list.innerHTML = '';
+            const preorderList = document.getElementById("preorderList");
+            const normalList = document.getElementById("normalList");
+            const preorderSection = document.getElementById("preorderSection");
+            const normalSection = document.getElementById("normalSection");
+            const emptyMessage = document.getElementById("emptyMessage");
 
-            if (items.length === 0) {
-                list.innerHTML = '<li class="text-center py-6 text-gray-500">Aucune commande trouvée</li>';
-                return;
+            preorderList.innerHTML = '';
+            normalList.innerHTML = '';
+
+            const preorders = items.filter(i => i.preorder);
+            const normals = items.filter(i => !i.preorder);
+
+            document.getElementById("preorderCount").textContent = preorders.length;
+            document.getElementById("normalCount").textContent = normals.length;
+
+            if (preorders.length > 0) {
+                preorderSection.style.display = "block";
+                preorders.forEach(item => preorderList.appendChild(createItemElement(item)));
+            } else {
+                preorderSection.style.display = "none";
             }
 
-            items.forEach((item) => {
-                const li = document.createElement("li");
-                li.className = 'glass-card p-4 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm';
+            if (normals.length > 0) {
+                normalSection.style.display = "block";
+                normals.forEach(item => normalList.appendChild(createItemElement(item)));
+            } else {
+                normalSection.style.display = "none";
+            }
 
-                const total = ((item.aantal || 1) * (item.prijs || 0)).toFixed(2);
-                const statusPaid = item.betaald ? '<span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-700 border border-emerald-400/30 font-bold text-[10px]">Payé</span>' : '<span class="px-2 py-0.5 rounded bg-red-500/20 text-red-700 border border-red-400/30 font-bold text-[10px]">Non Payé</span>';
+            if (items.length === 0) {
+                emptyMessage.style.display = "block";
+            } else {
+                emptyMessage.style.display = "none";
+            }
+        }
 
-                li.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <input type="checkbox" class="item-checkbox w-4 h-4 accent-[#8e44ad] rounded cursor-pointer" value="${item.id}" onchange="updateSelectionUI()">
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <h4 class="font-bold text-gray-900 text-base">${escapeHtml(item.naam || 'Inconnu')}</h4>
-                                ${statusPaid}
-                            </div>
-                            <p class="text-xs text-[#8e44ad] font-medium mt-0.5">${escapeHtml(item.text || '')}</p>
-                            ${item.adres ? `<p class="text-xs text-gray-600">📍 ${escapeHtml(item.adres)}</p>` : ''}
+        function createItemElement(item) {
+            const li = document.createElement("li");
+            li.className = 'glass-card p-4 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm';
+
+            const total = ((item.aantal || 1) * (item.prijs || 0)).toFixed(2);
+            const statusPaid = item.betaald ? '<span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-700 border border-emerald-400/30 font-bold text-[10px]">Payé</span>' : '<span class="px-2 py-0.5 rounded bg-red-500/20 text-red-700 border border-red-400/30 font-bold text-[10px]">Non Payé</span>';
+            const preorderBadge = item.preorder ? '<span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-700 border border-purple-400/30 font-bold text-[10px]">📦 Pré-commande</span>' : '';
+
+            li.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <input type="checkbox" class="item-checkbox w-4 h-4 accent-[#8e44ad] rounded cursor-pointer" value="${item.id}" onchange="updateSelectionUI()">
+                    <div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h4 class="font-bold text-gray-900 text-base">${escapeHtml(item.naam || 'Inconnu')}</h4>
+                            ${statusPaid}
+                            ${preorderBadge}
                         </div>
+                        <p class="text-xs text-[#8e44ad] font-medium mt-0.5">${escapeHtml(item.text || '')}</p>
+                        ${item.adres ? `<p class="text-xs text-gray-600">📍 ${escapeHtml(item.adres)}</p>` : ''}
                     </div>
-                    <div class="flex items-center gap-4 w-full md:w-auto justify-between border-t md:border-0 border-purple-900/10 pt-2 md:pt-0">
-                        <div class="text-right">
-                            <span class="text-xs text-gray-500 block">${item.aantal || 1}x €${parseFloat(item.prijs || 0).toFixed(2)}</span>
-                            <span class="text-base font-extrabold text-emerald-600">€ ${total}</span>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="editOrder('${item.id}')" class="p-2 rounded-lg bg-[#8e44ad]/10 text-[#8e44ad] hover:bg-[#8e44ad] hover:text-white transition-all text-xs cursor-pointer" title="Modifier">
-                                <i class="fa-solid fa-pen"></i>
-                            </button>
-                            <button onclick="deleteItem('${item.id}')" class="p-2 rounded-lg bg-red-500/10 text-red-600 hover:bg-red-500 hover:text-white transition-all text-xs cursor-pointer" title="Supprimer">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
+                </div>
+                <div class="flex items-center gap-4 w-full md:w-auto justify-between border-t md:border-0 border-purple-900/10 pt-2 md:pt-0">
+                    <div class="text-right">
+                        <span class="text-xs text-gray-500 block">${item.aantal || 1}x €${parseFloat(item.prijs || 0).toFixed(2)}</span>
+                        <span class="text-base font-extrabold text-emerald-600">€ ${total}</span>
                     </div>
-                `;
-                list.appendChild(li);
-            });
+                    <div class="flex gap-2">
+                        <button onclick="editOrder('${item.id}')" class="p-2 rounded-lg bg-[#8e44ad]/10 text-[#8e44ad] hover:bg-[#8e44ad] hover:text-white transition-all text-xs cursor-pointer" title="Modifier">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button onclick="deleteItem('${item.id}')" class="p-2 rounded-lg bg-red-500/10 text-red-600 hover:bg-red-500 hover:text-white transition-all text-xs cursor-pointer" title="Supprimer">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            return li;
         }
 
         window.toggleSelectAll = function(source) {
