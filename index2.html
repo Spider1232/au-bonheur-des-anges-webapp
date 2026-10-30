@@ -39,7 +39,6 @@
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* Pseudo-element voor de dynamische achtergrond en helderheid */
         body::before {
             content: "";
             position: fixed;
@@ -424,7 +423,7 @@
         <section id="settings-section" class="dashboard-section space-y-6 hidden">
             <div class="glass-card p-6 max-w-xl mx-auto space-y-6">
                 <h3 class="font-bold uppercase tracking-wider text-sm text-[#8e44ad] pb-2 border-b border-purple-900/10 flex items-center gap-2">
-                    <i class="fa-solid fa-sliders"></i> Réglages du style & Apparence
+                    <i class="fa-solid fa-sliders"></i> Réglages du style & Connexion
                 </h3>
 
                 <div class="space-y-4">
@@ -439,6 +438,20 @@
                         </div>
                         <button onclick="toggleDarkMode()" id="darkModeBtn" class="px-4 py-2 rounded-xl bg-[#8e44ad] text-white text-xs font-bold shadow-md cursor-pointer transition-all">
                             Activer Sombre
+                        </button>
+                    </div>
+
+                    <!-- Manuel Connexion / Hors-ligne (goOffline / goOnline) -->
+                    <div class="flex items-center justify-between glass-card p-4 rounded-xl">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-wifi text-lg text-[#8e44ad]"></i>
+                            <div>
+                                <h4 class="text-xs font-bold">Mode Réseau Firebase</h4>
+                                <p class="text-[11px] opacity-75">Basculer manuellement en ligne ou hors-ligne</p>
+                            </div>
+                        </div>
+                        <button onclick="toggleManualConnection()" id="networkToggleBtn" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md cursor-pointer transition-all">
+                            Forcer Hors-ligne
                         </button>
                     </div>
 
@@ -580,7 +593,7 @@
     <!-- SCRIPT -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getDatabase, ref, push, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+        import { getDatabase, ref, push, set, onValue, update, remove, goOffline, goOnline } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "JOUW_API_KEY", 
@@ -596,6 +609,7 @@
         const db = getDatabase(app);
 
         let allOrders = [];
+        let isManualOffline = false;
         const ADMIN_PIN = "1234";
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -605,7 +619,6 @@
                 document.getElementById("maintenanceOverlay").style.display = "flex";
             }
 
-            // Donkere modus initialiseren
             const isDarkMode = localStorage.getItem("appDarkMode") === "true";
             if (isDarkMode) {
                 document.body.classList.add("dark-mode");
@@ -625,6 +638,46 @@
 
             document.getElementById("datum").value = new Date().toISOString().split('T')[0];
         });
+
+        // Gestion de la connexion Réseau Firebase (.info/connected)
+        const connectedRef = ref(db, ".info/connected");
+        onValue(connectedRef, (snap) => {
+            const statusDot = document.getElementById("statusDot");
+            const statusText = document.getElementById("statusText");
+
+            if (snap.val() === true && !isManualOffline) {
+                if (statusDot) {
+                    statusDot.classList.remove("bg-red-500");
+                    statusDot.classList.add("bg-emerald-500");
+                }
+                if (statusText) statusText.textContent = "En ligne";
+            } else {
+                if (statusDot) {
+                    statusDot.classList.remove("bg-emerald-500");
+                    statusDot.classList.add("bg-red-500");
+                }
+                if (statusText) statusText.textContent = "Hors ligne";
+            }
+        });
+
+        window.toggleManualConnection = function() {
+            const btn = document.getElementById("networkToggleBtn");
+            if (!isManualOffline) {
+                goOffline(db);
+                isManualOffline = true;
+                btn.textContent = "Passer En ligne";
+                btn.classList.remove("bg-emerald-600", "hover:bg-emerald-700");
+                btn.classList.add("bg-amber-600", "hover:bg-amber-700");
+                showToast("Mode hors-ligne forcé activé");
+            } else {
+                goOnline(db);
+                isManualOffline = false;
+                btn.textContent = "Forcer Hors-ligne";
+                btn.classList.remove("bg-amber-600", "hover:bg-amber-700");
+                btn.classList.add("bg-emerald-600", "hover:bg-emerald-700");
+                showToast("Reconnexion au serveur...");
+            }
+        };
 
         window.toggleDarkMode = function() {
             const isDark = document.body.classList.toggle("dark-mode");
