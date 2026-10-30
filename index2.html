@@ -289,7 +289,7 @@
                         <ul class="space-y-3 text-xs opacity-80">
                             <li class="flex items-start gap-2">
                                 <i class="fa-solid fa-check text-emerald-500 mt-0.5"></i>
-                                <span>Cochez "📦 Pré-commande" pour séparer automatiquement vos préventes dans l'onglet Liste et sur le PDF.</span>
+                                <span>Cochez "📦 Pré-commande" pour séparer automatiquement vos préventes dans l'onglet Liste.</span>
                             </li>
                         </ul>
                     </div>
@@ -307,16 +307,6 @@
                             <input type="text" id="searchInput" onkeyup="filterItems()" class="w-full glass-input pl-10 pr-4 py-2 rounded-xl text-sm" placeholder="Rechercher nom, adresse, produit...">
                         </div>
                     </div>
-                </div>
-
-                <div class="glass-card px-4 py-2.5 rounded-xl mb-4 flex justify-between items-center text-xs shadow-sm">
-                    <label class="flex items-center gap-2 cursor-pointer font-semibold opacity-90">
-                        <input type="checkbox" id="selectAllCheckbox" onclick="toggleSelectAll(this)" class="w-4 h-4 accent-[#8e44ad] rounded cursor-pointer">
-                        <span>Tout sélectionner</span>
-                    </label>
-                    <button id="deleteSelectedBtn" onclick="deleteSelected()" class="hidden px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold transition-all cursor-pointer">
-                        Supprimer (<span id="selectedCount">0</span>)
-                    </button>
                 </div>
 
                 <div class="space-y-6">
@@ -341,14 +331,11 @@
 
                 <div class="mt-8 pt-6 border-t border-purple-900/10 flex flex-wrap items-center justify-between gap-4">
                     <div class="text-xs opacity-75">
-                        <i class="fa-solid fa-circle-info text-[#8e44ad]"></i> Actions sur l'ensemble de la liste :
+                        <i class="fa-solid fa-circle-info text-[#8e44ad]"></i> Action sur la liste :
                     </div>
                     <div class="flex items-center gap-3">
                         <button onclick="window.print()" class="px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-xs font-bold text-white transition-all flex items-center gap-2 shadow-sm cursor-pointer">
                             <i class="fa-solid fa-print"></i> Imprimer la liste
-                        </button>
-                        <button onclick="exportToPDF()" id="pdfBtn" class="px-5 py-2.5 rounded-xl bg-[#8e44ad] hover:bg-[#7d3c98] text-xs font-bold text-white transition-all flex items-center gap-2 shadow-md cursor-pointer">
-                            <i class="fa-solid fa-file-pdf"></i> Télécharger en PDF
                         </button>
                     </div>
                 </div>
