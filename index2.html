@@ -18,14 +18,38 @@
             --glass-bg: rgba(255, 255, 255, 0.20);
             --glass-border: rgba(255, 255, 255, 0.4);
             --glass-blur: 16px;
+            --text-color: #202124;
+            --body-bg: #fbeef7;
+        }
+
+        body.dark-mode {
+            --glass-bg: rgba(30, 30, 40, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --text-color: #f1f5f9;
+            --body-bg: #121216;
         }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #fbeef7;
+            background-color: var(--body-bg);
             background-attachment: fixed;
             min-height: 100vh;
-            color: #202124;
+            color: var(--text-color);
+            position: relative;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Pseudo-element voor de dynamische achtergrond en helderheid */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: brightness(100%);
+            transition: filter 0.2s ease;
         }
 
         .glass-card {
@@ -35,6 +59,7 @@
             border: 1px solid var(--glass-border);
             border-radius: 1rem;
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);
+            color: var(--text-color);
         }
 
         .glass-input {
@@ -45,8 +70,17 @@
             -webkit-backdrop-filter: blur(5px);
         }
 
+        body.dark-mode .glass-input {
+            background: rgba(40, 40, 50, 0.6);
+            color: #ffffff;
+        }
+
         .glass-input::placeholder {
             color: rgba(32, 33, 36, 0.5);
+        }
+
+        body.dark-mode .glass-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
         }
 
         .glass-input:focus {
@@ -56,9 +90,8 @@
             box-shadow: 0 0 0 3px rgba(142, 68, 173, 0.15);
         }
 
-        .editing-mode {
-            border: 2px dashed #8e44ad !important;
-            background: rgba(142, 68, 173, 0.05) !important;
+        body.dark-mode .glass-input:focus {
+            background: rgba(50, 50, 65, 0.9);
         }
 
         ::-webkit-scrollbar {
@@ -79,6 +112,10 @@
         select option {
             background-color: #ffffff;
             color: #202124;
+        }
+        body.dark-mode select option {
+            background-color: #1e1e24;
+            color: #ffffff;
         }
     </style>
 </head>
@@ -105,7 +142,7 @@
                     <h1 class="font-bold text-sm leading-tight text-[#8e44ad]">Au Bonheur Des Anges</h1>
                     <div class="flex items-center gap-2 mt-1">
                         <span id="statusDot" class="w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm"></span>
-                        <span id="statusText" class="text-xs text-gray-600 font-medium">Hors ligne</span>
+                        <span id="statusText" class="text-xs opacity-80 font-medium">Hors ligne</span>
                     </div>
                 </div>
             </div>
@@ -115,19 +152,23 @@
                     <i class="fa-solid fa-cart-plus text-lg w-6"></i>
                     <span>Commander</span>
                 </button>
-                <button onclick="showSection('list-section')" id="nav-list-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm text-gray-700 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
+                <button onclick="showSection('list-section')" id="nav-list-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm opacity-80 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
                     <i class="fa-solid fa-list-check text-lg w-6"></i>
                     <span>Liste Commandes</span>
                 </button>
-                <button onclick="showSection('pdf-section')" id="nav-pdf-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm text-gray-700 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
+                <button onclick="showSection('pdf-section')" id="nav-pdf-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm opacity-80 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
                     <i class="fa-solid fa-file-pdf text-lg w-6"></i>
                     <span>Liste PDF</span>
                 </button>
-                <button onclick="showSection('notebook-section')" id="nav-notebook-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm text-gray-700 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
+                <button onclick="showSection('notebook-section')" id="nav-notebook-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm opacity-80 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
                     <i class="fa-solid fa-book text-lg w-6"></i>
                     <span>Mes Idées & Notes</span>
                 </button>
-                <button onclick="showSection('info-section')" id="nav-info-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm text-gray-700 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
+                <button onclick="showSection('settings-section')" id="nav-settings-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm opacity-80 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
+                    <i class="fa-solid fa-sliders text-lg w-6"></i>
+                    <span>Réglages Style</span>
+                </button>
+                <button onclick="showSection('info-section')" id="nav-info-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm opacity-80 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
                     <i class="fa-solid fa-circle-info text-lg w-6"></i>
                     <span>Information</span>
                 </button>
@@ -138,10 +179,6 @@
             <button onclick="openProductModal()" class="w-full py-2.5 px-4 rounded-xl bg-[#8e44ad] hover:bg-[#7d3c98] text-white font-semibold text-xs transition-all flex items-center justify-center gap-2 shadow-md cursor-pointer">
                 <i class="fa-solid fa-boxes-stacked"></i>
                 <span>Gérer Produits</span>
-            </button>
-            <button onclick="openSettingsModal()" class="w-full py-2 px-4 rounded-xl bg-white/40 hover:bg-white/60 text-gray-700 font-medium text-xs transition-all flex items-center justify-center gap-2 border border-white/50 cursor-pointer">
-                <i class="fa-solid fa-sliders"></i>
-                <span>Réglages Style</span>
             </button>
         </div>
     </aside>
@@ -154,16 +191,16 @@
                 <img src="logo.jpg" alt="Logo" class="w-10 h-10 rounded-full object-cover border-2 border-white/60 shadow-md md:hidden" onerror="this.src='https://via.placeholder.com/40?text=ABDA'">
                 <div>
                     <h2 class="text-xl font-bold text-[#8e44ad]">Tableau de Bord</h2>
-                    <p class="text-xs text-gray-600">Gestion centralisée</p>
+                    <p class="text-xs opacity-75">Gestion centralisée</p>
                 </div>
             </div>
 
             <div class="flex items-center gap-2 md:hidden">
-                <a href="index.html" class="p-2.5 rounded-xl bg-white/70 text-[#8e44ad] text-xs font-bold border border-white/80 shadow-sm flex items-center gap-1" title="Accueil index.html">
+                <a href="index.html" class="p-2.5 rounded-xl bg-white/70 text-[#8e44ad] text-xs font-bold border border-white/80 shadow-sm flex items-center gap-1" title="Accueil">
                     <i class="fa-solid fa-house"></i>
                 </a>
                 <button onclick="openProductModal()" class="p-2.5 rounded-xl bg-[#8e44ad] text-white text-xs cursor-pointer" title="Produits"><i class="fa-solid fa-boxes-stacked"></i></button>
-                <button onclick="openSettingsModal()" class="p-2.5 rounded-xl bg-white/50 text-gray-700 text-xs cursor-pointer" title="Réglages"><i class="fa-solid fa-sliders"></i></button>
+                <button onclick="showSection('settings-section')" class="p-2.5 rounded-xl bg-white/50 text-gray-700 text-xs cursor-pointer" title="Réglages"><i class="fa-solid fa-sliders"></i></button>
             </div>
 
             <div class="flex items-center gap-4 text-xs">
@@ -171,18 +208,18 @@
                     <i class="fa-solid fa-house"></i>
                     <span>Accueil (index.html)</span>
                 </a>
-                <div class="bg-white/40 px-3 py-2 rounded-xl border border-white/60 shadow-sm">
-                    <span class="text-gray-600">Total:</span>
+                <div class="glass-card px-3 py-2 rounded-xl shadow-sm">
+                    <span class="opacity-75">Total:</span>
                     <span id="statTotalOrders" class="font-bold text-[#8e44ad] ml-1">0</span>
                 </div>
-                <div class="bg-white/40 px-3 py-2 rounded-xl border border-white/60 shadow-sm">
-                    <span class="text-gray-600">CA:</span>
-                    <span id="statTotalRevenue" class="font-bold text-emerald-600 ml-1">€ 0.00</span>
+                <div class="glass-card px-3 py-2 rounded-xl shadow-sm">
+                    <span class="opacity-75">CA:</span>
+                    <span id="statTotalRevenue" class="font-bold text-emerald-500 ml-1">€ 0.00</span>
                 </div>
             </div>
         </header>
 
-        <!-- SECTIE 1: COMMANDER / BEWERKEN KADER -->
+        <!-- SECTIE 1: COMMANDER -->
         <section id="order-section" class="dashboard-section space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div id="formCardContainer" class="lg:col-span-7 glass-card p-6 transition-all">
@@ -190,7 +227,7 @@
                         <h3 id="formSectionTitle" class="font-bold uppercase tracking-wider text-sm text-[#8e44ad] flex items-center gap-2">
                             <i class="fa-solid fa-plus-circle"></i> Nouvelle Commande
                         </h3>
-                        <button onclick="clearFormDraft()" class="text-xs text-red-600 hover:text-red-800 flex items-center gap-1 font-semibold cursor-pointer">
+                        <button onclick="clearFormDraft()" class="text-xs text-red-500 hover:text-red-700 flex items-center gap-1 font-semibold cursor-pointer">
                             <i class="fa-solid fa-trash"></i> Annuler / Effacer
                         </button>
                     </div>
@@ -199,18 +236,18 @@
                         <input type="hidden" id="editOrderId" value="">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">Nom du client *</label>
+                                <label class="block text-xs font-semibold opacity-80 mb-1">Nom du client *</label>
                                 <input type="text" id="naam" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm" placeholder="ex: Marie Dupont" required>
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">Adresse de livraison</label>
+                                <label class="block text-xs font-semibold opacity-80 mb-1">Adresse de livraison</label>
                                 <input type="text" id="adres" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm" placeholder="ex: Rue de la Paix 10">
                             </div>
                         </div>
 
                         <div>
                             <div class="flex justify-between items-center mb-1">
-                                <label class="block text-xs font-semibold text-gray-700">Choisir un produit *</label>
+                                <label class="block text-xs font-semibold opacity-80">Choisir un produit *</label>
                                 <button type="button" onclick="openProductModal()" class="text-xs text-[#8e44ad] underline font-medium hover:text-[#6c3483] cursor-pointer">
                                     + Gérer / Ajouter produits
                                 </button>
@@ -222,34 +259,34 @@
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">Quantité *</label>
+                                <label class="block text-xs font-semibold opacity-80 mb-1">Quantité *</label>
                                 <input type="number" id="aantal" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm" value="1" min="1" required oninput="calculateTotal()">
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">Prix unitaire (€) *</label>
+                                <label class="block text-xs font-semibold opacity-80 mb-1">Prix unitaire (€) *</label>
                                 <input type="number" step="0.01" id="prijs" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm" placeholder="0.00" required oninput="calculateTotal()">
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">Date de livraison / commande *</label>
+                                <label class="block text-xs font-semibold opacity-80 mb-1">Date de livraison / commande *</label>
                                 <input type="date" id="datum" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm cursor-pointer" required>
                             </div>
                             <div class="space-y-2 pt-2">
                                 <div class="flex items-center gap-3">
                                     <input type="checkbox" id="betaald" class="w-5 h-5 accent-[#8e44ad] rounded cursor-pointer">
-                                    <label for="betaald" class="text-sm font-semibold cursor-pointer text-gray-800">Commande déjà payée</label>
+                                    <label for="betaald" class="text-sm font-semibold cursor-pointer opacity-90">Commande déjà payée</label>
                                 </div>
                                 <div class="flex items-center gap-3">
                                     <input type="checkbox" id="preorder" class="w-5 h-5 accent-[#8e44ad] rounded cursor-pointer">
-                                    <label for="preorder" class="text-sm font-semibold cursor-pointer text-gray-800">📦 Pré-commande</label>
+                                    <label for="preorder" class="text-sm font-semibold cursor-pointer opacity-90">📦 Pré-commande</label>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="bg-white/40 p-4 rounded-xl border border-white/60 flex justify-between items-center mt-4 shadow-sm">
-                            <span class="text-sm font-medium text-gray-700">Total Calculé:</span>
+                        <div class="glass-card p-4 rounded-xl flex justify-between items-center mt-4 shadow-sm">
+                            <span class="text-sm font-medium opacity-80">Total Calculé:</span>
                             <span class="text-2xl font-extrabold text-[#8e44ad]">€ <span id="totalAmount">0.00</span></span>
                         </div>
 
@@ -264,14 +301,10 @@
                         <h3 class="font-bold uppercase tracking-wider text-sm text-[#8e44ad] mb-4 pb-2 border-b border-purple-900/10">
                             Guide Rapide
                         </h3>
-                        <ul class="space-y-3 text-xs text-gray-700">
+                        <ul class="space-y-3 text-xs opacity-80">
                             <li class="flex items-start gap-2">
-                                <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
+                                <i class="fa-solid fa-check text-emerald-500 mt-0.5"></i>
                                 <span>Cochez "📦 Pré-commande" pour séparer automatiquement vos préventes dans l'onglet Liste et sur le PDF.</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
-                                <span>Cliquez sur l'icône de modification (stylo) dans la liste pour charger une commande directement dans le formulaire.</span>
                             </li>
                         </ul>
                     </div>
@@ -279,22 +312,20 @@
             </div>
         </section>
 
-        <!-- SECTIE 2: LISTE COMMANDES (OPGESPLITST IN CATEGORIEËN) -->
+        <!-- SECTIE 2: LISTE COMMANDES -->
         <section id="list-section" class="dashboard-section space-y-6 hidden">
             <div class="glass-card p-6">
-                <!-- Top Zoekbalk -->
                 <div class="flex flex-wrap justify-between items-center gap-4 mb-6 pb-4 border-b border-purple-900/10">
                     <div class="flex items-center gap-2 flex-1 max-w-md">
                         <div class="relative w-full">
-                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-400 text-sm"></i>
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 opacity-50 text-sm"></i>
                             <input type="text" id="searchInput" onkeyup="filterItems()" class="w-full glass-input pl-10 pr-4 py-2 rounded-xl text-sm" placeholder="Rechercher nom, adresse, produit...">
                         </div>
                     </div>
                 </div>
 
-                <!-- Selectie balk -->
-                <div class="flex justify-between items-center bg-white/40 px-4 py-2.5 rounded-xl mb-4 border border-white/60 text-xs shadow-sm">
-                    <label class="flex items-center gap-2 cursor-pointer font-semibold text-gray-800">
+                <div class="glass-card px-4 py-2.5 rounded-xl mb-4 flex justify-between items-center text-xs shadow-sm">
+                    <label class="flex items-center gap-2 cursor-pointer font-semibold opacity-90">
                         <input type="checkbox" id="selectAllCheckbox" onclick="toggleSelectAll(this)" class="w-4 h-4 accent-[#8e44ad] rounded cursor-pointer">
                         <span>Tout sélectionner</span>
                     </label>
@@ -303,11 +334,9 @@
                     </button>
                 </div>
 
-                <!-- Opgesplitste Categorieën -->
                 <div class="space-y-6">
-                    <div id="loadingText" class="text-center py-8 text-gray-500 text-sm">Récupération des données...</div>
+                    <div id="loadingText" class="text-center py-8 opacity-60 text-sm">Récupération des données...</div>
 
-                    <!-- Pré-commandes Sectie -->
                     <div id="preorderSection" style="display:none;" class="space-y-3">
                         <div class="text-xs font-bold uppercase tracking-wider text-[#8e44ad] pb-1 border-b border-[#8e44ad]/30 flex items-center gap-2">
                             <span>📦 Pré-commandes</span> (<span id="preorderCount">0</span>)
@@ -315,7 +344,6 @@
                         <ul id="preorderList" class="space-y-3"></ul>
                     </div>
 
-                    <!-- Commandes Normales Sectie -->
                     <div id="normalSection" style="display:none;" class="space-y-3">
                         <div class="text-xs font-bold uppercase tracking-wider text-[#8e44ad] pb-1 border-b border-[#8e44ad]/30 flex items-center gap-2">
                             <span>🛍️ Commandes Normales</span> (<span id="normalCount">0</span>)
@@ -323,16 +351,15 @@
                         <ul id="normalList" class="space-y-3"></ul>
                     </div>
 
-                    <div id="emptyMessage" class="text-center py-8 text-gray-500 text-sm" style="display:none;">Aucune commande trouvée</div>
+                    <div id="emptyMessage" class="text-center py-8 opacity-60 text-sm" style="display:none;">Aucune commande trouvée</div>
                 </div>
 
-                <!-- EXPORT EN PDF KNOPPEN ONDER DE LIJST -->
                 <div class="mt-8 pt-6 border-t border-purple-900/10 flex flex-wrap items-center justify-between gap-4">
-                    <div class="text-xs text-gray-600">
-                        <i class="fa-solid fa-circle-info text-[#8e44ad]"></i> Actions sur l'ensemble de la liste des commandes :
+                    <div class="text-xs opacity-75">
+                        <i class="fa-solid fa-circle-info text-[#8e44ad]"></i> Actions sur l'ensemble de la liste :
                     </div>
                     <div class="flex items-center gap-3">
-                        <button onclick="shareList()" class="px-4 py-2.5 rounded-xl bg-white/70 hover:bg-white text-xs font-bold transition-all flex items-center gap-2 border border-white/60 shadow-sm cursor-pointer">
+                        <button onclick="shareList()" class="px-4 py-2.5 rounded-xl glass-card hover:opacity-100 opacity-90 text-xs font-bold transition-all flex items-center gap-2 shadow-sm cursor-pointer">
                             <i class="fa-solid fa-share-nodes text-[#8e44ad]"></i> Partager
                         </button>
                         <button onclick="exportToPDF()" id="pdfBtn" class="px-5 py-2.5 rounded-xl bg-[#8e44ad] hover:bg-[#7d3c98] text-xs font-bold text-white transition-all flex items-center gap-2 shadow-md cursor-pointer">
@@ -340,7 +367,6 @@
                         </button>
                     </div>
                 </div>
-
             </div>
         </section>
 
@@ -351,7 +377,7 @@
                     <h3 class="font-bold uppercase tracking-wider text-sm text-[#8e44ad]">Tarifs & Prix Boutique PDF</h3>
                     <a href="Prix boutique Au bonheur des Anges.  2026.pdf" download class="px-4 py-1.5 rounded-xl bg-[#8e44ad] text-xs font-bold text-white hover:bg-[#7d3c98]">Télécharger</a>
                 </div>
-                <div class="flex-1 rounded-xl overflow-hidden bg-white/40 border border-white/65">
+                <div class="flex-1 rounded-xl overflow-hidden glass-card">
                     <embed src="Prix boutique Au bonheur des Anges.  2026.pdf" type="application/pdf" class="w-full h-full">
                 </div>
             </div>
@@ -361,24 +387,23 @@
         <section id="notebook-section" class="dashboard-section space-y-6 hidden">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div class="lg:col-span-5 glass-card p-6">
-                    <h3 id="formTitleIdea" class="font-bold uppercase tracking-wider text-sm text-[#8e44ad] mb-4 pb-2 border-b border-purple-900/10">
+                    <h3 class="font-bold uppercase tracking-wider text-sm text-[#8e44ad] mb-4 pb-2 border-b border-purple-900/10">
                         Nouvelle Idée
                     </h3>
                     <form id="ideaForm" class="space-y-4">
-                        <input type="hidden" id="editIdeaId" value="">
                         <div>
-                            <label class="block text-xs font-semibold text-gray-700 mb-1">Titre de l'idée *</label>
+                            <label class="block text-xs font-semibold opacity-80 mb-1">Titre de l'idée *</label>
                             <input type="text" id="ideaTitre" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm" placeholder="ex: Nouveau mug" required>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-gray-700 mb-1">Description / Notes</label>
+                            <label class="block text-xs font-semibold opacity-80 mb-1">Description / Notes</label>
                             <textarea id="ideaDescription" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm h-24" placeholder="Détails..."></textarea>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-gray-700 mb-1">Photo (Optionnel)</label>
+                            <label class="block text-xs font-semibold opacity-80 mb-1">Photo (Optionnel)</label>
                             <input type="file" id="ideaPhoto" accept="image/*" class="w-full glass-input rounded-xl px-4 py-2 text-xs cursor-pointer">
                         </div>
-                        <button type="submit" id="submitBtnIdea" class="w-full py-3 rounded-xl bg-[#8e44ad] hover:bg-[#7d3c98] font-bold text-white shadow-lg text-sm cursor-pointer">
+                        <button type="submit" class="w-full py-3 rounded-xl bg-[#8e44ad] hover:bg-[#7d3c98] font-bold text-white shadow-lg text-sm cursor-pointer">
                             Enregistrer l'idée
                         </button>
                     </form>
@@ -389,19 +414,74 @@
                         Mes Idées & Prototypes
                     </h3>
                     <div id="ideasContainer" class="space-y-3">
-                        <div class="text-center py-6 text-gray-500 text-sm">Chargement...</div>
+                        <div class="text-center py-6 opacity-60 text-sm">Chargement...</div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- SECTIE 5: INFO -->
+        <!-- SECTIE 5: RÉGLAGES STYLE -->
+        <section id="settings-section" class="dashboard-section space-y-6 hidden">
+            <div class="glass-card p-6 max-w-xl mx-auto space-y-6">
+                <h3 class="font-bold uppercase tracking-wider text-sm text-[#8e44ad] pb-2 border-b border-purple-900/10 flex items-center gap-2">
+                    <i class="fa-solid fa-sliders"></i> Réglages du style & Apparence
+                </h3>
+
+                <div class="space-y-4">
+                    <!-- Donkere Modus Schakelaar -->
+                    <div class="flex items-center justify-between glass-card p-4 rounded-xl">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-moon text-lg text-[#8e44ad]"></i>
+                            <div>
+                                <h4 class="text-xs font-bold">Mode Sombre / Dark Mode</h4>
+                                <p class="text-[11px] opacity-75">Basculer entre l'apparence claire et sombre</p>
+                            </div>
+                        </div>
+                        <button onclick="toggleDarkMode()" id="darkModeBtn" class="px-4 py-2 rounded-xl bg-[#8e44ad] text-white text-xs font-bold shadow-md cursor-pointer transition-all">
+                            Activer Sombre
+                        </button>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold mb-2 flex justify-between opacity-80">
+                            <span>Transparence des cartes:</span>
+                            <span id="opacityVal">20%</span>
+                        </label>
+                        <input type="range" id="opacitySlider" min="0.05" max="0.85" step="0.05" value="0.20" class="w-full accent-[#8e44ad] cursor-pointer" oninput="updateOpacity(this.value)">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold mb-2 flex justify-between opacity-80">
+                            <span>Luminosité de l'arrière-plan (Assombrir / Éclaircir):</span>
+                            <span id="brightnessVal">100%</span>
+                        </label>
+                        <input type="range" id="brightnessSlider" min="20" max="150" step="5" value="100" class="w-full accent-[#8e44ad] cursor-pointer" oninput="updateBrightness(this.value)">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold mb-2 opacity-80">Image d'arrière-plan (.jpg, .png)</label>
+                        <input type="file" id="bgInput" accept="image/*" class="w-full glass-input rounded-xl p-2 text-xs cursor-pointer">
+                    </div>
+
+                    <div class="pt-4 border-t border-purple-900/10 space-y-3">
+                        <button onclick="toggleMaintenanceMode()" class="w-full py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-xs font-bold text-white shadow-md cursor-pointer">
+                            🛠️ Activer / Désactiver la Maintenance
+                        </button>
+                        <button onclick="removeCustomBackground()" class="w-full py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-xs font-bold text-white shadow-md cursor-pointer">
+                            Réinitialiser l'arrière-plan
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTIE 6: INFO -->
         <section id="info-section" class="dashboard-section space-y-6 hidden">
             <div class="glass-card p-6 max-w-2xl mx-auto space-y-6 text-center">
                 <img src="logo.jpg" alt="Logo Au Bonheur Des Anges" class="w-24 h-24 rounded-full mx-auto border-2 border-white/60 shadow-lg object-cover" onerror="this.src='https://via.placeholder.com/96'">
                 <h2 class="text-xl font-bold text-[#8e44ad]">Au bonheur des Anges</h2>
                 <span class="inline-block bg-[#8e44ad]/15 text-[#8e44ad] border border-[#8e44ad]/30 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider">Application Responsive</span>
-                <p class="text-sm text-gray-700">Gestion centralisée des commandes et produits avec synchronisation Firebase Cloud.</p>
+                <p class="text-sm opacity-80">Gestion centralisée des commandes et produits avec synchronisation Firebase Cloud.</p>
                 <div class="pt-4">
                     <a href="index.html" class="inline-flex items-center gap-2 px-6 py-3 bg-[#8e44ad] text-white rounded-xl text-sm font-bold shadow-md hover:bg-[#7d3c98] transition-all">
                         <i class="fa-solid fa-house"></i> Retour à l'accueil (index.html)
@@ -413,46 +493,42 @@
     </main>
 
     <!-- ================= MOBIELE NAVIGATIE BALK (ONDERAN) ================= -->
-    <nav class="fixed bottom-0 left-0 right-0 glass-card m-2 p-2 flex justify-around items-center z-30 md:hidden bg-white/85 shadow-lg border border-white/60">
+    <nav class="fixed bottom-0 left-0 right-0 glass-card m-2 p-2 flex justify-around items-center z-30 md:hidden shadow-lg border">
         <button onclick="showSection('order-section')" id="mob-nav-order-section" class="mob-nav-btn flex flex-col items-center p-2 text-[#8e44ad] text-xs font-semibold cursor-pointer">
             <i class="fa-solid fa-cart-plus text-base"></i>
             <span class="text-[10px]">Commander</span>
         </button>
-        <button onclick="showSection('list-section')" id="mob-nav-list-section" class="mob-nav-btn flex flex-col items-center p-2 text-gray-600 text-xs font-semibold cursor-pointer">
+        <button onclick="showSection('list-section')" id="mob-nav-list-section" class="mob-nav-btn flex flex-col items-center p-2 opacity-70 text-xs font-semibold cursor-pointer">
             <i class="fa-solid fa-list-check text-base"></i>
             <span class="text-[10px]">Listes</span>
         </button>
-        <button onclick="showSection('pdf-section')" id="mob-nav-pdf-section" class="mob-nav-btn flex flex-col items-center p-2 text-gray-600 text-xs font-semibold cursor-pointer">
+        <button onclick="showSection('pdf-section')" id="mob-nav-pdf-section" class="mob-nav-btn flex flex-col items-center p-2 opacity-70 text-xs font-semibold cursor-pointer">
             <i class="fa-solid fa-file-pdf text-base"></i>
             <span class="text-[10px]">PDF</span>
         </button>
-        <button onclick="showSection('notebook-section')" id="mob-nav-notebook-section" class="mob-nav-btn flex flex-col items-center p-2 text-gray-600 text-xs font-semibold cursor-pointer">
+        <button onclick="showSection('notebook-section')" id="mob-nav-notebook-section" class="mob-nav-btn flex flex-col items-center p-2 opacity-70 text-xs font-semibold cursor-pointer">
             <i class="fa-solid fa-book text-base"></i>
             <span class="text-[10px]">Notes</span>
         </button>
-        <button onclick="showSection('info-section')" id="mob-nav-info-section" class="mob-nav-btn flex flex-col items-center p-2 text-gray-600 text-xs font-semibold cursor-pointer">
-            <i class="fa-solid fa-circle-info text-base"></i>
-            <span class="text-[10px]">Info</span>
+        <button onclick="showSection('settings-section')" id="mob-nav-settings-section" class="mob-nav-btn flex flex-col items-center p-2 opacity-70 text-xs font-semibold cursor-pointer">
+            <i class="fa-solid fa-sliders text-base"></i>
+            <span class="text-[10px]">Style</span>
         </button>
     </nav>
 
-    <!-- ================= MODALS & POPUPS ================= -->
-
-    <!-- PRODUKTEN BEHEER MODAL -->
+    <!-- MODAL PRODUCTEN & TOAST -->
     <div id="productModal" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-md flex items-center justify-center p-4 hidden">
-        <div class="glass-card w-full max-w-2xl p-6 rounded-2xl relative max-h-[90vh] overflow-y-auto bg-white/95">
+        <div class="glass-card w-full max-w-2xl p-6 rounded-2xl relative max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center pb-4 mb-4 border-b border-purple-900/10">
                 <h3 class="font-bold text-lg text-[#8e44ad] flex items-center gap-2">
                     <i class="fa-solid fa-boxes-stacked"></i> Gestion des Produits & Catégories
                 </h3>
-                <button onclick="closeProductModal()" class="text-gray-500 hover:text-gray-800 text-xl font-bold cursor-pointer">&times;</button>
+                <button onclick="closeProductModal()" class="opacity-70 hover:opacity-100 text-xl font-bold cursor-pointer">&times;</button>
             </div>
-
-            <form id="productForm" class="space-y-4 mb-6 bg-white/50 p-4 rounded-xl border border-white/60 shadow-sm">
-                <input type="hidden" id="editProductId" value="">
+            <form id="productForm" class="space-y-4 mb-6 glass-card p-4 rounded-xl border shadow-sm">
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold mb-1 text-gray-700">Catégorie *</label>
+                        <label class="block text-xs font-semibold mb-1 opacity-80">Catégorie *</label>
                         <select id="categorieSelect" class="w-full glass-input rounded-xl px-3 py-2 text-xs cursor-pointer" required>
                             <option value="Sublimation">Sublimation</option>
                             <option value="Créations 3D">Créations 3D</option>
@@ -462,24 +538,19 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold mb-1 text-gray-700">Nom du produit *</label>
+                        <label class="block text-xs font-semibold mb-1 opacity-80">Nom du produit *</label>
                         <input type="text" id="productNaam" class="w-full glass-input rounded-xl px-3 py-2 text-xs" placeholder="ex: Mug photo" required>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold mb-1 text-gray-700">Prix (€) *</label>
+                        <label class="block text-xs font-semibold mb-1 opacity-80">Prix (€) *</label>
                         <input type="number" step="0.01" id="productPrijs" class="w-full glass-input rounded-xl px-3 py-2 text-xs" placeholder="0.00" required>
                     </div>
                 </div>
                 <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="addNewCategoryPrompt()" class="px-3 py-1.5 rounded-lg bg-white hover:bg-gray-100 text-xs font-semibold border border-gray-300 text-gray-700 shadow-sm cursor-pointer">
-                        + Nouvelle Catégorie
-                    </button>
-                    <button type="submit" id="submitProductBtn" class="px-4 py-1.5 rounded-lg bg-[#8e44ad] hover:bg-[#7d3c98] text-xs font-bold text-white shadow-md cursor-pointer">
-                        Enregistrer
-                    </button>
+                    <button type="button" onclick="addNewCategoryPrompt()" class="px-3 py-1.5 rounded-lg glass-card text-xs font-semibold border cursor-pointer">+ Nouvelle Catégorie</button>
+                    <button type="submit" class="px-4 py-1.5 rounded-lg bg-[#8e44ad] hover:bg-[#7d3c98] text-xs font-bold text-white shadow-md cursor-pointer">Enregistrer</button>
                 </div>
             </form>
-
             <div class="overflow-x-auto rounded-xl border border-purple-900/10">
                 <table class="w-full text-left text-xs">
                     <thead class="bg-purple-900/5 text-[#8e44ad] border-b border-purple-900/10 font-bold">
@@ -491,55 +562,22 @@
                         </tr>
                     </thead>
                     <tbody id="productsTableBody" class="divide-y divide-purple-900/10">
-                        <tr><td colspan="4" class="p-4 text-center text-gray-500">Chargement...</td></tr>
+                        <tr><td colspan="4" class="p-4 text-center opacity-60">Chargement...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- INSTELLINGEN MODAL -->
-    <div id="settingsModal" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-md flex items-center justify-center p-4 hidden">
-        <div class="glass-card w-full max-w-md p-6 rounded-2xl relative space-y-4 bg-white/95">
-            <div class="flex justify-between items-center pb-2 border-b border-purple-900/10">
-                <h3 class="font-bold text-lg text-[#8e44ad]">Réglages</h3>
-                <button onclick="closeSettingsModal()" class="text-gray-500 hover:text-gray-800 text-xl font-bold cursor-pointer">&times;</button>
-            </div>
-            
-            <div>
-                <label class="block text-xs font-semibold mb-2 flex justify-between text-gray-700">
-                    <span>Transparence des cartes:</span>
-                    <span id="opacityVal">20%</span>
-                </label>
-                <input type="range" id="opacitySlider" min="0.05" max="0.85" step="0.05" value="0.20" class="w-full accent-[#8e44ad] cursor-pointer" oninput="updateOpacity(this.value)">
-            </div>
-
-            <div>
-                <label class="block text-xs font-semibold mb-2 text-gray-700">Image d'arrière-plan</label>
-                <input type="file" id="bgInput" accept="image/*" class="w-full glass-input rounded-xl p-2 text-xs cursor-pointer">
-            </div>
-
-            <button onclick="toggleMaintenanceMode()" class="w-full py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-xs font-bold text-white shadow-md cursor-pointer">
-                🛠️ Activer / Désactiver la Maintenance
-            </button>
-
-            <button onclick="removeCustomBackground()" class="w-full py-2 rounded-xl bg-red-600 hover:bg-red-700 text-xs font-bold text-white shadow-md cursor-pointer">
-                Réinitialiser l'arrière-plan
-            </button>
-        </div>
-    </div>
-
-    <!-- Lightbox -->
     <div id="lightboxModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4" onclick="closeLightbox()">
         <img id="lightboxImage" class="max-w-full max-h-[85vh] rounded-xl object-contain shadow-2xl" src="" alt="Agrandissement">
     </div>
 
-    <!-- Notification Toast -->
     <div id="toastNotification" class="fixed bottom-20 right-5 z-50 bg-emerald-600 text-white font-semibold text-xs px-4 py-3 rounded-xl shadow-xl hidden transition-all">
         <span id="toastText">Opération réussie !</span>
     </div>
 
-    <!-- ================= FIREBASE & APP SCRIPT ================= -->
+    <!-- SCRIPT -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getDatabase, ref, push, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -558,30 +596,117 @@
         const db = getDatabase(app);
 
         let allOrders = [];
-        let allProducts = {};
-        let allIdeas = {};
-        let currentBase64Image = "";
-
         const ADMIN_PIN = "1234";
 
         document.addEventListener("DOMContentLoaded", () => {
             const isMaintenanceOn = localStorage.getItem("appMaintenanceMode") === "true";
             const isAdminUnlocked = sessionStorage.getItem("adminUnlocked") === "true";
-
             if (isMaintenanceOn && !isAdminUnlocked) {
                 document.getElementById("maintenanceOverlay").style.display = "flex";
             }
+
+            // Donkere modus initialiseren
+            const isDarkMode = localStorage.getItem("appDarkMode") === "true";
+            if (isDarkMode) {
+                document.body.classList.add("dark-mode");
+                document.getElementById("darkModeBtn").textContent = "Désactiver Sombre";
+            }
+
+            const savedBg = localStorage.getItem("customAppBackground");
+            if (savedBg) applyBackground(savedBg);
+
+            const savedOpacity = localStorage.getItem("appGlassOpacity") || "0.20";
+            document.getElementById("opacitySlider").value = savedOpacity;
+            updateOpacity(savedOpacity);
+
+            const savedBrightness = localStorage.getItem("appBackgroundBrightness") || "100";
+            document.getElementById("brightnessSlider").value = savedBrightness;
+            updateBrightness(savedBrightness);
+
+            document.getElementById("datum").value = new Date().toISOString().split('T')[0];
         });
 
-        window.requestAdminAccess = function() {
-            const enteredPin = prompt("Entrez le code secret administrateur :");
-            if (enteredPin === ADMIN_PIN) {
-                sessionStorage.setItem("adminUnlocked", "true");
-                document.getElementById("maintenanceOverlay").style.display = "none";
-                showToast("Accès administrateur autorisé !");
-            } else if (enteredPin !== null) {
-                alert("Code secret incorrect !");
-            }
+        window.toggleDarkMode = function() {
+            const isDark = document.body.classList.toggle("dark-mode");
+            localStorage.setItem("appDarkMode", isDark);
+            document.getElementById("darkModeBtn").textContent = isDark ? "Désactiver Sombre" : "Activer Sombre";
+            showToast(isDark ? "Mode sombre activé" : "Mode clair activé");
+        };
+
+        window.updateOpacity = function(val) {
+            document.documentElement.style.setProperty('--glass-bg', isDarkTheme() ? `rgba(30, 30, 40, ${val})` : `rgba(255, 255, 255, ${val})`);
+            document.getElementById('opacityVal').textContent = Math.round(val * 100) + "%";
+            localStorage.setItem("appGlassOpacity", val);
+        };
+
+        function isDarkTheme() {
+            return document.body.classList.contains("dark-mode");
+        }
+
+        window.updateBrightness = function(val) {
+            const styleEl = document.getElementById('dynamicBgStyle') || document.head.appendChild(document.createElement('style'));
+            styleEl.id = 'dynamicBgStyle';
+            styleEl.textContent = `body::before { filter: brightness(${val}%); }`;
+            document.getElementById('brightnessVal').textContent = val + "%";
+            localStorage.setItem("appBackgroundBrightness", val);
+        };
+
+        const bgInput = document.getElementById('bgInput');
+        if (bgInput) {
+            bgInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const img = new Image();
+                        img.onload = function() {
+                            const canvas = document.createElement('canvas');
+                            const MAX_WIDTH = 1280;
+                            const MAX_HEIGHT = 1280;
+                            let width = img.width;
+                            let height = img.height;
+
+                            if (width > height) {
+                                if (width > MAX_WIDTH) {
+                                    height *= MAX_WIDTH / width;
+                                    width = MAX_WIDTH;
+                                }
+                            } else {
+                                if (height > MAX_HEIGHT) {
+                                    width *= MAX_HEIGHT / height;
+                                    height = MAX_HEIGHT;
+                                }
+                            }
+
+                            canvas.width = width;
+                            canvas.height = height;
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0, width, height);
+
+                            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                            applyBackground(compressedDataUrl);
+                            localStorage.setItem("customAppBackground", compressedDataUrl);
+                            showToast("Arrière-plan mis à jour !");
+                        };
+                        img.src = event.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        function applyBackground(dataUrl) {
+            const styleEl = document.getElementById('dynamicBgImageStyle') || document.head.appendChild(document.createElement('style'));
+            styleEl.id = 'dynamicBgImageStyle';
+            styleEl.textContent = `body::before { background-image: url('${dataUrl}'); }`;
+        }
+
+        window.removeCustomBackground = function() {
+            localStorage.removeItem("customAppBackground");
+            const styleEl = document.getElementById('dynamicBgImageStyle');
+            if (styleEl) styleEl.remove();
+            if (document.getElementById('bgInput')) document.getElementById('bgInput').value = '';
+            showToast("Arrière-plan réinitialisé.");
         };
 
         window.toggleMaintenanceMode = function() {
@@ -602,7 +727,6 @@
                 document.getElementById("maintenanceOverlay").style.display = "none";
                 showToast("Mode maintenance désactivé.");
             }
-            closeSettingsModal();
         };
 
         window.showSection = function(sectionId) {
@@ -611,96 +735,24 @@
 
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.classList.remove('bg-[#8e44ad]/15', 'text-[#8e44ad]', 'shadow-sm');
-                btn.classList.add('text-gray-700');
+                btn.classList.add('opacity-80');
             });
             const activeBtn = document.getElementById(`nav-${sectionId}`);
             if (activeBtn) {
                 activeBtn.classList.add('bg-[#8e44ad]/15', 'text-[#8e44ad]', 'shadow-sm');
-                activeBtn.classList.remove('text-gray-700');
+                activeBtn.classList.remove('opacity-80');
             }
 
             document.querySelectorAll('.mob-nav-btn').forEach(btn => {
                 btn.classList.remove('text-[#8e44ad]');
-                btn.classList.add('text-gray-600');
+                btn.classList.add('opacity-70');
             });
             const activeMobBtn = document.getElementById(`mob-nav-${sectionId}`);
             if (activeMobBtn) {
                 activeMobBtn.classList.add('text-[#8e44ad]');
-                activeMobBtn.classList.remove('text-gray-600');
+                activeMobBtn.classList.remove('opacity-70');
             }
         };
-
-        const connectedRef = ref(db, ".info/connected");
-        onValue(connectedRef, (snap) => {
-            const statusDot = document.getElementById("statusDot");
-            const statusText = document.getElementById("statusText");
-            if (snap.val() === true) {
-                statusDot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm animate-pulse";
-                statusText.textContent = "En ligne";
-                statusText.className = "text-xs text-emerald-700 font-medium";
-            } else {
-                statusDot.className = "w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm";
-                statusText.textContent = "Hors ligne";
-                statusText.className = "text-xs text-gray-600 font-medium";
-            }
-        });
-
-        window.updateOpacity = function(val) {
-            document.documentElement.style.setProperty('--glass-bg', `rgba(255, 255, 255, ${val})`);
-            document.getElementById('opacityVal').textContent = Math.round(val * 100) + "%";
-            localStorage.setItem("appGlassOpacity", val);
-        };
-
-        document.addEventListener("DOMContentLoaded", () => {
-            const savedBg = localStorage.getItem("customAppBackground");
-            if (savedBg) applyBackground(savedBg);
-
-            const savedOpacity = localStorage.getItem("appGlassOpacity") || "0.20";
-            document.getElementById("opacitySlider").value = savedOpacity;
-            updateOpacity(savedOpacity);
-
-            document.getElementById("datum").value = new Date().toISOString().split('T')[0];
-            loadCustomCategories();
-        });
-
-        const bgInput = document.getElementById('bgInput');
-        if (bgInput) {
-            bgInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(event) {
-                        const imageUrl = event.target.result;
-                        applyBackground(imageUrl);
-                        localStorage.setItem("customAppBackground", imageUrl);
-                        closeSettingsModal();
-                        showToast("Arrière-plan mis à jour !");
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-        }
-
-        function applyBackground(dataUrl) {
-            document.body.style.backgroundImage = `url('${dataUrl}')`;
-            document.body.style.backgroundSize = "cover";
-            document.body.style.backgroundPosition = "center";
-            document.body.style.backgroundAttachment = "fixed";
-        }
-
-        window.removeCustomBackground = function() {
-            localStorage.removeItem("customAppBackground");
-            document.body.style.backgroundImage = "none";
-            document.body.style.backgroundColor = "#fbeef7";
-            closeSettingsModal();
-            showToast("Arrière-plan réinitialisé.");
-        };
-
-        window.openProductModal = () => document.getElementById("productModal").classList.remove("hidden");
-        window.closeProductModal = () => document.getElementById("productModal").classList.add("hidden");
-        window.openSettingsModal = () => document.getElementById("settingsModal").classList.remove("hidden");
-        window.closeSettingsModal = () => document.getElementById("settingsModal").classList.add("hidden");
-        window.closeLightbox = () => document.getElementById("lightboxModal").classList.add("hidden");
 
         window.showToast = function(msg) {
             const toast = document.getElementById("toastNotification");
@@ -709,214 +761,19 @@
             setTimeout(() => toast.classList.add("hidden"), 3500);
         };
 
-        function loadCustomCategories() {
-            const customCats = JSON.parse(localStorage.getItem("customCategories") || "[]");
-            const select = document.getElementById("categorieSelect");
-            customCats.forEach(cat => {
-                if (!select.querySelector(`option[value="${cat}"]`)) {
-                    select.add(new Option(cat, cat));
-                }
-            });
-        }
-
-        window.addNewCategoryPrompt = function() {
-            const newCat = prompt("Entrez la nouvelle catégorie :");
-            if (newCat && newCat.trim()) {
-                const clean = newCat.trim();
-                const select = document.getElementById("categorieSelect");
-                select.add(new Option(clean, clean));
-                select.value = clean;
-
-                const customCats = JSON.parse(localStorage.getItem("customCategories") || "[]");
-                customCats.push(clean);
-                localStorage.setItem("customCategories", JSON.stringify(customCats));
-            }
-        };
-
-        const productsRef = ref(db, 'products');
-        onValue(productsRef, (snapshot) => {
-            const selectMenu = document.getElementById("text");
-            const tableBody = document.getElementById("productsTableBody");
-
-            selectMenu.innerHTML = '<option value="" data-price="">-- Sélectionner un produit --</option>';
-            tableBody.innerHTML = '';
-
-            if (snapshot.exists()) {
-                allProducts = snapshot.val();
-                const categories = {};
-
-                Object.keys(allProducts).forEach(key => {
-                    const item = allProducts[key];
-                    const cat = item.categorie || "Autre";
-                    if (!categories[cat]) categories[cat] = [];
-                    categories[cat].push({ id: key, ...item });
-                });
-
-                Object.keys(categories).sort().forEach(catName => {
-                    const optGroup = document.createElement("optgroup");
-                    optGroup.label = catName;
-
-                    categories[catName].forEach(prod => {
-                        const option = document.createElement("option");
-                        option.value = prod.naam;
-                        option.setAttribute("data-price", prod.prijs);
-                        option.textContent = `${prod.naam} - ${parseFloat(prod.prijs).toFixed(2)} €`;
-                        optGroup.appendChild(option);
-
-                        const tr = document.createElement("tr");
-                        tr.innerHTML = `
-                            <td class="p-3"><span class="bg-[#8e44ad]/10 px-2 py-1 rounded text-[#8e44ad] font-semibold">${escapeHtml(prod.categorie || 'Autre')}</span></td>
-                            <td class="p-3 font-semibold text-gray-800">${escapeHtml(prod.naam)}</td>
-                            <td class="p-3 text-emerald-600 font-bold">${parseFloat(prod.prijs).toFixed(2)} €</td>
-                            <td class="p-3 text-right">
-                                <button onclick="deleteProductFromDb('${prod.id}')" class="text-red-500 hover:text-red-700 cursor-pointer"><i class="fa-solid fa-trash"></i></button>
-                            </td>
-                        `;
-                        tableBody.appendChild(tr);
-                    });
-                    selectMenu.appendChild(optGroup);
-                });
-            } else {
-                selectMenu.innerHTML = '<option value="" data-price="">-- Aucun produit trouvé --</option>';
-                tableBody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500">Aucun produit</td></tr>';
-            }
-        });
-
-        document.getElementById("productForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const cat = document.getElementById("categorieSelect").value;
-            const naam = document.getElementById("productNaam").value.trim();
-            const prijs = parseFloat(document.getElementById("productPrijs").value) || 0;
-
-            try {
-                await set(push(ref(db, 'products')), {
-                    categorie: cat,
-                    naam: naam,
-                    prijs: prijs,
-                    timestamp: Date.now()
-                });
-                showToast("Produit ajouté avec succès !");
-                document.getElementById("productForm").reset();
-            } catch (err) {
-                alert("Erreur: " + err.message);
-            }
-        });
-
-        window.deleteProductFromDb = async function(id) {
-            if (confirm("Voulez-vous supprimer ce produit ?")) {
-                await remove(ref(db, `products/${id}`));
-                showToast("Produit supprimé !");
-            }
-        };
-
-        window.updateDefaultPrice = function() {
-            const select = document.getElementById("text");
-            const selectedOpt = select.options[select.selectedIndex];
-            const price = selectedOpt.getAttribute("data-price");
-            if (price) {
-                document.getElementById("prijs").value = price;
-                calculateTotal();
-            }
-        };
-
-        window.calculateTotal = function() {
-            const aantal = parseInt(document.getElementById("aantal").value) || 0;
-            const prijs = parseFloat(document.getElementById("prijs").value) || 0;
-            document.getElementById("totalAmount").textContent = (aantal * prijs).toFixed(2);
-        };
-
-        window.clearFormDraft = function() {
-            document.getElementById("orderForm").reset();
-            document.getElementById("editOrderId").value = "";
-            document.getElementById("datum").value = new Date().toISOString().split('T')[0];
-            document.getElementById("totalAmount").textContent = "0.00";
-            document.getElementById("formSectionTitle").innerHTML = '<i class="fa-solid fa-plus-circle"></i> Nouvelle Commande';
-            document.getElementById("submitBtn").textContent = "Enregistrer la commande";
-            document.getElementById("formCardContainer").classList.remove("editing-mode");
-        };
-
-        window.editOrder = function(id) {
-            const order = allOrders.find(o => o.id === id);
-            if (!order) return;
-
-            document.getElementById("editOrderId").value = order.id;
-            document.getElementById("naam").value = order.naam || "";
-            document.getElementById("adres").value = order.adres || "";
-            document.getElementById("text").value = order.text || "";
-            document.getElementById("aantal").value = order.aantal || 1;
-            document.getElementById("prijs").value = order.prijs || 0;
-            document.getElementById("datum").value = order.datum || new Date().toISOString().split('T')[0];
-            document.getElementById("betaald").checked = !!order.betaald;
-            document.getElementById("preorder").checked = !!order.preorder;
-
-            calculateTotal();
-            document.getElementById("formSectionTitle").innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Modifier la commande';
-            document.getElementById("submitBtn").textContent = "Mettre à jour la commande";
-            document.getElementById("formCardContainer").classList.add("editing-mode");
-
-            showSection('order-section');
-        };
-
-        document.getElementById("orderForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const text = document.getElementById("text").value;
-            if (!text) {
-                alert("Veuillez sélectionner un produit.");
-                return;
-            }
-
-            const editId = document.getElementById("editOrderId").value;
-            const orderData = {
-                naam: document.getElementById("naam").value.trim(),
-                adres: document.getElementById("adres").value.trim(),
-                text: text,
-                aantal: parseInt(document.getElementById("aantal").value) || 1,
-                prijs: parseFloat(document.getElementById("prijs").value) || 0,
-                datum: document.getElementById("datum").value,
-                betaald: document.getElementById("betaald").checked,
-                preorder: document.getElementById("preorder").checked,
-                terugbetaald: false,
-                timestamp: Date.now()
-            };
-
-            try {
-                if (editId) {
-                    await update(ref(db, `items/${editId}`), orderData);
-                    showToast("Commande mise à jour avec succès !");
-                } else {
-                    await set(push(ref(db, 'items')), orderData);
-                    showToast("Commande enregistrée avec succès !");
-                }
-                clearFormDraft();
-                showSection('list-section');
-            } catch (err) {
-                alert("Erreur lors de l'enregistrement: " + err.message);
-            }
-        });
+        window.openProductModal = () => document.getElementById("productModal").classList.remove("hidden");
+        window.closeProductModal = () => document.getElementById("productModal").classList.add("hidden");
+        window.closeLightbox = () => document.getElementById("lightboxModal").classList.add("hidden");
 
         const itemsRef = ref(db, 'items');
         onValue(itemsRef, (snapshot) => {
-            document.getElementById("loadingText").style.display = "none";
             const data = snapshot.val();
-            
-            if (!data) {
-                allOrders = [];
-            } else {
-                allOrders = Object.keys(data).map(key => ({
-                    id: key,
-                    ...data[key]
-                })).reverse();
-            }
-
-            updateDashboardStats();
-            filterItems();
-        });
-
-        function updateDashboardStats() {
+            allOrders = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })).reverse() : [];
             document.getElementById("statTotalOrders").textContent = allOrders.length;
             const totalRevenue = allOrders.reduce((sum, item) => sum + ((item.aantal || 1) * (item.prijs || 0)), 0);
             document.getElementById("statTotalRevenue").textContent = "€ " + totalRevenue.toFixed(2);
-        }
+            filterItems();
+        });
 
         window.filterItems = function() {
             const query = document.getElementById("searchInput").value.toLowerCase();
@@ -925,304 +782,7 @@
                 (item.adres || '').toLowerCase().includes(query) ||
                 (item.text || '').toLowerCase().includes(query)
             );
-            renderList(filtered);
         };
-
-        function renderList(items) {
-            const preorderList = document.getElementById("preorderList");
-            const normalList = document.getElementById("normalList");
-            const preorderSection = document.getElementById("preorderSection");
-            const normalSection = document.getElementById("normalSection");
-            const emptyMessage = document.getElementById("emptyMessage");
-
-            preorderList.innerHTML = '';
-            normalList.innerHTML = '';
-
-            const preorders = items.filter(i => i.preorder);
-            const normals = items.filter(i => !i.preorder);
-
-            document.getElementById("preorderCount").textContent = preorders.length;
-            document.getElementById("normalCount").textContent = normals.length;
-
-            if (preorders.length > 0) {
-                preorderSection.style.display = "block";
-                preorders.forEach(item => preorderList.appendChild(createItemElement(item)));
-            } else {
-                preorderSection.style.display = "none";
-            }
-
-            if (normals.length > 0) {
-                normalSection.style.display = "block";
-                normals.forEach(item => normalList.appendChild(createItemElement(item)));
-            } else {
-                normalSection.style.display = "none";
-            }
-
-            if (items.length === 0) {
-                emptyMessage.style.display = "block";
-            } else {
-                emptyMessage.style.display = "none";
-            }
-        }
-
-        function createItemElement(item) {
-            const li = document.createElement("li");
-            li.className = 'glass-card p-4 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm';
-
-            const total = ((item.aantal || 1) * (item.prijs || 0)).toFixed(2);
-            const statusPaid = item.betaald ? '<span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-700 border border-emerald-400/30 font-bold text-[10px]">Payé</span>' : '<span class="px-2 py-0.5 rounded bg-red-500/20 text-red-700 border border-red-400/30 font-bold text-[10px]">Non Payé</span>';
-            const preorderBadge = item.preorder ? '<span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-700 border border-purple-400/30 font-bold text-[10px]">📦 Pré-commande</span>' : '';
-
-            li.innerHTML = `
-                <div class="flex items-center gap-3">
-                    <input type="checkbox" class="item-checkbox w-4 h-4 accent-[#8e44ad] rounded cursor-pointer" value="${item.id}" onchange="updateSelectionUI()">
-                    <div>
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <h4 class="font-bold text-gray-900 text-base">${escapeHtml(item.naam || 'Inconnu')}</h4>
-                            ${statusPaid}
-                            ${preorderBadge}
-                        </div>
-                        <p class="text-xs text-[#8e44ad] font-medium mt-0.5">${escapeHtml(item.text || '')}</p>
-                        ${item.adres ? `<p class="text-xs text-gray-600">📍 ${escapeHtml(item.adres)}</p>` : ''}
-                    </div>
-                </div>
-                <div class="flex items-center gap-4 w-full md:w-auto justify-between border-t md:border-0 border-purple-900/10 pt-2 md:pt-0">
-                    <div class="text-right">
-                        <span class="text-xs text-gray-500 block">${item.aantal || 1}x €${parseFloat(item.prijs || 0).toFixed(2)}</span>
-                        <span class="text-base font-extrabold text-emerald-600">€ ${total}</span>
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="editOrder('${item.id}')" class="p-2 rounded-lg bg-[#8e44ad]/10 text-[#8e44ad] hover:bg-[#8e44ad] hover:text-white transition-all text-xs cursor-pointer" title="Modifier">
-                            <i class="fa-solid fa-pen"></i>
-                        </button>
-                        <button onclick="deleteItem('${item.id}')" class="p-2 rounded-lg bg-red-500/10 text-red-600 hover:bg-red-500 hover:text-white transition-all text-xs cursor-pointer" title="Supprimer">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-            return li;
-        }
-
-        window.toggleSelectAll = function(source) {
-            document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = source.checked);
-            updateSelectionUI();
-        };
-
-        window.updateSelectionUI = function() {
-            const selected = document.querySelectorAll('.item-checkbox:checked');
-            const deleteBtn = document.getElementById('deleteSelectedBtn');
-            const countSpan = document.getElementById('selectedCount');
-
-            if (selected.length > 0) {
-                deleteBtn.classList.remove('hidden');
-                countSpan.textContent = selected.length;
-            } else {
-                deleteBtn.classList.add('hidden');
-            }
-        };
-
-        window.deleteSelected = async function() {
-            const selected = document.querySelectorAll('.item-checkbox:checked');
-            if (confirm(`Supprimer les ${selected.length} commandes sélectionnées ?`)) {
-                const updates = {};
-                selected.forEach(cb => updates[`items/${cb.value}`] = null);
-                await update(ref(db), updates);
-                showToast("Commandes supprimées !");
-            }
-        };
-
-        window.deleteItem = async function(id) {
-            if (confirm("Supprimer définitivement cette commande ?")) {
-                await remove(ref(db, `items/${id}`));
-                showToast("Commande supprimée !");
-            }
-        };
-
-        // Garantie van nette, overzichtelijke tabellen in de PDF-export
-        window.exportToPDF = function() {
-            const currentQuery = document.getElementById("searchInput").value.toLowerCase();
-            const filteredOrders = allOrders.filter(item => 
-                (item.naam || '').toLowerCase().includes(currentQuery) ||
-                (item.adres || '').toLowerCase().includes(currentQuery) ||
-                (item.text || '').toLowerCase().includes(currentQuery)
-            );
-
-            const preorders = filteredOrders.filter(i => i.preorder);
-            const normals = filteredOrders.filter(i => !i.preorder);
-
-            let pdfHtml = `
-                <div style="font-family: Arial, sans-serif; padding: 20px; color: #202124; background: #ffffff;">
-                    <h2 style="text-align: center; color: #8e44ad; margin-bottom: 5px; font-size: 22px;">Au Bonheur Des Anges</h2>
-                    <p style="text-align: center; font-size: 12px; color: #666; margin-bottom: 25px;">Liste des Commandes & Pré-commandes</p>
-            `;
-
-            if (preorders.length > 0) {
-                pdfHtml += `
-                    <h3 style="background-color: #8e44ad; color: white; padding: 8px 12px; font-size: 14px; border-radius: 4px; margin-bottom: 10px;">📦 Pré-commandes (${preorders.length})</h3>
-                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 11px;">
-                        <thead>
-                            <tr style="background-color: #f3e5f5; color: #8e44ad; text-align: left;">
-                                <th style="padding: 8px; border-bottom: 2px solid #ddd;">Client / Adresse</th>
-                                <th style="padding: 8px; border-bottom: 2px solid #ddd;">Produit</th>
-                                <th style="padding: 8px; border-bottom: 2px solid #ddd;">Qté & Prix</th>
-                                <th style="padding: 8px; border-bottom: 2px solid #ddd;">Total</th>
-                                <th style="padding: 8px; border-bottom: 2px solid #ddd;">Statut</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
-                preorders.forEach(item => {
-                    const total = ((item.aantal || 1) * (item.prijs || 0)).toFixed(2);
-                    const paidText = item.betaald ? 'Payé' : 'Non Payé';
-                    pdfHtml += `
-                        <tr>
-                            <td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>${escapeHtml(item.naam)}</strong>${item.adres ? '<br><span style="color:#666;">' + escapeHtml(item.adres) + '</span>' : ''}</td>
-                            <td style="padding: 8px; border-bottom: 1px solid #eee;">${escapeHtml(item.text)}</td>
-                            <td style="padding: 8px; border-bottom: 1px solid #eee;">${item.aantal || 1} x €${parseFloat(item.prijs || 0).toFixed(2)}</td>
-                            <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold; color: #27ae60;">€${total}</td>
-                            <td style="padding: 8px; border-bottom: 1px solid #eee;">${paidText}</td>
-                        </tr>
-                    `;
-                });
-                pdfHtml += `</tbody></table>`;
-            }
-
-            if (normals.length > 0) {
-                pdfHtml += `
-                    <h3 style="background-color: #4a5568; color: white; padding: 8px 12px; font-size: 14px; border-radius: 4px; margin-bottom: 10px;">🛍️ Commandes Normales (${normals.length})</h3>
-                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 11px;">
-                        <thead>
-                            <tr style="background-color: #edf2f7; color: #2d3748; text-align: left;">
-                                <th style="padding: 8px; border-bottom: 2px solid #ddd;">Client / Adresse</th>
-                                <th style="padding: 8px; border-bottom: 2px solid #ddd;">Produit</th>
-                                <th style="padding: 8px; border-bottom: 2px solid #ddd;">Qté & Prix</th>
-                                <th style="padding: 8px; border-bottom: 2px solid #ddd;">Total</th>
-                                <th style="padding: 8px; border-bottom: 2px solid #ddd;">Statut</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
-                normals.forEach(item => {
-                    const total = ((item.aantal || 1) * (item.prijs || 0)).toFixed(2);
-                    const paidText = item.betaald ? 'Payé' : 'Non Payé';
-                    pdfHtml += `
-                        <tr>
-                            <td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>${escapeHtml(item.naam)}</strong>${item.adres ? '<br><span style="color:#666;">' + escapeHtml(item.adres) + '</span>' : ''}</td>
-                            <td style="padding: 8px; border-bottom: 1px solid #eee;">${escapeHtml(item.text)}</td>
-                            <td style="padding: 8px; border-bottom: 1px solid #eee;">${item.aantal || 1} x €${parseFloat(item.prijs || 0).toFixed(2)}</td>
-                            <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold; color: #27ae60;">€${total}</td>
-                            <td style="padding: 8px; border-bottom: 1px solid #eee;">${paidText}</td>
-                        </tr>
-                    `;
-                });
-                pdfHtml += `</tbody></table>`;
-            }
-
-            if (filteredOrders.length === 0) {
-                pdfHtml += `<p style="text-align: center; color: #666; padding: 20px;">Aucune commande trouvée.</p>`;
-            }
-
-            pdfHtml += `</div>`;
-
-            const container = document.createElement("div");
-            container.innerHTML = pdfHtml;
-
-            const options = {
-                margin: 10,
-                filename: 'Au_bonheur_des_Anges_Commandes.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-
-            html2pdf().set(options).from(container).save().then(() => {
-                showToast("PDF téléchargé avec succès !");
-            }).catch(err => {
-                console.error("PDF Error:", err);
-                alert("Erreur lors de la génération du PDF.");
-            });
-        };
-
-        window.shareList = async function() {
-            if (navigator.share) {
-                await navigator.share({ title: 'Au bonheur des Anges', url: window.location.href });
-            } else {
-                navigator.clipboard.writeText(window.location.href);
-                showToast("Lien copié !");
-            }
-        };
-
-        const ideasRef = ref(db, 'ideas');
-        onValue(ideasRef, (snapshot) => {
-            const container = document.getElementById("ideasContainer");
-            container.innerHTML = "";
-
-            if (snapshot.exists()) {
-                allIdeas = snapshot.val();
-                Object.keys(allIdeas).reverse().forEach(id => {
-                    const item = allIdeas[id];
-                    const div = document.createElement("div");
-                    div.className = "glass-card p-4 rounded-xl flex flex-col gap-2 shadow-sm";
-                    div.innerHTML = `
-                        <div class="flex justify-between items-start">
-                            <h4 class="font-bold text-gray-900 text-sm">${escapeHtml(item.titre || 'Sans titre')}</h4>
-                            <button onclick="deleteIdea('${id}')" class="text-xs text-red-600 hover:text-red-800 cursor-pointer"><i class="fa-solid fa-trash"></i></button>
-                        </div>
-                        ${item.description ? `<p class="text-xs text-gray-700">${escapeHtml(item.description)}</p>` : ''}
-                        ${item.image ? `<img src="${item.image}" class="h-32 object-cover rounded-lg cursor-pointer mt-2 border border-white/60" onclick="openLightbox('${item.image}')">` : ''}
-                    `;
-                    container.appendChild(div);
-                });
-            } else {
-                container.innerHTML = '<div class="text-center py-6 text-gray-500">Aucune idée enregistrée</div>';
-            }
-        });
-
-        document.getElementById("ideaForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const titre = document.getElementById("ideaTitre").value.trim();
-            const desc = document.getElementById("ideaDescription").value.trim();
-
-            try {
-                await set(push(ideasRef), {
-                    titre: titre,
-                    description: desc,
-                    image: currentBase64Image || "",
-                    timestamp: Date.now()
-                });
-                showToast("Nouvelle idée enregistrée !");
-                document.getElementById("ideaForm").reset();
-                currentBase64Image = "";
-            } catch (err) {
-                alert("Erreur: " + err.message);
-            }
-        });
-
-        document.getElementById("ideaPhoto").addEventListener("change", (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => currentBase64Image = event.target.result;
-                reader.readAsDataURL(file);
-            }
-        });
-
-        window.deleteIdea = async function(id) {
-            if (confirm("Supprimer cette idée ?")) {
-                await remove(ref(db, `ideas/${id}`));
-                showToast("Idée supprimée !");
-            }
-        };
-
-        window.openLightbox = function(src) {
-            document.getElementById("lightboxImage").src = src;
-            document.getElementById("lightboxModal").classList.remove("hidden");
-        };
-
-        function escapeHtml(str) {
-            return str ? str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;") : '';
-        }
     </script>
 </body>
 </html>
