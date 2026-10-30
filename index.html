@@ -31,6 +31,19 @@
             min-height: 100vh;
         }
 
+        /* Klasse wanneer een aangepaste achtergrond actief is */
+        body.custom-bg-active {
+            color: #000000 !important;
+        }
+        body.custom-bg-active .form-group label,
+        body.custom-bg-active .checkbox-group label,
+        body.custom-bg-active .item-description,
+        body.custom-bg-active p,
+        body.custom-bg-active h2,
+        body.custom-bg-active h3 {
+            color: #000000 !important;
+        }
+
         /* iOS Transparante Header */
         .app-header { 
             background: var(--glass-bg); 
@@ -716,6 +729,48 @@
 
     window.updateOpacity = function(val) {
         document.documentElement.style.setProperty('--glass-bg', `rgba(255, 255, 255, ${val})`);
+    };
+
+    // Achtergrond upload functionaliteit & automatische zwarte tekstkleur
+    const bgInput = document.getElementById('bgInput');
+    if (bgInput) {
+        const savedBg = localStorage.getItem('custom_bg');
+        if (savedBg) {
+            document.body.style.backgroundImage = `url(${savedBg})`;
+            document.body.style.backgroundSize = 'cover';
+            document.body.style.backgroundPosition = 'center';
+            document.body.style.backgroundAttachment = 'fixed';
+            document.body.classList.add('custom-bg-active');
+        }
+
+        bgInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const imageUrl = event.target.result;
+                    document.body.style.backgroundImage = `url(${imageUrl})`;
+                    document.body.style.backgroundSize = 'cover';
+                    document.body.style.backgroundPosition = 'center';
+                    document.body.style.backgroundAttachment = 'fixed';
+                    document.body.classList.add('custom-bg-active');
+                    localStorage.setItem('custom_bg', imageUrl);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    window.removeCustomBackground = function() {
+        localStorage.removeItem('custom_bg');
+        document.body.style.backgroundImage = '';
+        document.body.style.backgroundSize = '';
+        document.body.style.backgroundPosition = '';
+        document.body.style.backgroundAttachment = '';
+        document.body.classList.remove('custom-bg-active');
+        if (document.getElementById('bgInput')) {
+            document.getElementById('bgInput').value = '';
+        }
     };
 
     function escapeHtml(str) {
