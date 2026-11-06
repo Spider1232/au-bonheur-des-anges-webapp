@@ -31,19 +31,6 @@
             min-height: 100vh;
         }
 
-        /* Klasse wanneer een aangepaste achtergrond actief is */
-        body.custom-bg-active {
-            color: #000000 !important;
-        }
-        body.custom-bg-active .form-group label,
-        body.custom-bg-active .checkbox-group label,
-        body.custom-bg-active .item-description,
-        body.custom-bg-active p,
-        body.custom-bg-active h2,
-        body.custom-bg-active h3 {
-            color: #000000 !important;
-        }
-
         /* iOS Transparante Header */
         .app-header { 
             background: var(--glass-bg); 
@@ -262,10 +249,25 @@
         .btn-card-ready { background: rgba(241, 196, 15, 0.2); color: #b7950b; }
         .btn-card-delete { color: #c0392b; background: rgba(231, 76, 60, 0.15); }
 
+        /* Activiteitenlog lijststijl */
+        .activity-item {
+            background: rgba(255, 255, 255, 0.4);
+            border-left: 3px solid #8e44ad;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+        .activity-time {
+            font-size: 10px;
+            color: #7f8c8d;
+            margin-bottom: 2px;
+        }
+
         /* Navigation Bar */
         .bottom-nav { 
             position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
-            width: calc(100% - 24px); max-width: 450px; 
+            width: calc(100% - 24px); max-width: 480px; 
             background: rgba(255, 255, 255, 0.88); 
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -429,12 +431,9 @@
 </div>
 
 <!-- TAB 3: LISTE PDF -->
-
-
 <div id="tab-pdf" class="tab-content app-view" style="max-width: 100%; height: 80vh;">
     <h1>La liste PDF et pas à jour La commande de la liste est en ordre </h1>
     <embed src="" type="application/pdf" width="100%" height="100%">
-        
 </div>
 
 <!-- TAB 4: INFO -->
@@ -523,22 +522,24 @@
     </div>
 </div>
 
-<!-- MODAL: SETTINGS -->
+<!-- MODAL: SETTINGS & ACTIVITIES -->
 <div id="settingsModal" class="modal-overlay">
     <div class="modal-container">
         <div class="modal-header">
-            <h3>Réglages du style</h3>
+            <h3>Réglages & Activités</h3>
             <button class="btn-close-modal" onclick="document.getElementById('settingsModal').style.display='none'">&times;</button>
         </div>
         <div class="form-group">
             <label>Transparence des cartes:</label>
             <input type="range" id="opacitySlider" min="0.05" max="0.95" step="0.05" value="0.20" oninput="window.updateOpacity(this.value)">
         </div>
-        <div class="form-group">
-            <label>Arrière-plan (.jpg, .png)</label>
-            <input type="file" id="bgInput" accept="image/*" class="form-control">
+
+        <hr style="border: none; border-top: 1px solid rgba(0,0,0,0.1); margin: 15px 0;">
+
+        <h3 style="font-size: 14px; color: #8e44ad; margin-bottom: 10px;">📋 Historique des Activités</h3>
+        <div id="activityLogContainer" style="max-height: 250px; overflow-y: auto; background: rgba(255,255,255,0.5); border-radius: 12px; padding: 10px; border: 1px solid var(--glass-border);">
+            <p style="font-size: 12px; color: #7f8c8d; text-align: center; margin: 10px 0;">Chargement des activités...</p>
         </div>
-        <button class="btn-reset" onclick="window.removeCustomBackground()">Réinitialiser l'arrière-plan</button>
     </div>
 </div>
 
@@ -570,7 +571,40 @@
 
     let allItems = [];
 
-    // Tab Switcher
+    async function logActivity(actionDescription) {
+        try {
+            const now = new Date();
+            const timeString = now.toLocaleString('fr-BE', { dateStyle: 'short', timeStyle: 'medium' });
+            await set(push(ref(db, 'activities')), {
+                text: actionDescription,
+                time: timeString,
+                timestamp: Date.now()
+            });
+        } catch (e) {
+            console.error("Fout bij loggen:", e);
+        }
+    }
+
+    onValue(ref(db, 'activities'), (snapshot) => {
+        const container = document.getElementById('activityLogContainer');
+        if (!container) return;
+        
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+            const activities = Object.keys(data).map(k => data[k]).sort((a, b) => b.timestamp - a.timestamp);
+            
+            container.innerHTML = '';
+            activities.slice(0, 30).forEach(act => {
+                const div = document.createElement('div');
+                div.className = 'activity-item';
+                div.innerHTML = `<div class="activity-time">🕒 ${act.time}</div><div>${escapeHtml(act.text)}</div>`;
+                container.appendChild(div);
+            });
+        } else {
+            container.innerHTML = '<p style="font-size: 12px; color: #7f8c8d; text-align: center; margin: 10px 0;">Aucune activité récente</p>';
+        }
+    });
+
     window.switchTab = function(tabId, el) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -578,7 +612,6 @@
         if (el) el.classList.add('active');
     };
 
-    // Product Modal Handlers
     window.openProductModal = function() {
         const frame = document.getElementById("productFrame");
         if (!frame.src || frame.src === "" || frame.src.endsWith("index.html")) {
@@ -591,7 +624,6 @@
         document.getElementById("productModal").style.display = "none";
     };
 
-    // Firebase Connection Status
     onValue(ref(db, ".info/connected"), (snap) => {
         const dot = document.getElementById("statusDot");
         const txt = document.getElementById("statusText");
@@ -604,7 +636,6 @@
         }
     });
 
-    // Products Loader
     onValue(ref(db, 'products'), (snapshot) => {
         const select = document.getElementById("text");
         select.innerHTML = '<option value="" data-price="">-- Sélectionner un produit --</option>';
@@ -621,7 +652,6 @@
         }
     });
 
-    // Orders Loader
     onValue(ref(db, 'items'), (snapshot) => {
         const data = snapshot.val();
         allItems = data ? Object.keys(data).map(k => ({ id: k, ...data[k] })).reverse() : [];
@@ -656,7 +686,6 @@
         document.getElementById("preorderCount").textContent = preorders.length;
         document.getElementById("normalCount").textContent = normals.length;
 
-        // Render Pre-orders
         if (preorders.length > 0) {
             preorderSection.style.display = "block";
             preorders.forEach(i => preorderList.appendChild(createItemElement(i)));
@@ -664,7 +693,6 @@
             preorderSection.style.display = "none";
         }
 
-        // Render Normal orders
         if (normals.length > 0) {
             normalSection.style.display = "block";
             normals.forEach(i => normalList.appendChild(createItemElement(i)));
@@ -672,7 +700,6 @@
             normalSection.style.display = "none";
         }
 
-        // Empty state
         if (items.length === 0) {
             emptyMessage.style.display = "block";
         } else {
@@ -703,23 +730,22 @@
                 <div style="display: flex; gap: 4px; flex-wrap: wrap;">
                     <button class="btn-card-action btn-card-ready" onclick="window.markAsReady('${i.id}', ${!i.klaarstaand})">${i.klaarstaand ? 'Annuler prêt' : 'Prêt'}</button>
                     <button class="btn-card-action" onclick="window.openEditModal('${i.id}')">Modifier</button>
-                    <button class="btn-card-action btn-card-delete" onclick="window.deleteItem('${i.id}')">Supprimer</button>
+                    <button class="btn-card-action btn-card-delete" onclick="window.deleteItem('${i.id}', '${escapeHtml(i.naam)}')">Supprimer</button>
                 </div>
             </div>
         `;
         return li;
     }
 
-    // Mark as Ready Toggle Function
     window.markAsReady = async function(id, newState) {
         try {
             await update(ref(db, `items/${id}`), { klaarstaand: newState });
+            await logActivity(`Statut 'Prêt' modifié pour la commande de ID ${id} (${newState ? 'Prêt' : 'En cours'})`);
         } catch (err) {
             alert("Erreur: " + err.message);
         }
     };
 
-    // Modal Edit Open
     window.openEditModal = function(id) {
         const item = allItems.find(i => i.id === id);
         if (!item) return;
@@ -739,12 +765,12 @@
         document.getElementById('editModal').style.display = 'flex';
     };
 
-    // Save Edit Form
     document.getElementById('editForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const id = document.getElementById('editId').value;
+        const naam = document.getElementById('editNaam').value.trim();
         const updated = {
-            naam: document.getElementById('editNaam').value.trim(),
+            naam: naam,
             adres: document.getElementById('editAdres').value.trim(),
             text: document.getElementById('editText').value.trim(),
             aantal: parseInt(document.getElementById('editAantal').value) || 1,
@@ -758,24 +784,25 @@
 
         try {
             await update(ref(db, `items/${id}`), updated);
+            await logActivity(`Commande modifiée pour : ${naam}`);
             document.getElementById('editModal').style.display = 'none';
         } catch (err) {
             alert("Erreur: " + err.message);
         }
     });
 
-    // Delete Item
-    window.deleteItem = async function(id) {
+    window.deleteItem = async function(id, clientName) {
         if (confirm("Supprimer cette commande ?")) {
             await remove(ref(db, `items/${id}`));
+            await logActivity(`Commande supprimée pour : ${clientName || 'Client'}`);
         }
     };
 
-    // Order Submit
     document.getElementById("orderForm").addEventListener("submit", async (e) => {
         e.preventDefault();
+        const clientName = document.getElementById("naam").value.trim();
         const newOrder = {
-            naam: document.getElementById("naam").value.trim(),
+            naam: clientName,
             adres: document.getElementById("adres").value.trim(),
             text: document.getElementById("text").value,
             aantal: parseInt(document.getElementById("aantal").value) || 1,
@@ -789,13 +816,13 @@
         };
 
         await set(push(ref(db, 'items')), newOrder);
+        await logActivity(`Nouvelle commande enregistrée pour : ${clientName}`);
         document.getElementById("orderForm").reset();
         document.getElementById("datum").value = new Date().toISOString().split('T')[0];
         alert("Commande enregistrée !");
     });
 
-    // Stabiele PDF Export met tabellen op basis van de actieve filter
-    window.exportToPDF = function() {
+    window.exportToPDF = async function() {
         const currentQuery = document.getElementById("searchInput").value.toLowerCase();
         const filteredOrders = allItems.filter(item => 
             (item.naam || '').toLowerCase().includes(currentQuery) ||
@@ -895,7 +922,8 @@
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
 
-        html2pdf().set(options).from(container).save().then(() => {
+        html2pdf().set(options).from(container).save().then(async () => {
+            await logActivity("Export PDF des commandes effectué");
             alert("PDF téléchargé avec succès !");
         }).catch(err => {
             console.error("PDF Error:", err);
@@ -903,7 +931,6 @@
         });
     };
 
-    // Helpers
     window.updateDefaultPrice = function() {
         const select = document.getElementById("text");
         const price = select.options[select.selectedIndex].getAttribute("data-price");
@@ -921,48 +948,6 @@
 
     window.updateOpacity = function(val) {
         document.documentElement.style.setProperty('--glass-bg', `rgba(255, 255, 255, ${val})`);
-    };
-
-    // Achtergrond upload functionaliteit & automatische zwarte tekstkleur
-    const bgInput = document.getElementById('bgInput');
-    if (bgInput) {
-        const savedBg = localStorage.getItem('custom_bg');
-        if (savedBg) {
-            document.body.style.backgroundImage = `url(${savedBg})`;
-            document.body.style.backgroundSize = 'cover';
-            document.body.style.backgroundPosition = 'center';
-            document.body.style.backgroundAttachment = 'fixed';
-            document.body.classList.add('custom-bg-active');
-        }
-
-        bgInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const imageUrl = event.target.result;
-                    document.body.style.backgroundImage = `url(${imageUrl})`;
-                    document.body.style.backgroundSize = 'cover';
-                    document.body.style.backgroundPosition = 'center';
-                    document.body.style.backgroundAttachment = 'fixed';
-                    document.body.classList.add('custom-bg-active');
-                    localStorage.setItem('custom_bg', imageUrl);
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    }
-
-    window.removeCustomBackground = function() {
-        localStorage.removeItem('custom_bg');
-        document.body.style.backgroundImage = '';
-        document.body.style.backgroundSize = '';
-        document.body.style.backgroundPosition = '';
-        document.body.style.backgroundAttachment = '';
-        document.body.classList.remove('custom-bg-active');
-        if (document.getElementById('bgInput')) {
-            document.getElementById('bgInput').value = '';
-        }
     };
 
     function escapeHtml(str) {
