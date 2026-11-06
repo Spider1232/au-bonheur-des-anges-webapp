@@ -267,7 +267,7 @@
         /* Navigation Bar */
         .bottom-nav { 
             position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
-            width: calc(100% - 24px); max-width: 480px; 
+            width: calc(100% - 24px); max-width: 450px; 
             background: rgba(255, 255, 255, 0.88); 
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -636,18 +636,36 @@
         }
     });
 
+    // Products Loader met groepering per categorie
     onValue(ref(db, 'products'), (snapshot) => {
         const select = document.getElementById("text");
         select.innerHTML = '<option value="" data-price="">-- Sélectionner un produit --</option>';
         if (snapshot.exists()) {
             const data = snapshot.val();
+            const categories = {};
+
+            // Groepeer producten per categorie
             Object.keys(data).forEach(k => {
                 const item = data[k];
-                const opt = document.createElement("option");
-                opt.value = item.naam;
-                opt.setAttribute("data-price", item.prijs);
-                opt.textContent = `${item.naam} - ${parseFloat(item.prijs || 0).toFixed(2)} €`;
-                select.appendChild(opt);
+                const cat = item.categorie || 'Autre';
+                if (!categories[cat]) categories[cat] = [];
+                categories[cat].push({ id: k, ...item });
+            });
+
+            // Bouw de <optgroup> opties per categorie op
+            Object.keys(categories).sort().forEach(cat => {
+                const group = document.createElement("optgroup");
+                group.label = cat;
+
+                categories[cat].forEach(item => {
+                    const opt = document.createElement("option");
+                    opt.value = item.naam;
+                    opt.setAttribute("data-price", item.prijs);
+                    opt.textContent = `${item.naam} - ${parseFloat(item.prijs || 0).toFixed(2)} €`;
+                    group.appendChild(opt);
+                });
+
+                select.appendChild(group);
             });
         }
     });
