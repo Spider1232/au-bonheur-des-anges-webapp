@@ -536,7 +536,10 @@
 
         <hr style="border: none; border-top: 1px solid rgba(0,0,0,0.1); margin: 15px 0;">
 
-        <h3 style="font-size: 14px; color: #8e44ad; margin-bottom: 10px;">📋 Historique des Activités</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3 style="font-size: 14px; color: #8e44ad; margin: 0;">📋 Historique des Activités</h3>
+            <button onclick="window.clearActivityLog()" style="background: rgba(231, 76, 60, 0.15); border: none; color: #c0392b; border-radius: 6px; padding: 4px 8px; font-size: 11px; font-weight: 600; cursor: pointer;">Tout marquer comme lu et effacer</button>
+        </div>
         <div id="activityLogContainer" style="max-height: 250px; overflow-y: auto; background: rgba(255,255,255,0.5); border-radius: 12px; padding: 10px; border: 1px solid var(--glass-border);">
             <p style="font-size: 12px; color: #7f8c8d; text-align: center; margin: 10px 0;">Chargement des activités...</p>
         </div>
@@ -591,7 +594,7 @@
         
         if (snapshot.exists()) {
             const data = snapshot.val();
-            const activities = Object.keys(data).map(k => data[k]).sort((a, b) => b.timestamp - a.timestamp);
+            const activities = Object.keys(data).map(k => ({ id: k, ...data[k] })).sort((a, b) => b.timestamp - a.timestamp);
             
             container.innerHTML = '';
             activities.slice(0, 30).forEach(act => {
@@ -604,6 +607,17 @@
             container.innerHTML = '<p style="font-size: 12px; color: #7f8c8d; text-align: center; margin: 10px 0;">Aucune activité récente</p>';
         }
     });
+
+    window.clearActivityLog = async function() {
+        if (confirm("Voulez-vous effacer tout l'historique des activités ?")) {
+            try {
+                await remove(ref(db, 'activities'));
+                document.getElementById('activityLogContainer').innerHTML = '<p style="font-size: 12px; color: #7f8c8d; text-align: center; margin: 10px 0;">Aucune activité récente</p>';
+            } catch (err) {
+                alert("Erreur lors de la suppression : " + err.message);
+            }
+        }
+    };
 
     window.switchTab = function(tabId, el) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -644,7 +658,6 @@
             const data = snapshot.val();
             const categories = {};
 
-            // Groepeer producten per categorie
             Object.keys(data).forEach(k => {
                 const item = data[k];
                 const cat = item.categorie || 'Autre';
@@ -652,7 +665,6 @@
                 categories[cat].push({ id: k, ...item });
             });
 
-            // Bouw de <optgroup> opties per categorie op
             Object.keys(categories).sort().forEach(cat => {
                 const group = document.createElement("optgroup");
                 group.label = cat;
