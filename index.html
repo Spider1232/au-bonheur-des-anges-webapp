@@ -509,7 +509,7 @@
                     <label for="editHasSteungeld">💰Soutien au projet ou Blauwe kruis</label>
                 </div>
                 <div id="editSteungeldWrapper" style="display: none; margin-top: 10px;">
-                    <label for="editSteungeldBedrag" style="font-size: 12px;">Montant du steungeld (€)</label>
+                    <label for="editSteungeldBedrag" style="font-size: 12px;">Montant du Soutien (€)</label>
                     <input type="number" step="0.01" id="editSteungeldBedrag" class="form-control" value="0.00" min="0">
                 </div>
             </div>
@@ -796,7 +796,7 @@
             <div class="item-description">${escapeHtml(i.text || '')}</div>
             <div class="item-meta">
                 <span class="badge badge-subtle">${i.aantal || 1}x €${parseFloat(i.prijs||0).toFixed(2)}</span>
-                ${i.hasSteungeld && steungeld > 0 ? `<span class="badge status-steungeld">💰 Steungeld: €${steungeld.toFixed(2)}</span>` : ''}
+                ${i.hasSteungeld && steungeld > 0 ? `<span class="badge status-steungeld">Soutien: €${steungeld.toFixed(2)}</span>` : ''}
                 <span class="badge ${i.betaald ? 'status-paid' : 'status-unpaid'}">${i.betaald ? 'Payé' : 'Non Payé'}</span>
                 ${i.terugbetaald ? '<span class="badge status-refund">Remboursé</span>' : ''}
                 ${i.klaarstaand ? '<span class="badge status-ready">✨ Prêt</span>' : ''}
