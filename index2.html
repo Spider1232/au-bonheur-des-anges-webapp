@@ -117,6 +117,24 @@
             color: #ffffff;
         }
 
+        /* Activiteitenlog lijststijl */
+        .activity-item {
+            background: rgba(255, 255, 255, 0.4);
+            border-left: 3px solid #8e44ad;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+        body.dark-mode .activity-item {
+            background: rgba(40, 40, 50, 0.4);
+        }
+        .activity-time {
+            font-size: 10px;
+            color: #7f8c8d;
+            margin-bottom: 2px;
+        }
+
         @media print {
             body { background: white !important; color: black !important; }
             aside, nav, header, button, .glass-card { background: white !important; box-shadow: none !important; border: none !important; color: black !important; }
@@ -253,6 +271,18 @@
                             </div>
                         </div>
 
+                        <!-- STEUNGELD / SOUTIEN AU PROJET / BLAUWE KRUIS -->
+                        <div class="glass-card p-4 rounded-xl border border-dashed border-[#8e44ad]/30 bg-purple-900/5 space-y-3">
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" id="hasSteungeld" class="w-5 h-5 accent-[#8e44ad] rounded cursor-pointer" onchange="toggleSteungeldInput(); calculateTotal();">
+                                <label for="hasSteungeld" class="text-sm font-semibold cursor-pointer opacity-90">💰 Soutien au projet / Blauwe kruis (Steungeld)</label>
+                            </div>
+                            <div id="steungeldWrapper" style="display: none;">
+                                <label class="block text-xs font-semibold opacity-80 mb-1">Montant du soutien / steungeld (€)</label>
+                                <input type="number" step="0.01" id="steungeldBedrag" class="w-full glass-input rounded-xl px-4 py-2 text-sm" value="0.00" min="0" oninput="calculateTotal()">
+                            </div>
+                        </div>
+
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
                             <div>
                                 <label class="block text-xs font-semibold opacity-80 mb-1">Date de livraison / commande *</label>
@@ -346,11 +376,11 @@
         <section id="pdf-section" class="dashboard-section space-y-6 hidden">
             <div class="glass-card p-6 h-[75vh] flex flex-col">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold uppercase tracking-wider text-sm text-[#8e44ad]">Tarifs & Prix Boutique PDF</<h1>La liste PDF et pas à jour La commande de la liste est en ordre </h1>
+                    <h3 class="font-bold uppercase tracking-wider text-sm text-[#8e44ad]">Tarifs & Prix Boutique PDF</h3>
                     <a href="" download class="px-4 py-1.5 rounded-xl bg-[#8e44ad] text-xs font-bold text-white hover:bg-[#7d3c98]">Télécharger</a>
                 </div>
                 <div class="flex-1 rounded-xl overflow-hidden glass-card">
-                    <h1>La liste PDF et pas à jour La commande de la liste est en ordre </h1>
+                    <h1 class="p-4 text-center font-bold text-lg">La liste PDF est à jour. La commande de la liste est en ordre.</h1>
                     <embed src="" type="application/pdf" class="w-full h-full">
                 </div>
             </div>
@@ -444,17 +474,32 @@
             </div>
         </section>
 
-        <!-- SECTIE 6: INFO -->
+        <!-- SECTIE 6: INFO (Met Historiek van Activiteiten) -->
         <section id="info-section" class="dashboard-section space-y-6 hidden">
             <div class="glass-card p-6 max-w-2xl mx-auto space-y-6 text-center">
                 <img src="logo.jpg" alt="Logo" class="w-24 h-24 rounded-full mx-auto border-2 border-white/60 shadow-lg object-cover" onerror="this.src='https://via.placeholder.com/96'">
                 <h2 class="text-xl font-bold text-[#8e44ad]">Au bonheur des Anges</h2>
                 <span class="inline-block bg-[#8e44ad]/15 text-[#8e44ad] border border-[#8e44ad]/30 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider">Application Responsive</span>
                 <p class="text-sm opacity-80">Gestion centralisée des commandes et produits avec synchronisation Firebase Cloud.</p>
-                <div class="pt-4">
+                <div class="pt-2">
                     <a href="index.html" class="inline-flex items-center gap-2 px-6 py-3 bg-[#8e44ad] text-white rounded-xl text-sm font-bold shadow-md hover:bg-[#7d3c98] transition-all">
                         <i class="fa-solid fa-house"></i> Retour à l'accueil (index.html)
                     </a>
+                </div>
+            </div>
+
+            <!-- HISTORIQUE DES ACTIVITÉS INFORMATIE -->
+            <div class="glass-card p-6 max-w-2xl mx-auto space-y-4 text-left">
+                <div class="flex justify-between items-center pb-2 border-b border-purple-900/10">
+                    <h3 class="font-bold text-sm text-[#8e44ad] flex items-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left"></i> Historique des Activités
+                    </h3>
+                    <button onclick="clearActivityLog()" class="px-3 py-1 bg-red-500/15 text-red-600 hover:bg-red-500/25 rounded-lg text-xs font-semibold transition-all cursor-pointer">
+                        Tout marquer comme lu et effacer
+                    </button>
+                </div>
+                <div id="activityLogContainer" class="max-h-64 overflow-y-auto space-y-2 pr-1">
+                    <p class="text-center text-xs opacity-60 py-4">Chargement des activités...</p>
                 </div>
             </div>
         </section>
@@ -533,6 +578,71 @@
         </button>
     </nav>
 
+    <!-- MODAL EDIT/BEWERK -->
+    <div id="editModal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="glass-card p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto space-y-4">
+            <div class="flex justify-between items-center pb-3 border-b border-purple-900/10">
+                <h3 class="font-bold text-[#8e44ad] text-sm">Modifier la commande</h3>
+                <button onclick="document.getElementById('editModal').classList.add('hidden')" class="text-xl font-bold opacity-60 hover:opacity-100">&times;</button>
+            </div>
+            <form id="editForm" class="space-y-4">
+                <input type="hidden" id="modalEditId">
+                <div>
+                    <label class="block text-xs font-semibold opacity-80 mb-1">Nom du client</label>
+                    <input type="text" id="modalNaam" class="w-full glass-input rounded-xl px-3 py-2 text-sm" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold opacity-80 mb-1">Adresse</label>
+                    <input type="text" id="modalAdres" class="w-full glass-input rounded-xl px-3 py-2 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold opacity-80 mb-1">Produit</label>
+                    <input type="text" id="modalText" class="w-full glass-input rounded-xl px-3 py-2 text-sm" required>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold opacity-80 mb-1">Quantité</label>
+                        <input type="number" id="modalAantal" class="w-full glass-input rounded-xl px-3 py-2 text-sm" required min="1">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold opacity-80 mb-1">Prix (€)</label>
+                        <input type="number" step="0.01" id="modalPrijs" class="w-full glass-input rounded-xl px-3 py-2 text-sm" required>
+                    </div>
+                </div>
+
+                <!-- EDIT STEUNGELD -->
+                <div class="glass-card p-3 rounded-xl border border-dashed border-[#8e44ad]/30 space-y-2">
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="modalHasSteungeld" class="w-4 h-4 accent-[#8e44ad] rounded cursor-pointer" onchange="toggleModalSteungeldInput()">
+                        <label for="modalHasSteungeld" class="text-xs font-semibold cursor-pointer">💰 Soutien / Steungeld</label>
+                    </div>
+                    <div id="modalSteungeldWrapper" style="display: none;">
+                        <input type="number" step="0.01" id="modalSteungeldBedrag" class="w-full glass-input rounded-xl px-3 py-1.5 text-xs" value="0.00" min="0">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold opacity-80 mb-1">Date</label>
+                    <input type="date" id="modalDatum" class="w-full glass-input rounded-xl px-3 py-2 text-sm" required>
+                </div>
+                <div class="space-y-2 pt-1">
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="modalBetaald" class="w-4 h-4 accent-[#8e44ad] rounded cursor-pointer">
+                        <label for="modalBetaald" class="text-xs font-semibold cursor-pointer">Payé</label>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="modalPreorder" class="w-4 h-4 accent-[#8e44ad] rounded cursor-pointer">
+                        <label for="modalPreorder" class="text-xs font-semibold cursor-pointer">📦 Pré-commande</label>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="document.getElementById('editModal').classList.add('hidden')" class="px-4 py-2 rounded-xl glass-card text-xs font-semibold">Annuler</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl bg-[#8e44ad] text-white text-xs font-bold">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="lightboxModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4" onclick="closeLightbox()">
         <img id="lightboxImage" class="max-w-full max-h-[85vh] rounded-xl object-contain shadow-2xl" src="" alt="Agrandissement">
     </div>
@@ -563,6 +673,70 @@
         let allOrders = [];
         let allProducts = {};
 
+        window.toggleSteungeldInput = function() {
+            const checkbox = document.getElementById("hasSteungeld");
+            const wrapper = document.getElementById("steungeldWrapper");
+            wrapper.style.display = checkbox.checked ? "block" : "none";
+            if (!checkbox.checked) {
+                document.getElementById("steungeldBedrag").value = "0.00";
+            }
+        };
+
+        window.toggleModalSteungeldInput = function() {
+            const checkbox = document.getElementById("modalHasSteungeld");
+            const wrapper = document.getElementById("modalSteungeldWrapper");
+            wrapper.style.display = checkbox.checked ? "block" : "none";
+            if (!checkbox.checked) {
+                document.getElementById("modalSteungeldBedrag").value = "0.00";
+            }
+        };
+
+        async function logActivity(actionDescription) {
+            try {
+                const now = new Date();
+                const timeString = now.toLocaleString('fr-BE', { dateStyle: 'short', timeStyle: 'medium' });
+                await set(push(ref(db, 'activities')), {
+                    text: actionDescription,
+                    time: timeString,
+                    timestamp: Date.now()
+                });
+            } catch (e) {
+                console.error("Fout bij loggen:", e);
+            }
+        }
+
+        onValue(ref(db, 'activities'), (snapshot) => {
+            const container = document.getElementById('activityLogContainer');
+            if (!container) return;
+            
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                const activities = Object.keys(data).map(k => ({ id: k, ...data[k] })).sort((a, b) => b.timestamp - a.timestamp);
+                
+                container.innerHTML = '';
+                activities.slice(0, 30).forEach(act => {
+                    const div = document.createElement('div');
+                    div.className = 'activity-item';
+                    div.innerHTML = `<div class="activity-time">🕒 ${escapeHTML(act.time)}</div><div>${escapeHTML(act.text)}</div>`;
+                    container.appendChild(div);
+                });
+            } else {
+                container.innerHTML = '<p class="text-center text-xs opacity-60 py-4">Aucune activité récente</p>';
+            }
+        });
+
+        window.clearActivityLog = async function() {
+            if (confirm("Voulez-vous effacer tout l'historique des activités ?")) {
+                try {
+                    await remove(ref(db, 'activities'));
+                    document.getElementById('activityLogContainer').innerHTML = '<p class="text-center text-xs opacity-60 py-4">Aucune activité récente</p>';
+                    showToast("Historique effacé");
+                } catch (err) {
+                    alert("Erreur lors de la suppression : " + err.message);
+                }
+            }
+        };
+
         document.addEventListener("DOMContentLoaded", () => {
             const isDarkMode = localStorage.getItem("appDarkMode") === "true";
             if (isDarkMode) {
@@ -589,7 +763,11 @@
             const data = snapshot.val();
             allOrders = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })).reverse() : [];
             document.getElementById("statTotalOrders").textContent = allOrders.length;
-            const totalRevenue = allOrders.reduce((sum, item) => sum + ((item.aantal || 1) * (item.prijs || 0)), 0);
+            const totalRevenue = allOrders.reduce((sum, item) => {
+                const prodTotal = ((item.aantal || 1) * (item.prijs || 0));
+                const steungeld = item.hasSteungeld ? (parseFloat(item.steungeldBedrag) || 0) : 0;
+                return sum + prodTotal + steungeld;
+            }, 0);
             document.getElementById("statTotalRevenue").textContent = "€ " + totalRevenue.toFixed(2);
             filterItems();
         });
@@ -611,6 +789,7 @@
             const newProdRef = push(ref(db, 'products'));
             set(newProdRef, { categorie, naam, prijs }).then(() => {
                 showToast("Produit ajouté avec succès !");
+                logActivity(`Produit ajouté : ${naam} (${categorie})`);
                 document.getElementById("productNaam").value = "";
                 document.getElementById("productPrijs").value = "";
             });
@@ -645,16 +824,19 @@
                     <td class="p-3 font-semibold">${escapeHTML(prod.naam || '')}</td>
                     <td class="p-3">€ ${parseFloat(prod.prijs || 0).toFixed(2)}</td>
                     <td class="p-3 text-right">
-                        <button onclick="deleteProduct('${id}')" class="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold cursor-pointer">Supprimer</button>
+                        <button onclick="deleteProduct('${id}', '${escapeHTML(prod.naam)}')" class="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold cursor-pointer">Supprimer</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             }
         };
 
-        window.deleteProduct = function(id) {
+        window.deleteProduct = function(id, name) {
             if (confirm("Voulez-vous vraiment supprimer ce produit ?")) {
-                remove(ref(db, `products/${id}`)).then(() => showToast("Produit supprimé"));
+                remove(ref(db, `products/${id}`)).then(() => {
+                    showToast("Produit supprimé");
+                    logActivity(`Produit supprimé : ${name}`);
+                });
             }
         };
 
@@ -684,7 +866,10 @@
         window.calculateTotal = function() {
             const aantal = parseFloat(document.getElementById("aantal").value) || 1;
             const prijs = parseFloat(document.getElementById("prijs").value) || 0;
-            document.getElementById("totalAmount").textContent = (aantal * prijs).toFixed(2);
+            const hasSteungeld = document.getElementById("hasSteungeld").checked;
+            const steungeld = hasSteungeld ? (parseFloat(document.getElementById("steungeldBedrag").value) || 0) : 0;
+            const total = (aantal * prijs) + steungeld;
+            document.getElementById("totalAmount").textContent = total.toFixed(2);
         };
 
         document.getElementById("orderForm").addEventListener("submit", (e) => {
@@ -695,20 +880,24 @@
             const text = document.getElementById("text").value;
             const aantal = parseInt(document.getElementById("aantal").value);
             const prijs = parseFloat(document.getElementById("prijs").value);
+            const hasSteungeld = document.getElementById("hasSteungeld").checked;
+            const steungeldBedrag = hasSteungeld ? (parseFloat(document.getElementById("steungeldBedrag").value) || 0) : 0;
             const datum = document.getElementById("datum").value;
             const betaald = document.getElementById("betaald").checked;
             const preorder = document.getElementById("preorder").checked;
 
-            const orderData = { naam, adres, text, aantal, prijs, datum, betaald, preorder };
+            const orderData = { naam, adres, text, aantal, prijs, hasSteungeld, steungeldBedrag, datum, betaald, preorder };
 
             if (editId) {
                 update(ref(db, `items/${editId}`), orderData).then(() => {
                     showToast("Commande mise à jour !");
+                    logActivity(`Commande modifiée pour : ${naam}`);
                     clearFormDraft();
                 });
             } else {
                 push(ref(db, 'items'), orderData).then(() => {
                     showToast("Commande enregistrée avec succès !");
+                    logActivity(`Nouvelle commande enregistrée pour : ${naam}`);
                     clearFormDraft();
                 });
             }
@@ -718,13 +907,15 @@
             document.getElementById("orderForm").reset();
             document.getElementById("editOrderId").value = "";
             document.getElementById("formSectionTitle").innerHTML = '<i class="fa-solid fa-plus-circle"></i> Nouvelle Commande';
+            document.getElementById("steungeldWrapper").style.display = "none";
             document.getElementById("datum").value = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
-            document.getElementById("totalAmount").textContent = "0.00";
+            calculateTotal();
         };
 
         window.toggleReadyStatus = function(id, currentStatus) {
             update(ref(db, `items/${id}`), { pret: !currentStatus }).then(() => {
                 showToast(!currentStatus ? "Commande marquée comme prête !" : "Commande marquée comme non prête");
+                logActivity(`Statut 'Prêt' modifié pour la commande ID ${id}`);
             });
         };
 
@@ -746,17 +937,22 @@
 
             filtered.forEach(item => {
                 const isReady = !!item.pret;
+                const productTotal = (parseInt(item.aantal) || 1) * (parseFloat(item.prijs) || 0);
+                const steungeld = item.hasSteungeld ? (parseFloat(item.steungeldBedrag) || 0) : 0;
+                const total = productTotal + steungeld;
+
                 const li = document.createElement("li");
                 li.className = "glass-card p-4 flex flex-wrap justify-between items-center gap-3 text-xs";
                 li.innerHTML = `
                     <div class="flex items-center gap-3">
                         <input type="checkbox" class="order-checkbox w-4 h-4 accent-[#8e44ad] rounded cursor-pointer" data-id="${item.id}">
                         <div>
-                            <strong>${escapeHTML(item.naam)}</strong> (${escapeHTML(item.text)} x${item.aantal}) - € ${(item.aantal * item.prijs).toFixed(2)}
+                            <strong>${escapeHTML(item.naam)}</strong> (${escapeHTML(item.text)} x${item.aantal}) - € ${total.toFixed(2)}
                             <br><span class="opacity-75">📅 ${escapeHTML(item.datum)} | 📍 ${escapeHTML(item.adres || 'Aucune adresse')}</span>
                         </div>
                     </div>
                     <div class="flex items-center gap-2 flex-wrap">
+                        ${item.hasSteungeld && steungeld > 0 ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-[#8e44ad]">💰 Steungeld: €${steungeld.toFixed(2)}</span>` : ''}
                         <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${item.betaald ? 'bg-emerald-500/20 text-emerald-600' : 'bg-amber-500/20 text-amber-600'}">
                             ${item.betaald ? 'Payé' : 'Non payé'}
                         </span>
@@ -767,7 +963,7 @@
                             <i class="fa-solid fa-check"></i> ${isReady ? 'Annuler prêt' : 'Prêt'}
                         </button>
                         <button onclick="editOrder('${item.id}')" class="p-1.5 bg-sky-500/20 text-sky-600 rounded-lg cursor-pointer" title="Modifier"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteSingleOrder('${item.id}')" class="p-1.5 bg-red-500/20 text-red-600 rounded-lg cursor-pointer" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
+                        <button onclick="deleteSingleOrder('${item.id}', '${escapeHTML(item.naam)}')" class="p-1.5 bg-red-500/20 text-red-600 rounded-lg cursor-pointer" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 `;
 
@@ -791,23 +987,54 @@
         window.editOrder = function(id) {
             const item = allOrders.find(o => o.id === id);
             if (item) {
-                document.getElementById("editOrderId").value = item.id;
-                document.getElementById("naam").value = item.naam || "";
-                document.getElementById("adres").value = item.adres || "";
-                document.getElementById("text").value = item.text || "";
-                document.getElementById("aantal").value = item.aantal || 1;
-                document.getElementById("prijs").value = item.prijs || 0;
-                document.getElementById("datum").value = item.datum || new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
-                document.getElementById("betaald").checked = !!item.betaald;
-                document.getElementById("preorder").checked = !!item.preorder;
-                calculateTotal();
-                showSection('order-section');
+                document.getElementById("modalEditId").value = item.id;
+                document.getElementById("modalNaam").value = item.naam || "";
+                document.getElementById("modalAdres").value = item.adres || "";
+                document.getElementById("modalText").value = item.text || "";
+                document.getElementById("modalAantal").value = item.aantal || 1;
+                document.getElementById("modalPrijs").value = item.prijs || 0;
+                document.getElementById("modalDatum").value = item.datum || new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+                document.getElementById("modalBetaald").checked = !!item.betaald;
+                document.getElementById("modalPreorder").checked = !!item.preorder;
+
+                const hasSt = !!item.hasSteungeld;
+                document.getElementById("modalHasSteungeld").checked = hasSt;
+                document.getElementById("modalSteungeldBedrag").value = item.steungeldBedrag || 0.00;
+                document.getElementById("modalSteungeldWrapper").style.display = hasSt ? "block" : "none";
+
+                document.getElementById("editModal").classList.remove("hidden");
             }
         };
 
-        window.deleteSingleOrder = function(id) {
+        document.getElementById("editForm").addEventListener("submit", (e) => {
+            e.preventDefault();
+            const id = document.getElementById("modalEditId").value;
+            const naam = document.getElementById("modalNaam").value;
+            const adres = document.getElementById("modalAdres").value;
+            const text = document.getElementById("modalText").value;
+            const aantal = parseInt(document.getElementById("modalAantal").value);
+            const prijs = parseFloat(document.getElementById("modalPrijs").value);
+            const hasSteungeld = document.getElementById("modalHasSteungeld").checked;
+            const steungeldBedrag = hasSteungeld ? (parseFloat(document.getElementById("modalSteungeldBedrag").value) || 0) : 0;
+            const datum = document.getElementById("modalDatum").value;
+            const betaald = document.getElementById("modalBetaald").checked;
+            const preorder = document.getElementById("modalPreorder").checked;
+
+            const updatedData = { naam, adres, text, aantal, prijs, hasSteungeld, steungeldBedrag, datum, betaald, preorder };
+
+            update(ref(db, `items/${id}`), updatedData).then(() => {
+                showToast("Commande mise à jour !");
+                logActivity(`Commande modifiée pour : ${naam}`);
+                document.getElementById("editModal").classList.add("hidden");
+            });
+        });
+
+        window.deleteSingleOrder = function(id, clientName) {
             if (confirm("Supprimer cette commande ?")) {
-                remove(ref(db, `items/${id}`)).then(() => showToast("Commande supprimée"));
+                remove(ref(db, `items/${id}`)).then(() => {
+                    showToast("Commande supprimée");
+                    logActivity(`Commande supprimée pour : ${clientName || 'Client'}`);
+                });
             }
         };
 
@@ -876,6 +1103,7 @@
                 e.currentTarget.reset(); selectedIdeaImage = '';
                 const preview = document.getElementById('ideaPhotoPreview'); if (preview) { preview.src = ''; preview.classList.add('hidden'); }
                 showToast('Idée enregistrée !');
+                logActivity(`Idée enregistrée : ${titre}`);
             } catch (err) { console.error(err); showToast('Erreur lors de l’enregistrement.'); }
             finally { btn.disabled = false; }
         });
@@ -890,7 +1118,7 @@
                 const title = document.createElement('h4'); title.className = 'font-bold text-sm text-[#8e44ad]'; title.textContent = idea.titre || 'Sans titre'; card.appendChild(title);
                 if (idea.description) { const desc = document.createElement('p'); desc.className = 'text-xs opacity-80 mt-2 whitespace-pre-wrap'; desc.textContent = idea.description; card.appendChild(desc); }
                 if (idea.image) { const img = document.createElement('img'); img.src = idea.image; img.alt = idea.titre || 'Photo idée'; img.className = 'mt-3 max-h-56 rounded-xl object-contain cursor-zoom-in'; img.addEventListener('click', () => { document.getElementById('lightboxImage').src = idea.image; document.getElementById('lightboxModal').classList.remove('hidden'); }); card.appendChild(img); }
-                const del = document.createElement('button'); del.type = 'button'; del.className = 'mt-3 px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-bold'; del.textContent = 'Supprimer'; del.addEventListener('click', async () => { if (confirm('Supprimer cette idée ?')) { try { await remove(ref(db, `ideas/${id}`)); showToast('Idée supprimée.'); } catch(err) { showToast('Suppression impossible.'); } } }); card.appendChild(del);
+                const del = document.createElement('button'); del.type = 'button'; del.className = 'mt-3 px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-bold'; del.textContent = 'Supprimer'; del.addEventListener('click', async () => { if (confirm('Supprimer cette idée ?')) { try { await remove(ref(db, `ideas/${id}`)); showToast('Idée supprimée.'); logActivity(`Idée supprimée : ${idea.titre}`); } catch(err) { showToast('Suppression impossible.'); } } }); card.appendChild(del);
                 container.appendChild(card);
             });
         });

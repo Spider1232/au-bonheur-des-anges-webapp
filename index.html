@@ -243,6 +243,7 @@
         .status-refund { background: rgba(52, 152, 219, 0.2); color: #2980b9; }
         .status-ready { background: rgba(241, 196, 15, 0.25); color: #d35400; }
         .status-preorder { background: rgba(142, 68, 173, 0.2); color: #8e44ad; border: 1px solid rgba(142, 68, 173, 0.3); }
+        .status-steungeld { background: rgba(155, 89, 224, 0.2); color: #8e44ad; border: 1px solid rgba(142, 68, 173, 0.3); }
 
         .item-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; padding-top: 8px; border-top: 1px dashed rgba(142, 68, 173, 0.2); flex-wrap: wrap; gap: 6px; }
         .btn-card-action { background: rgba(142, 68, 173, 0.15); border: none; color: #8e44ad; border-radius: 6px; padding: 5px 10px; font-size: 12px; font-weight: 600; cursor: pointer; }
@@ -361,6 +362,18 @@
                 <div class="form-group">
                     <label for="prijs">Prix unitaire (€) *</label>
                     <input type="number" step="0.01" id="prijs" class="form-control" placeholder="0.00" required oninput="calculateTotal()">
+                </div>
+            </div>
+
+            <!-- STEUNGELD / EXTRA SECTIE -->
+            <div class="form-group" style="background: rgba(142, 68, 173, 0.05); padding: 12px; border-radius: 12px; border: 1px dashed rgba(142, 68, 173, 0.3);">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="hasSteungeld" onchange="toggleSteungeldInput(); calculateTotal();">
+                    <label for="hasSteungeld">💰Soutien au projet ou Blauwe kruis</label>
+                </div>
+                <div id="steungeldWrapper" style="display: none; margin-top: 10px;">
+                    <label for="steungeldBedrag" style="font-size: 12px;">Montant du steungeld (€)</label>
+                    <input type="number" step="0.01" id="steungeldBedrag" class="form-control" value="0.00" min="0" oninput="calculateTotal()">
                 </div>
             </div>
 
@@ -488,6 +501,19 @@
                     <input type="number" step="0.01" id="editPrijs" class="form-control" required>
                 </div>
             </div>
+
+            <!-- EDIT STEUNGELD -->
+            <div class="form-group" style="background: rgba(142, 68, 173, 0.05); padding: 12px; border-radius: 12px; border: 1px dashed rgba(142, 68, 173, 0.3);">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="editHasSteungeld" onchange="toggleEditSteungeldInput()">
+                    <label for="editHasSteungeld">💰Soutien au projet ou Blauwe kruis</label>
+                </div>
+                <div id="editSteungeldWrapper" style="display: none; margin-top: 10px;">
+                    <label for="editSteungeldBedrag" style="font-size: 12px;">Montant du steungeld (€)</label>
+                    <input type="number" step="0.01" id="editSteungeldBedrag" class="form-control" value="0.00" min="0">
+                </div>
+            </div>
+
             <div class="form-group">
                 <label>Date</label>
                 <input type="date" id="editDatum" class="form-control" required>
@@ -573,6 +599,24 @@
     const db = getDatabase(app);
 
     let allItems = [];
+
+    window.toggleSteungeldInput = function() {
+        const checkbox = document.getElementById("hasSteungeld");
+        const wrapper = document.getElementById("steungeldWrapper");
+        wrapper.style.display = checkbox.checked ? "block" : "none";
+        if (!checkbox.checked) {
+            document.getElementById("steungeldBedrag").value = "0.00";
+        }
+    };
+
+    window.toggleEditSteungeldInput = function() {
+        const checkbox = document.getElementById("editHasSteungeld");
+        const wrapper = document.getElementById("editSteungeldWrapper");
+        wrapper.style.display = checkbox.checked ? "block" : "none";
+        if (!checkbox.checked) {
+            document.getElementById("editSteungeldBedrag").value = "0.00";
+        }
+    };
 
     async function logActivity(actionDescription) {
         try {
@@ -739,7 +783,10 @@
     function createItemElement(i) {
         const li = document.createElement("li");
         li.className = 'list-item';
-        const total = ((parseInt(i.aantal) || 0) * (parseFloat(i.prijs) || 0)).toFixed(2);
+        const productTotal = (parseInt(i.aantal) || 0) * (parseFloat(i.prijs) || 0);
+        const steungeld = i.hasSteungeld ? (parseFloat(i.steungeldBedrag) || 0) : 0;
+        const total = (productTotal + steungeld).toFixed(2);
+
         li.innerHTML = `
             <div class="item-header">
                 <h3 class="item-title">${escapeHtml(i.naam || 'Inconnu')}</h3>
@@ -749,6 +796,7 @@
             <div class="item-description">${escapeHtml(i.text || '')}</div>
             <div class="item-meta">
                 <span class="badge badge-subtle">${i.aantal || 1}x €${parseFloat(i.prijs||0).toFixed(2)}</span>
+                ${i.hasSteungeld && steungeld > 0 ? `<span class="badge status-steungeld">💰 Steungeld: €${steungeld.toFixed(2)}</span>` : ''}
                 <span class="badge ${i.betaald ? 'status-paid' : 'status-unpaid'}">${i.betaald ? 'Payé' : 'Non Payé'}</span>
                 ${i.terugbetaald ? '<span class="badge status-refund">Remboursé</span>' : ''}
                 ${i.klaarstaand ? '<span class="badge status-ready">✨ Prêt</span>' : ''}
@@ -791,6 +839,11 @@
         document.getElementById('editKlaarstaand').checked = !!item.klaarstaand;
         document.getElementById('editPreorder').checked = !!item.preorder;
 
+        const hasSteungeld = !!item.hasSteungeld;
+        document.getElementById('editHasSteungeld').checked = hasSteungeld;
+        document.getElementById('editSteungeldBedrag').value = item.steungeldBedrag || 0.00;
+        document.getElementById('editSteungeldWrapper').style.display = hasSteungeld ? "block" : "none";
+
         document.getElementById('editModal').style.display = 'flex';
     };
 
@@ -798,12 +851,17 @@
         e.preventDefault();
         const id = document.getElementById('editId').value;
         const naam = document.getElementById('editNaam').value.trim();
+        const hasSteungeld = document.getElementById('editHasSteungeld').checked;
+        const steungeldBedrag = hasSteungeld ? (parseFloat(document.getElementById('editSteungeldBedrag').value) || 0) : 0;
+
         const updated = {
             naam: naam,
             adres: document.getElementById('editAdres').value.trim(),
             text: document.getElementById('editText').value.trim(),
             aantal: parseInt(document.getElementById('editAantal').value) || 1,
             prijs: parseFloat(document.getElementById('editPrijs').value) || 0,
+            hasSteungeld: hasSteungeld,
+            steungeldBedrag: steungeldBedrag,
             datum: document.getElementById('editDatum').value,
             betaald: document.getElementById('editBetaald').checked,
             terugbetaald: document.getElementById('editTerugbetaald').checked,
@@ -830,12 +888,17 @@
     document.getElementById("orderForm").addEventListener("submit", async (e) => {
         e.preventDefault();
         const clientName = document.getElementById("naam").value.trim();
+        const hasSteungeld = document.getElementById("hasSteungeld").checked;
+        const steungeldBedrag = hasSteungeld ? (parseFloat(document.getElementById("steungeldBedrag").value) || 0) : 0;
+
         const newOrder = {
             naam: clientName,
             adres: document.getElementById("adres").value.trim(),
             text: document.getElementById("text").value,
             aantal: parseInt(document.getElementById("aantal").value) || 1,
             prijs: parseFloat(document.getElementById("prijs").value) || 0,
+            hasSteungeld: hasSteungeld,
+            steungeldBedrag: steungeldBedrag,
             datum: document.getElementById("datum").value,
             betaald: document.getElementById("betaald").checked,
             terugbetaald: false,
@@ -847,7 +910,9 @@
         await set(push(ref(db, 'items')), newOrder);
         await logActivity(`Nouvelle commande enregistrée pour : ${clientName}`);
         document.getElementById("orderForm").reset();
+        document.getElementById("steungeldWrapper").style.display = "none";
         document.getElementById("datum").value = new Date().toISOString().split('T')[0];
+        calculateTotal();
         alert("Commande enregistrée !");
     });
 
@@ -884,10 +949,13 @@
                     <tbody>
             `;
             preorders.forEach(item => {
-                const total = ((item.aantal || 1) * (item.prijs || 0)).toFixed(2);
+                const productTotal = ((item.aantal || 1) * (item.prijs || 0));
+                const steungeld = item.hasSteungeld ? (parseFloat(item.steungeldBedrag) || 0) : 0;
+                const total = (productTotal + steungeld).toFixed(2);
                 let statuses = [];
                 if (item.betaald) statuses.push('Payé'); else statuses.push('Non Payé');
                 if (item.klaarstaand) statuses.push('Prêt');
+                if (item.hasSteungeld && steungeld > 0) statuses.push(`Steungeld: €${steungeld.toFixed(2)}`);
                 pdfHtml += `
                     <tr>
                         <td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>${escapeHtml(item.naam)}</strong>${item.adres ? '<br><span style="color:#666;">' + escapeHtml(item.adres) + '</span>' : ''}</td>
@@ -917,10 +985,13 @@
                     <tbody>
             `;
             normals.forEach(item => {
-                const total = ((item.aantal || 1) * (item.prijs || 0)).toFixed(2);
+                const productTotal = ((item.aantal || 1) * (item.prijs || 0));
+                const steungeld = item.hasSteungeld ? (parseFloat(item.steungeldBedrag) || 0) : 0;
+                const total = (productTotal + steungeld).toFixed(2);
                 let statuses = [];
                 if (item.betaald) statuses.push('Payé'); else statuses.push('Non Payé');
                 if (item.klaarstaand) statuses.push('Prêt');
+                if (item.hasSteungeld && steungeld > 0) statuses.push(`Steungeld: €${steungeld.toFixed(2)}`);
                 pdfHtml += `
                     <tr>
                         <td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>${escapeHtml(item.naam)}</strong>${item.adres ? '<br><span style="color:#666;">' + escapeHtml(item.adres) + '</span>' : ''}</td>
@@ -972,7 +1043,11 @@
     window.calculateTotal = function() {
         const a = parseInt(document.getElementById("aantal").value) || 0;
         const p = parseFloat(document.getElementById("prijs").value) || 0;
-        document.getElementById("totalAmount").textContent = (a * p).toFixed(2);
+        const hasSteungeld = document.getElementById("hasSteungeld").checked;
+        const steungeld = hasSteungeld ? (parseFloat(document.getElementById("steungeldBedrag").value) || 0) : 0;
+        
+        const total = (a * p) + steungeld;
+        document.getElementById("totalAmount").textContent = total.toFixed(2);
     };
 
     window.updateOpacity = function(val) {
