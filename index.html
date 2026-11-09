@@ -421,7 +421,13 @@
     <div class="app-card" id="pdfContent">
         <div class="card-header-actions">
             <h2 class="section-title">Commandes (<span id="orderCount">0</span>)</h2>
-            <button class="btn-card-action" onclick="window.exportToPDF()">📄 Export PDF</button>
+            <div style="display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end;">
+                <!-- BACKUP & IMPORT KNOPPEN BIJ DE LIJST -->
+                <button class="btn-card-action" onclick="window.downloadBackup()" title="Sauvegarde">💾 Backup</button>
+                <button class="btn-card-action" onclick="document.getElementById('importFile').click()" title="Importer">📥 Import</button>
+                <input type="file" id="importFile" style="display: none;" accept=".json" onchange="window.importBackup(event)">
+                <button class="btn-card-action" onclick="window.exportToPDF()">📄 PDF</button>
+            </div>
         </div>
         
         <!-- Gescheiden container voor categorieën -->
@@ -456,7 +462,7 @@
         <h2>Au bonheur des Anges</h2>
         <p style="font-size: 13px; color: #5f6368;">Gestionnaire de Commandes Cloud</p>
         <hr style="border: none; border-top: 1px solid rgba(0,0,0,0.1); margin: 15px 0;">
-        <p style="font-size: 12px; color: #7f8c8d;">Mise à jour: 2026 | Version 26.5.9</p>
+        <p style="font-size: 12px; color: #7f8c8d;">Mise à jour: 2026 | Version 26.2</p>
     </div>
 
     <div class="app-card">
@@ -583,7 +589,7 @@
 <!-- FIREBASE LOGIC -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getDatabase, ref, push, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    import { getDatabase, ref, push, set, onValue, update, remove, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "JOUW_API_KEY", 
@@ -599,6 +605,7 @@
     const db = getDatabase(app);
 
     let allItems = [];
+    let globalDatabaseSnapshot = null;
 
     window.toggleSteungeldInput = function() {
         const checkbox = document.getElementById("hasSteungeld");
@@ -682,6 +689,77 @@
         document.getElementById("productModal").style.display = "none";
     };
 
+    onValue(ref(db), (snapshot) => {
+        if (snapshot.exists()) {
+            globalDatabaseSnapshot = snapshot.val();
+            const data = globalDatabaseSnapshot.items;
+            allItems = data ? Object.keys(data).map(k => ({ id: k, ...data[k] })) : [];
+            window.filterItems();
+        }
+    });
+
+    window.downloadBackup = async function() {
+        try {
+            const snapshot = await get(ref(db));
+            const dataToBackup = snapshot.exists() ? snapshot.val() : globalDatabaseSnapshot;
+            
+            if (!dataToBackup) {
+                alert("Aucune donnée à sauvegarder.");
+                return;
+            }
+
+            const jsonString = JSON.stringify(dataToBackup, null, 2);
+            const blob = new Blob([jsonString], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0];
+            const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-');
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `backup_au_bonheur_des_anges_${dateStr}_${timeStr}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            await logActivity("Sauvegarde (Backup) de la base de données téléchargée");
+            alert("Sauvegarde téléchargée avec succès !");
+        } catch (err) {
+            console.error("Erreur backup:", err);
+            alert("Erreur lors de la création de la sauvegarde : " + err.message);
+        }
+    };
+
+    // Functie om een back-up bestand te importeren en terug te zetten in de database
+    window.importBackup = async function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        if (!confirm("Attention : l'importation de ce fichier va remplacer ou fusionner les données actuelles de la base. Voulez-vous continuer ?")) {
+            event.target.value = '';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            try {
+                const importedData = JSON.parse(e.target.result);
+                // Zet de volledige data terug in Firebase op de hoofdniveau referentie
+                await set(ref(db), importedData);
+                await logActivity("Restauration (Import) de la base de données effectuée");
+                alert("Données importées avec succès !");
+            } catch (err) {
+                console.error("Erreur import:", err);
+                alert("Erreur lors de l'importation du fichier JSON : " + err.message);
+            } finally {
+                event.target.value = ''; // Reset file input
+            }
+        };
+        reader.readAsText(file);
+    };
+
     onValue(ref(db, ".info/connected"), (snap) => {
         const dot = document.getElementById("statusDot");
         const txt = document.getElementById("statusText");
@@ -723,12 +801,6 @@
                 select.appendChild(group);
             });
         }
-    });
-
-    onValue(ref(db, 'items'), (snapshot) => {
-        const data = snapshot.val();
-        allItems = data ? Object.keys(data).map(k => ({ id: k, ...data[k] })) : [];
-        window.filterItems();
     });
 
     window.filterItems = function() {
@@ -916,7 +988,6 @@
         alert("Commande enregistrée !");
     });
 
-    // Functie om logo in te laden als Base64 voor de PDF
     function getLogoBase64() {
         return new Promise((resolve) => {
             const img = new Image();
@@ -930,7 +1001,7 @@
                 resolve(canvas.toDataURL("image/jpeg"));
             };
             img.onerror = function() {
-                resolve(""); // Als logo niet geladen kan worden, gewoon leeg laten
+                resolve(""); 
             };
             img.src = "logo.jpg";
         });
@@ -947,7 +1018,6 @@
         const preorders = filteredOrders.filter(i => i.preorder);
         const normals = filteredOrders.filter(i => !i.preorder);
 
-        // Logo ophalen
         const logoBase64 = await getLogoBase64();
         const logoHtml = logoBase64 ? `<div style="text-align: center; margin-bottom: 10px;"><img src="${logoBase64}" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover;"></div>` : '';
 
