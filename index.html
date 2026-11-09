@@ -916,6 +916,26 @@
         alert("Commande enregistrée !");
     });
 
+    // Functie om logo in te laden als Base64 voor de PDF
+    function getLogoBase64() {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.crossOrigin = "Anonymous";
+            img.onload = function() {
+                const canvas = document.createElement("canvas");
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0);
+                resolve(canvas.toDataURL("image/jpeg"));
+            };
+            img.onerror = function() {
+                resolve(""); // Als logo niet geladen kan worden, gewoon leeg laten
+            };
+            img.src = "logo.jpg";
+        });
+    }
+
     window.exportToPDF = async function() {
         const currentQuery = document.getElementById("searchInput").value.toLowerCase();
         const filteredOrders = allItems.filter(item => 
@@ -927,23 +947,28 @@
         const preorders = filteredOrders.filter(i => i.preorder);
         const normals = filteredOrders.filter(i => !i.preorder);
 
+        // Logo ophalen
+        const logoBase64 = await getLogoBase64();
+        const logoHtml = logoBase64 ? `<div style="text-align: center; margin-bottom: 10px;"><img src="${logoBase64}" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover;"></div>` : '';
+
         let pdfHtml = `
             <div style="font-family: Arial, sans-serif; padding: 20px; color: #202124; background: #ffffff;">
-                <h2 style="text-align: center; color: #8e44ad; margin-bottom: 5px; font-size: 22px;">Au Bonheur Des Anges</h2>
-                <p style="text-align: center; font-size: 12px; color: #666; margin-bottom: 25px;">Liste des Commandes & Pré-commandes</p>
+                ${logoHtml}
+                <h2 style="text-align: center; color: #8e44ad; margin-bottom: 2px; font-size: 20px;">Au Bonheur Des Anges</h2>
+                <p style="text-align: center; font-size: 11px; color: #666; margin-bottom: 20px;">Liste des Commandes & Pré-commandes</p>
         `;
 
         if (preorders.length > 0) {
             pdfHtml += `
-                <h3 style="background-color: #8e44ad; color: white; padding: 8px 12px; font-size: 14px; border-radius: 4px; margin-bottom: 10px;">📦 Pré-commandes (${preorders.length})</h3>
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 11px;">
+                <h3 style="background-color: #8e44ad; color: white; padding: 6px 10px; font-size: 13px; border-radius: 4px; margin-bottom: 8px;">📦 Pré-commandes (${preorders.length})</h3>
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px;">
                     <thead>
                         <tr style="background-color: #f3e5f5; color: #8e44ad; text-align: left;">
-                            <th style="padding: 8px; border-bottom: 2px solid #ddd;">Client / Adresse</th>
-                            <th style="padding: 8px; border-bottom: 2px solid #ddd;">Produit</th>
-                            <th style="padding: 8px; border-bottom: 2px solid #ddd;">Qté & Prix</th>
-                            <th style="padding: 8px; border-bottom: 2px solid #ddd;">Total</th>
-                            <th style="padding: 8px; border-bottom: 2px solid #ddd;">Statut</th>
+                            <th style="padding: 6px; border-bottom: 2px solid #ddd;">Client / Adresse</th>
+                            <th style="padding: 6px; border-bottom: 2px solid #ddd;">Produit</th>
+                            <th style="padding: 6px; border-bottom: 2px solid #ddd;">Qté & Prix</th>
+                            <th style="padding: 6px; border-bottom: 2px solid #ddd;">Total</th>
+                            <th style="padding: 6px; border-bottom: 2px solid #ddd;">Statut</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -958,11 +983,11 @@
                 if (item.hasSteungeld && steungeld > 0) statuses.push(`Soutien au projet: €${steungeld.toFixed(2)}`);
                 pdfHtml += `
                     <tr>
-                        <td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>${escapeHtml(item.naam)}</strong>${item.adres ? '<br><span style="color:#666;">' + escapeHtml(item.adres) + '</span>' : ''}</td>
-                        <td style="padding: 8px; border-bottom: 1px solid #eee;">${escapeHtml(item.text)}</td>
-                        <td style="padding: 8px; border-bottom: 1px solid #eee;">${item.aantal || 1} x €${parseFloat(item.prijs || 0).toFixed(2)}</td>
-                        <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold; color: #27ae60;">€${total}</td>
-                        <td style="padding: 8px; border-bottom: 1px solid #eee;">${statuses.join(', ')}</td>
+                        <td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>${escapeHtml(item.naam)}</strong>${item.adres ? '<br><span style="color:#666;">' + escapeHtml(item.adres) + '</span>' : ''}</td>
+                        <td style="padding: 6px; border-bottom: 1px solid #eee;">${escapeHtml(item.text)}</td>
+                        <td style="padding: 6px; border-bottom: 1px solid #eee;">${item.aantal || 1} x €${parseFloat(item.prijs || 0).toFixed(2)}</td>
+                        <td style="padding: 6px; border-bottom: 1px solid #eee; font-weight: bold; color: #27ae60;">€${total}</td>
+                        <td style="padding: 6px; border-bottom: 1px solid #eee;">${statuses.join(', ')}</td>
                     </tr>
                 `;
             });
@@ -971,15 +996,15 @@
 
         if (normals.length > 0) {
             pdfHtml += `
-                <h3 style="background-color: #4a5568; color: white; padding: 8px 12px; font-size: 14px; border-radius: 4px; margin-bottom: 10px;">🛍️ Commandes Normales (${normals.length})</h3>
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 11px;">
+                <h3 style="background-color: #4a5568; color: white; padding: 6px 10px; font-size: 13px; border-radius: 4px; margin-bottom: 8px;">🛍️ Commandes Normales (${normals.length})</h3>
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px;">
                     <thead>
                         <tr style="background-color: #edf2f7; color: #2d3748; text-align: left;">
-                            <th style="padding: 8px; border-bottom: 2px solid #ddd;">Client / Adresse</th>
-                            <th style="padding: 8px; border-bottom: 2px solid #ddd;">Produit</th>
-                            <th style="padding: 8px; border-bottom: 2px solid #ddd;">Qté & Prix</th>
-                            <th style="padding: 8px; border-bottom: 2px solid #ddd;">Total</th>
-                            <th style="padding: 8px; border-bottom: 2px solid #ddd;">Statut</th>
+                            <th style="padding: 6px; border-bottom: 2px solid #ddd;">Client / Adresse</th>
+                            <th style="padding: 6px; border-bottom: 2px solid #ddd;">Produit</th>
+                            <th style="padding: 6px; border-bottom: 2px solid #ddd;">Qté & Prix</th>
+                            <th style="padding: 6px; border-bottom: 2px solid #ddd;">Total</th>
+                            <th style="padding: 6px; border-bottom: 2px solid #ddd;">Statut</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -994,11 +1019,11 @@
                 if (item.hasSteungeld && steungeld > 0) statuses.push(`Soutien au projet: €${steungeld.toFixed(2)}`);
                 pdfHtml += `
                     <tr>
-                        <td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>${escapeHtml(item.naam)}</strong>${item.adres ? '<br><span style="color:#666;">' + escapeHtml(item.adres) + '</span>' : ''}</td>
-                        <td style="padding: 8px; border-bottom: 1px solid #eee;">${escapeHtml(item.text)}</td>
-                        <td style="padding: 8px; border-bottom: 1px solid #eee;">${item.aantal || 1} x €${parseFloat(item.prijs || 0).toFixed(2)}</td>
-                        <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold; color: #27ae60;">€${total}</td>
-                        <td style="padding: 8px; border-bottom: 1px solid #eee;">${statuses.join(', ')}</td>
+                        <td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>${escapeHtml(item.naam)}</strong>${item.adres ? '<br><span style="color:#666;">' + escapeHtml(item.adres) + '</span>' : ''}</td>
+                        <td style="padding: 6px; border-bottom: 1px solid #eee;">${escapeHtml(item.text)}</td>
+                        <td style="padding: 6px; border-bottom: 1px solid #eee;">${item.aantal || 1} x €${parseFloat(item.prijs || 0).toFixed(2)}</td>
+                        <td style="padding: 6px; border-bottom: 1px solid #eee; font-weight: bold; color: #27ae60;">€${total}</td>
+                        <td style="padding: 6px; border-bottom: 1px solid #eee;">${statuses.join(', ')}</td>
                     </tr>
                 `;
             });
