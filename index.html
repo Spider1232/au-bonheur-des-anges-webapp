@@ -365,14 +365,14 @@
                 </div>
             </div>
 
-            <!-- STEUNGELD / EXTRA SECTIE -->
+            <!-- SOUTIEN AU PROJET / BLAUWE KRUIS SECTIE -->
             <div class="form-group" style="background: rgba(142, 68, 173, 0.05); padding: 12px; border-radius: 12px; border: 1px dashed rgba(142, 68, 173, 0.3);">
                 <div class="checkbox-group">
                     <input type="checkbox" id="hasSteungeld" onchange="toggleSteungeldInput(); calculateTotal();">
-                    <label for="hasSteungeld">💰Soutien au projet ou Blauwe kruis</label>
+                    <label for="hasSteungeld">💰 Soutien au projet / Blauwe kruis</label>
                 </div>
                 <div id="steungeldWrapper" style="display: none; margin-top: 10px;">
-                    <label for="steungeldBedrag" style="font-size: 12px;">Montant du steungeld (€)</label>
+                    <label for="steungeldBedrag" style="font-size: 12px;">Montant du soutien au projet (€)</label>
                     <input type="number" step="0.01" id="steungeldBedrag" class="form-control" value="0.00" min="0" oninput="calculateTotal()">
                 </div>
             </div>
@@ -502,14 +502,14 @@
                 </div>
             </div>
 
-            <!-- EDIT STEUNGELD -->
+            <!-- EDIT SOUTIEN AU PROJET / BLAUWE KRUIS -->
             <div class="form-group" style="background: rgba(142, 68, 173, 0.05); padding: 12px; border-radius: 12px; border: 1px dashed rgba(142, 68, 173, 0.3);">
                 <div class="checkbox-group">
                     <input type="checkbox" id="editHasSteungeld" onchange="toggleEditSteungeldInput()">
-                    <label for="editHasSteungeld">💰Soutien au projet ou Blauwe kruis</label>
+                    <label for="editHasSteungeld">💰 Soutien au projet / Blauwe kruis</label>
                 </div>
                 <div id="editSteungeldWrapper" style="display: none; margin-top: 10px;">
-                    <label for="editSteungeldBedrag" style="font-size: 12px;">Montant du Soutien (€)</label>
+                    <label for="editSteungeldBedrag" style="font-size: 12px;">Montant du soutien au projet (€)</label>
                     <input type="number" step="0.01" id="editSteungeldBedrag" class="form-control" value="0.00" min="0">
                 </div>
             </div>
@@ -727,7 +727,7 @@
 
     onValue(ref(db, 'items'), (snapshot) => {
         const data = snapshot.val();
-        allItems = data ? Object.keys(data).map(k => ({ id: k, ...data[k] })).reverse() : [];
+        allItems = data ? Object.keys(data).map(k => ({ id: k, ...data[k] })) : [];
         window.filterItems();
     });
 
@@ -796,7 +796,7 @@
             <div class="item-description">${escapeHtml(i.text || '')}</div>
             <div class="item-meta">
                 <span class="badge badge-subtle">${i.aantal || 1}x €${parseFloat(i.prijs||0).toFixed(2)}</span>
-                ${i.hasSteungeld && steungeld > 0 ? `<span class="badge status-steungeld">Soutien: €${steungeld.toFixed(2)}</span>` : ''}
+                ${i.hasSteungeld && steungeld > 0 ? `<span class="badge status-steungeld">Soutien au projet: €${steungeld.toFixed(2)}</span>` : ''}
                 <span class="badge ${i.betaald ? 'status-paid' : 'status-unpaid'}">${i.betaald ? 'Payé' : 'Non Payé'}</span>
                 ${i.terugbetaald ? '<span class="badge status-refund">Remboursé</span>' : ''}
                 ${i.klaarstaand ? '<span class="badge status-ready">✨ Prêt</span>' : ''}
@@ -955,7 +955,7 @@
                 let statuses = [];
                 if (item.betaald) statuses.push('Payé'); else statuses.push('Non Payé');
                 if (item.klaarstaand) statuses.push('Prêt');
-                if (item.hasSteungeld && steungeld > 0) statuses.push(`Steungeld: €${steungeld.toFixed(2)}`);
+                if (item.hasSteungeld && steungeld > 0) statuses.push(`Soutien au projet: €${steungeld.toFixed(2)}`);
                 pdfHtml += `
                     <tr>
                         <td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>${escapeHtml(item.naam)}</strong>${item.adres ? '<br><span style="color:#666;">' + escapeHtml(item.adres) + '</span>' : ''}</td>
@@ -991,7 +991,7 @@
                 let statuses = [];
                 if (item.betaald) statuses.push('Payé'); else statuses.push('Non Payé');
                 if (item.klaarstaand) statuses.push('Prêt');
-                if (item.hasSteungeld && steungeld > 0) statuses.push(`Steungeld: €${steungeld.toFixed(2)}`);
+                if (item.hasSteungeld && steungeld > 0) statuses.push(`Soutien au projet: €${steungeld.toFixed(2)}`);
                 pdfHtml += `
                     <tr>
                         <td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>${escapeHtml(item.naam)}</strong>${item.adres ? '<br><span style="color:#666;">' + escapeHtml(item.adres) + '</span>' : ''}</td>
