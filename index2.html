@@ -9,7 +9,7 @@
     <!-- FontAwesome icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://font<!-- -->s.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- html2pdf for PDF export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
@@ -329,13 +329,26 @@
 
         <!-- SECTIE 2: LISTE COMMANDES -->
         <section id="list-section" class="dashboard-section space-y-6 hidden">
-            <div class="glass-card p-6">
+            <div class="glass-card p-6" id="pdfContent">
                 <div class="flex flex-wrap justify-between items-center gap-4 mb-6 pb-4 border-b border-purple-900/10">
                     <div class="flex items-center gap-2 flex-1 max-w-md">
                         <div class="relative w-full">
                             <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 opacity-50 text-sm"></i>
                             <input type="text" id="searchInput" onkeyup="filterItems()" class="w-full glass-input pl-10 pr-4 py-2 rounded-xl text-sm" placeholder="Rechercher nom, adresse, produit...">
                         </div>
+                    </div>
+                    <!-- BACKUP, IMPORT & PDF KNOPPEN HIER TOEGEVOEGD -->
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <button onclick="downloadBackup()" class="px-3 py-2 rounded-xl glass-card text-xs font-semibold text-[#8e44ad] border border-[#8e44ad]/30 shadow-sm hover:bg-white/50 cursor-pointer flex items-center gap-1.5" title="Télécharger une sauvegarde (Backup)">
+                            <i class="fa-solid fa-download"></i> Backup
+                        </button>
+                        <button onclick="document.getElementById('importFile').click()" class="px-3 py-2 rounded-xl glass-card text-xs font-semibold text-[#8e44ad] border border-[#8e44ad]/30 shadow-sm hover:bg-white/50 cursor-pointer flex items-center gap-1.5" title="Importer une sauvegarde">
+                            <i class="fa-solid fa-upload"></i> Import
+                        </button>
+                        <input type="file" id="importFile" style="display: none;" accept=".json" onchange="importBackup(event)">
+                        <button onclick="exportToPDF()" class="px-3 py-2 rounded-xl bg-[#8e44ad] text-xs font-semibold text-white shadow-sm hover:bg-[#7d3c98] cursor-pointer flex items-center gap-1.5" title="Exporter en PDF">
+                            <i class="fa-solid fa-file-pdf"></i> PDF
+                        </button>
                     </div>
                 </div>
 
@@ -654,7 +667,7 @@
     <!-- SCRIPT -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getDatabase, ref, push, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+        import { getDatabase, ref, push, set, onValue, update, remove, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "JOUW_API_KEY", 
@@ -672,6 +685,7 @@
 
         let allOrders = [];
         let allProducts = {};
+        let globalDatabaseSnapshot = null;
 
         window.toggleSteungeldInput = function() {
             const checkbox = document.getElementById("hasSteungeld");
@@ -735,6 +749,211 @@
                     alert("Erreur lors de la suppression : " + err.message);
                 }
             }
+        };
+
+        // Globale database observer voor back-up
+        onValue(ref(db), (snapshot) => {
+            if (snapshot.exists()) {
+                globalDatabaseSnapshot = snapshot.val();
+            }
+        });
+
+        window.downloadBackup = async function() {
+            try {
+                const snapshot = await get(ref(db));
+                const dataToBackup = snapshot.exists() ? snapshot.val() : globalDatabaseSnapshot;
+                
+                if (!dataToBackup) {
+                    alert("Aucune donnée à sauvegarder.");
+                    return;
+                }
+
+                const jsonString = JSON.stringify(dataToBackup, null, 2);
+                const blob = new Blob([jsonString], { type: "application/json" });
+                const url = URL.createObjectURL(blob);
+                
+                const now = new Date();
+                const dateStr = now.toISOString().split('T')[0];
+                const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-');
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `backup_au_bonheur_des_anges_${dateStr}_${timeStr}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                await logActivity("Sauvegarde (Backup) de la base de données téléchargée");
+                showToast("Sauvegarde téléchargée avec succès !");
+            } catch (err) {
+                console.error("Erreur backup:", err);
+                alert("Erreur lors de la création de la sauvegarde : " + err.message);
+            }
+        };
+
+        window.importBackup = async function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!confirm("Attention : l'importation de ce fichier va remplacer ou fusionner les données actuelles de la base. Voulez-vous continuer ?")) {
+                event.target.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    await set(ref(db), importedData);
+                    await logActivity("Restauration (Import) de la base de données effectuée");
+                    showToast("Données importées avec succès !");
+                } catch (err) {
+                    console.error("Erreur import:", err);
+                    alert("Erreur lors de l'importation du fichier JSON : " + err.message);
+                } finally {
+                    event.target.value = '';
+                }
+            };
+            reader.readAsText(file);
+        };
+
+        function getLogoBase64() {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.crossOrigin = "Anonymous";
+                img.onload = function() {
+                    const canvas = document.createElement("canvas");
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext("2d");
+                    ctx.drawImage(img, 0, 0);
+                    resolve(canvas.toDataURL("image/jpeg"));
+                };
+                img.onerror = function() {
+                    resolve(""); 
+                };
+                img.src = "logo.jpg";
+            });
+        }
+
+        window.exportToPDF = async function() {
+            const currentQuery = document.getElementById("searchInput").value.toLowerCase();
+            const filteredOrders = allOrders.filter(item => 
+                (item.naam || '').toLowerCase().includes(currentQuery) ||
+                (item.adres || '').toLowerCase().includes(currentQuery) ||
+                (item.text || '').toLowerCase().includes(currentQuery)
+            );
+
+            const preorders = filteredOrders.filter(i => i.preorder);
+            const normals = filteredOrders.filter(i => !i.preorder);
+
+            const logoBase64 = await getLogoBase64();
+            const logoHtml = logoBase64 ? `<div style="text-align: center; margin-bottom: 10px;"><img src="${logoBase64}" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover;"></div>` : '';
+
+            let pdfHtml = `
+                <div style="font-family: Arial, sans-serif; padding: 20px; color: #202124; background: #ffffff;">
+                    ${logoHtml}
+                    <h2 style="text-align: center; color: #8e44ad; margin-bottom: 2px; font-size: 20px;">Au Bonheur Des Anges</h2>
+                    <p style="text-align: center; font-size: 11px; color: #666; margin-bottom: 20px;">Liste des Commandes & Pré-commandes</p>
+            `;
+
+            if (preorders.length > 0) {
+                pdfHtml += `
+                    <h3 style="background-color: #8e44ad; color: white; padding: 6px 10px; font-size: 13px; border-radius: 4px; margin-bottom: 8px;">📦 Pré-commandes (${preorders.length})</h3>
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px;">
+                        <thead>
+                            <tr style="background-color: #f3e5f5; color: #8e44ad; text-align: left;">
+                                <th style="padding: 6px; border-bottom: 2px solid #ddd;">Client / Adresse</th>
+                                <th style="padding: 6px; border-bottom: 2px solid #ddd;">Produit</th>
+                                <th style="padding: 6px; border-bottom: 2px solid #ddd;">Qté & Prix</th>
+                                <th style="padding: 6px; border-bottom: 2px solid #ddd;">Total</th>
+                                <th style="padding: 6px; border-bottom: 2px solid #ddd;">Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                preorders.forEach(item => {
+                    const productTotal = ((item.aantal || 1) * (item.prijs || 0));
+                    const steungeld = item.hasSteungeld ? (parseFloat(item.steungeldBedrag) || 0) : 0;
+                    const total = (productTotal + steungeld).toFixed(2);
+                    let statuses = [];
+                    if (item.betaald) statuses.push('Payé'); else statuses.push('Non Payé');
+                    if (item.pret) statuses.push('Prêt');
+                    if (item.hasSteungeld && steungeld > 0) statuses.push(`Soutien au projet: €${steungeld.toFixed(2)}`);
+                    pdfHtml += `
+                        <tr>
+                            <td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>${escapeHTML(item.naam)}</strong>${item.adres ? '<br><span style="color:#666;">' + escapeHTML(item.adres) + '</span>' : ''}</td>
+                            <td style="padding: 6px; border-bottom: 1px solid #eee;">${escapeHTML(item.text)}</td>
+                            <td style="padding: 6px; border-bottom: 1px solid #eee;">${item.aantal || 1} x €${parseFloat(item.prijs || 0).toFixed(2)}</td>
+                            <td style="padding: 6px; border-bottom: 1px solid #eee; font-weight: bold; color: #27ae60;">€${total}</td>
+                            <td style="padding: 6px; border-bottom: 1px solid #eee;">${statuses.join(', ')}</td>
+                        </tr>
+                    `;
+                });
+                pdfHtml += `</tbody></table>`;
+            }
+
+            if (normals.length > 0) {
+                pdfHtml += `
+                    <h3 style="background-color: #4a5568; color: white; padding: 6px 10px; font-size: 13px; border-radius: 4px; margin-bottom: 8px;">🛍️ Commandes Normales (${normals.length})</h3>
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px;">
+                        <thead>
+                            <tr style="background-color: #edf2f7; color: #2d3748; text-align: left;">
+                                <th style="padding: 6px; border-bottom: 2px solid #ddd;">Client / Adresse</th>
+                                <th style="padding: 6px; border-bottom: 2px solid #ddd;">Produit</th>
+                                <th style="padding: 6px; border-bottom: 2px solid #ddd;">Qté & Prix</th>
+                                <th style="padding: 6px; border-bottom: 2px solid #ddd;">Total</th>
+                                <th style="padding: 6px; border-bottom: 2px solid #ddd;">Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                normals.forEach(item => {
+                    const productTotal = ((item.aantal || 1) * (item.prijs || 0));
+                    const steungeld = item.hasSteungeld ? (parseFloat(item.steungeldBedrag) || 0) : 0;
+                    const total = (productTotal + steungeld).toFixed(2);
+                    let statuses = [];
+                    if (item.betaald) statuses.push('Payé'); else statuses.push('Non Payé');
+                    if (item.pret) statuses.push('Prêt');
+                    if (item.hasSteungeld && steungeld > 0) statuses.push(`Soutien au projet: €${steungeld.toFixed(2)}`);
+                    pdfHtml += `
+                        <tr>
+                            <td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>${escapeHTML(item.naam)}</strong>${item.adres ? '<br><span style="color:#666;">' + escapeHTML(item.adres) + '</span>' : ''}</td>
+                            <td style="padding: 6px; border-bottom: 1px solid #eee;">${escapeHTML(item.text)}</td>
+                            <td style="padding: 6px; border-bottom: 1px solid #eee;">${item.aantal || 1} x €${parseFloat(item.prijs || 0).toFixed(2)}</td>
+                            <td style="padding: 6px; border-bottom: 1px solid #eee; font-weight: bold; color: #27ae60;">€${total}</td>
+                            <td style="padding: 6px; border-bottom: 1px solid #eee;">${statuses.join(', ')}</td>
+                        </tr>
+                    `;
+                });
+                pdfHtml += `</tbody></table>`;
+            }
+
+            if (filteredOrders.length === 0) {
+                pdfHtml += `<p style="text-align: center; color: #666; padding: 20px;">Aucune commande trouvée.</p>`;
+            }
+
+            pdfHtml += `</div>`;
+
+            const container = document.createElement("div");
+            container.innerHTML = pdfHtml;
+
+            const options = {
+                margin: 10,
+                filename: 'Au_bonheur_des_Anges_Commandes.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(options).from(container).save().then(async () => {
+                await logActivity("Export PDF des commandes effectué");
+                showToast("PDF téléchargé avec succès !");
+            }).catch(err => {
+                console.error("PDF Error:", err);
+                alert("Erreur lors de la génération du PDF.");
+            });
         };
 
         document.addEventListener("DOMContentLoaded", () => {
