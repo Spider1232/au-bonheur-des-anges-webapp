@@ -9,7 +9,7 @@
     <!-- FontAwesome icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://font<!-- -->s.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- html2pdf for PDF export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
@@ -337,7 +337,7 @@
                             <input type="text" id="searchInput" onkeyup="filterItems()" class="w-full glass-input pl-10 pr-4 py-2 rounded-xl text-sm" placeholder="Rechercher nom, adresse, produit...">
                         </div>
                     </div>
-                    <!-- BACKUP, IMPORT & PDF KNOPPEN HIER TOEGEVOEGD -->
+                    <!-- BACKUP, IMPORT & PDF KNOPPEN -->
                     <div class="flex items-center gap-2 flex-wrap">
                         <button onclick="downloadBackup()" class="px-3 py-2 rounded-xl glass-card text-xs font-semibold text-[#8e44ad] border border-[#8e44ad]/30 shadow-sm hover:bg-white/50 cursor-pointer flex items-center gap-1.5" title="Télécharger une sauvegarde (Backup)">
                             <i class="fa-solid fa-download"></i> Backup
@@ -517,18 +517,18 @@
             </div>
         </section>
 
-        <!-- SECTIE 7: GÉRER PRODUITS -->
+        <!-- SECTIE 7: GÉRER PRODUITS & STOCK -->
         <section id="products-section" class="dashboard-section space-y-6 hidden">
             <div class="glass-card p-6">
                 <div class="flex flex-wrap justify-between items-center gap-3 mb-5 pb-4 border-b border-purple-900/10">
                     <div>
-                        <h3 class="font-bold text-lg text-[#8e44ad] flex items-center gap-2"><i class="fa-solid fa-boxes-stacked"></i> Gestion des Produits & Catégories</h3>
-                        <p class="text-xs opacity-70 mt-1">Ajoutez, consultez et supprimez vos produits.</p>
+                        <h3 class="font-bold text-lg text-[#8e44ad] flex items-center gap-2"><i class="fa-solid fa-boxes-stacked"></i> Gestion des Produits & Stock</h3>
+                        <p class="text-xs opacity-70 mt-1">Ajoutez, consultez, modifiez et supprimez vos produits.</p>
                     </div>
                     <button onclick="showSection('order-section')" class="px-3 py-2 rounded-xl glass-card text-xs font-semibold cursor-pointer"><i class="fa-solid fa-arrow-left mr-1"></i> Retour</button>
                 </div>
                 <form id="productForm" class="space-y-4 mb-6 glass-card p-4 rounded-xl border shadow-sm">
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
                         <div>
                             <label class="block text-xs font-semibold mb-1 opacity-80">Catégorie *</label>
                             <select id="categorieSelect" class="w-full glass-input rounded-xl px-3 py-2 text-xs cursor-pointer" required>
@@ -539,8 +539,18 @@
                                 <option value="Autre">Autre</option>
                             </select>
                         </div>
-                        <div><label class="block text-xs font-semibold mb-1 opacity-80">Nom du produit *</label><input type="text" id="productNaam" class="w-full glass-input rounded-xl px-3 py-2 text-xs" placeholder="ex: Mug photo" required></div>
-                        <div><label class="block text-xs font-semibold mb-1 opacity-80">Prix (€) *</label><input type="number" min="0" step="0.01" id="productPrijs" class="w-full glass-input rounded-xl px-3 py-2 text-xs" placeholder="0.00" required></div>
+                        <div>
+                            <label class="block text-xs font-semibold mb-1 opacity-80">Nom du produit *</label>
+                            <input type="text" id="productNaam" class="w-full glass-input rounded-xl px-3 py-2 text-xs" placeholder="ex: Mug photo" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold mb-1 opacity-80">Prix (€) *</label>
+                            <input type="number" min="0" step="0.01" id="productPrijs" class="w-full glass-input rounded-xl px-3 py-2 text-xs" placeholder="0.00" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold mb-1 opacity-80">Stock initial *</label>
+                            <input type="number" min="0" id="productStock" class="w-full glass-input rounded-xl px-3 py-2 text-xs" value="10" required>
+                        </div>
                     </div>
                     <div class="flex justify-end gap-2 pt-2">
                         <button type="button" onclick="addNewCategoryPrompt()" class="px-3 py-1.5 rounded-lg glass-card text-xs font-semibold border cursor-pointer">+ Nouvelle Catégorie</button>
@@ -554,11 +564,12 @@
                                 <th class="p-3">Catégorie</th>
                                 <th class="p-3">Nom</th>
                                 <th class="p-3">Prix</th>
+                                <th class="p-3">Stock Actuel / Restant</th>
                                 <th class="p-3 text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="productsTableBody" class="divide-y divide-purple-900/10">
-                            <tr><td colspan="4" class="p-4 text-center opacity-60">Chargement...</td></tr>
+                            <tr><td colspan="5" class="p-4 text-center opacity-60">Chargement...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -591,7 +602,7 @@
         </button>
     </nav>
 
-    <!-- MODAL EDIT/BEWERK -->
+    <!-- MODAL EDIT/BEWERK BESTELLING -->
     <div id="editModal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="glass-card p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto space-y-4">
             <div class="flex justify-between items-center pb-3 border-b border-purple-900/10">
@@ -651,6 +662,41 @@
                 <div class="flex justify-end gap-2 pt-2">
                     <button type="button" onclick="document.getElementById('editModal').classList.add('hidden')" class="px-4 py-2 rounded-xl glass-card text-xs font-semibold">Annuler</button>
                     <button type="submit" class="px-4 py-2 rounded-xl bg-[#8e44ad] text-white text-xs font-bold">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL EDIT/BEWERK PRODUCT -->
+    <div id="editProductModal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="glass-card p-6 max-w-md w-full space-y-4">
+            <div class="flex justify-between items-center pb-3 border-b border-purple-900/10">
+                <h3 class="font-bold text-[#8e44ad] text-sm"><i class="fa-solid fa-pen-to-square mr-1"></i> Modifier le produit</h3>
+                <button onclick="document.getElementById('editProductModal').classList.add('hidden')" class="text-xl font-bold opacity-60 hover:opacity-100">&times;</button>
+            </div>
+            <form id="editProductForm" class="space-y-4">
+                <input type="hidden" id="modalEditProductId">
+                <div>
+                    <label class="block text-xs font-semibold opacity-80 mb-1">Catégorie</label>
+                    <input type="text" id="modalProductCategorie" class="w-full glass-input rounded-xl px-3 py-2 text-sm" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold opacity-80 mb-1">Nom du produit</label>
+                    <input type="text" id="modalProductNaam" class="w-full glass-input rounded-xl px-3 py-2 text-sm" required>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold opacity-80 mb-1">Prix (€)</label>
+                        <input type="number" step="0.01" min="0" id="modalProductPrijs" class="w-full glass-input rounded-xl px-3 py-2 text-sm" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold opacity-80 mb-1">Stock initial</label>
+                        <input type="number" min="0" id="modalProductStock" class="w-full glass-input rounded-xl px-3 py-2 text-sm" required>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="document.getElementById('editProductModal').classList.add('hidden')" class="px-4 py-2 rounded-xl glass-card text-xs font-semibold cursor-pointer">Annuler</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl bg-[#8e44ad] text-white text-xs font-bold cursor-pointer">Mettre à jour</button>
                 </div>
             </form>
         </div>
@@ -751,7 +797,6 @@
             }
         };
 
-        // Globale database observer voor back-up
         onValue(ref(db), (snapshot) => {
             if (snapshot.exists()) {
                 globalDatabaseSnapshot = snapshot.val();
@@ -830,9 +875,7 @@
                     ctx.drawImage(img, 0, 0);
                     resolve(canvas.toDataURL("image/jpeg"));
                 };
-                img.onerror = function() {
-                    resolve(""); 
-                };
+                img.onerror = function() { resolve(""); };
                 img.src = "logo.jpg";
             });
         }
@@ -989,6 +1032,7 @@
             }, 0);
             document.getElementById("statTotalRevenue").textContent = "€ " + totalRevenue.toFixed(2);
             filterItems();
+            renderProductsTable();
         });
 
         const productsRef = ref(db, 'products');
@@ -1004,13 +1048,15 @@
             const categorie = document.getElementById("categorieSelect").value;
             const naam = document.getElementById("productNaam").value;
             const prijs = parseFloat(document.getElementById("productPrijs").value);
+            const stock = parseInt(document.getElementById("productStock").value) || 0;
 
             const newProdRef = push(ref(db, 'products'));
-            set(newProdRef, { categorie, naam, prijs }).then(() => {
-                showToast("Produit ajouté avec succès !");
-                logActivity(`Produit ajouté : ${naam} (${categorie})`);
+            set(newProdRef, { categorie, naam, prijs, stock }).then(() => {
+                showToast("Produit et stock ajoutés avec succès !");
+                logActivity(`Produit ajouté : ${naam} (${categorie}, Stock initial: ${stock})`);
                 document.getElementById("productNaam").value = "";
                 document.getElementById("productPrijs").value = "";
+                document.getElementById("productStock").value = "10";
             });
         });
 
@@ -1032,23 +1078,64 @@
             tbody.innerHTML = "";
 
             if (Object.keys(allProducts).length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center opacity-60">Aucun produit enregistré</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center opacity-60">Aucun produit enregistré</td></tr>`;
                 return;
             }
 
             for (const [id, prod] of Object.entries(allProducts)) {
+                const orderedCount = allOrders
+                    .filter(order => (order.text || '').toLowerCase() === (prod.naam || '').toLowerCase())
+                    .reduce((sum, order) => sum + (parseInt(order.aantal) || 1), 0);
+
+                const initialStock = parseInt(prod.stock) || 0;
+                const remainingStock = initialStock - orderedCount;
+
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
                     <td class="p-3">${escapeHTML(prod.categorie || '')}</td>
                     <td class="p-3 font-semibold">${escapeHTML(prod.naam || '')}</td>
                     <td class="p-3">€ ${parseFloat(prod.prijs || 0).toFixed(2)}</td>
-                    <td class="p-3 text-right">
-                        <button onclick="deleteProduct('${id}', '${escapeHTML(prod.naam)}')" class="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold cursor-pointer">Supprimer</button>
+                    <td class="p-3">
+                        <span class="font-bold ${remainingStock <= 0 ? 'text-red-500' : 'text-emerald-500'}">
+                            ${remainingStock} en stock
+                        </span> 
+                        <span class="opacity-75 text-[10px]"> (Initial: ${initialStock}, Vendu: ${orderedCount})</span>
+                    </td>
+                    <td class="p-3 text-right space-x-1">
+                        <button onclick="editProduct('${id}')" class="px-2.5 py-1 bg-sky-500 hover:bg-sky-600 text-white rounded-lg text-xs font-bold cursor-pointer" title="Modifier"><i class="fa-solid fa-pen"></i> Modifier</button>
+                        <button onclick="deleteProduct('${id}', '${escapeHTML(prod.naam)}')" class="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold cursor-pointer" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             }
         };
+
+        window.editProduct = function(id) {
+            const prod = allProducts[id];
+            if (prod) {
+                document.getElementById("modalEditProductId").value = id;
+                document.getElementById("modalProductCategorie").value = prod.categorie || "";
+                document.getElementById("modalProductNaam").value = prod.naam || "";
+                document.getElementById("modalProductPrijs").value = prod.prijs || 0;
+                document.getElementById("modalProductStock").value = prod.stock || 0;
+                document.getElementById("editProductModal").classList.remove("hidden");
+            }
+        };
+
+        document.getElementById("editProductForm").addEventListener("submit", (e) => {
+            e.preventDefault();
+            const id = document.getElementById("modalEditProductId").value;
+            const categorie = document.getElementById("modalProductCategorie").value;
+            const naam = document.getElementById("modalProductNaam").value;
+            const prijs = parseFloat(document.getElementById("modalProductPrijs").value);
+            const stock = parseInt(document.getElementById("modalProductStock").value) || 0;
+
+            update(ref(db, `products/${id}`), { categorie, naam, prijs, stock }).then(() => {
+                showToast("Produit mis à jour avec succès !");
+                logActivity(`Produit modifié : ${naam} (${categorie})`);
+                document.getElementById("editProductModal").classList.add("hidden");
+            });
+        });
 
         window.deleteProduct = function(id, name) {
             if (confirm("Voulez-vous vraiment supprimer ce produit ?")) {
@@ -1171,7 +1258,7 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-2 flex-wrap">
-                        ${item.hasSteungeld && steungeld > 0 ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-[#8e44ad]">💰 Steungeld: €${steungeld.toFixed(2)}</span>` : ''}
+                        ${item.hasSteungeld && steungeld > 0 ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-[#8e44ad]">Soutien au projet: €${steungeld.toFixed(2)}</span>` : ''}
                         <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${item.betaald ? 'bg-emerald-500/20 text-emerald-600' : 'bg-amber-500/20 text-amber-600'}">
                             ${item.betaald ? 'Payé' : 'Non payé'}
                         </span>
