@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Au Bonheur Des Anges - Commande</title>
-    <link rel="icon" href="logo.jpg">
+    <title>Au Bonheur Des Anges - Dashboard</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome icons -->
@@ -703,6 +702,36 @@
         </div>
     </div>
 
+    <!-- MODAL EDIT/BEWERK IDÉE -->
+    <div id="editIdeaModal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="glass-card p-6 max-w-lg w-full space-y-4">
+            <div class="flex justify-between items-center pb-3 border-b border-purple-900/10">
+                <h3 class="font-bold text-[#8e44ad] text-sm"><i class="fa-solid fa-pen-to-square mr-1"></i> Modifier l'idée</h3>
+                <button onclick="document.getElementById('editIdeaModal').classList.add('hidden')" class="text-xl font-bold opacity-60 hover:opacity-100">&times;</button>
+            </div>
+            <form id="editIdeaForm" class="space-y-4">
+                <input type="hidden" id="modalEditIdeaId">
+                <div>
+                    <label class="block text-xs font-semibold opacity-80 mb-1">Titre de l'idée *</label>
+                    <input type="text" id="modalIdeaTitre" class="w-full glass-input rounded-xl px-3 py-2 text-sm" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold opacity-80 mb-1">Description / Notes</label>
+                    <textarea id="modalIdeaDescription" class="w-full glass-input rounded-xl px-3 py-2 text-sm h-24"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold opacity-80 mb-1">Remplacer la photo (Optionnel)</label>
+                    <input type="file" id="modalIdeaPhoto" accept="image/*" class="w-full glass-input rounded-xl px-3 py-2 text-xs cursor-pointer">
+                    <img id="modalIdeaPhotoPreview" class="mt-2 max-h-32 rounded-xl object-contain hidden" src="" alt="Aperçu">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="document.getElementById('editIdeaModal').classList.add('hidden')" class="px-4 py-2 rounded-xl glass-card text-xs font-semibold cursor-pointer">Annuler</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl bg-[#8e44ad] text-white text-xs font-bold cursor-pointer">Mettre à jour</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="lightboxModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4" onclick="closeLightbox()">
         <img id="lightboxImage" class="max-w-full max-h-[85vh] rounded-xl object-contain shadow-2xl" src="" alt="Agrandissement">
     </div>
@@ -732,6 +761,7 @@
 
         let allOrders = [];
         let allProducts = {};
+        let allIdeas = {};
         let globalDatabaseSnapshot = null;
 
         window.toggleSteungeldInput = function() {
@@ -893,89 +923,103 @@
             const normals = filteredOrders.filter(i => !i.preorder);
 
             const logoBase64 = await getLogoBase64();
-            const logoHtml = logoBase64 ? `<div style="text-align: center; margin-bottom: 10px;"><img src="${logoBase64}" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover;"></div>` : '';
+            const logoHtml = logoBase64 ? `
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <img src="${logoBase64}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #8e44ad; box-shadow: 0 4px 10px rgba(142,68,173,0.2);">
+                </div>` : '';
+
+            const currentDate = new Date().toLocaleDateString('fr-BE', { dateStyle: 'long' });
 
             let pdfHtml = `
-                <div style="font-family: Arial, sans-serif; padding: 20px; color: #202124; background: #ffffff;">
+                <div style="font-family: 'Inter', Arial, sans-serif; padding: 30px; color: #2d3748; background: #ffffff; max-width: 800px; margin: 0 auto;">
                     ${logoHtml}
-                    <h2 style="text-align: center; color: #8e44ad; margin-bottom: 2px; font-size: 20px;">Au Bonheur Des Anges</h2>
-                    <p style="text-align: center; font-size: 11px; color: #666; margin-bottom: 20px;">Liste des Commandes & Pré-commandes</p>
+                    <h1 style="text-align: center; color: #8e44ad; font-size: 22px; font-weight: 800; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Au Bonheur Des Anges</h1>
+                    <p style="text-align: center; font-size: 11px; color: #718096; margin-bottom: 25px;">Rapport officiel des commandes & pré-commandes • Édité le ${currentDate}</p>
+                    <hr style="border: none; border-top: 1px solid #e2e8f0; margin-bottom: 25px;">
             `;
 
             if (preorders.length > 0) {
                 pdfHtml += `
-                    <h3 style="background-color: #8e44ad; color: white; padding: 6px 10px; font-size: 13px; border-radius: 4px; margin-bottom: 8px;">📦 Pré-commandes (${preorders.length})</h3>
-                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px;">
-                        <thead>
-                            <tr style="background-color: #f3e5f5; color: #8e44ad; text-align: left;">
-                                <th style="padding: 6px; border-bottom: 2px solid #ddd;">Client / Adresse</th>
-                                <th style="padding: 6px; border-bottom: 2px solid #ddd;">Produit</th>
-                                <th style="padding: 6px; border-bottom: 2px solid #ddd;">Qté & Prix</th>
-                                <th style="padding: 6px; border-bottom: 2px solid #ddd;">Total</th>
-                                <th style="padding: 6px; border-bottom: 2px solid #ddd;">Statut</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                    <div style="margin-bottom: 25px;">
+                        <h3 style="background: linear-gradient(135deg, #9b51e0, #8e44ad); color: white; padding: 8px 14px; font-size: 12px; font-weight: bold; border-radius: 6px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">📦 Pré-commandes (${preorders.length})</h3>
+                        <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                            <thead>
+                                <tr style="background-color: #f7fafc; color: #4a5568; text-align: left; border-bottom: 2px solid #e2e8f0;">
+                                    <th style="padding: 8px 10px;">Client & Adresse</th>
+                                    <th style="padding: 8px 10px;">Produit</th>
+                                    <th style="padding: 8px 10px;">Qté & Prix</th>
+                                    <th style="padding: 8px 10px;">Total</th>
+                                    <th style="padding: 8px 10px;">Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
                 `;
-                preorders.forEach(item => {
+                preorders.forEach((item, index) => {
+                    const bgRow = index % 2 === 0 ? '#ffffff' : '#faf5ff';
                     const productTotal = ((item.aantal || 1) * (item.prijs || 0));
                     const steungeld = item.hasSteungeld ? (parseFloat(item.steungeldBedrag) || 0) : 0;
                     const total = (productTotal + steungeld).toFixed(2);
                     let statuses = [];
-                    if (item.betaald) statuses.push('Payé'); else statuses.push('Non Payé');
-                    if (item.pret) statuses.push('Prêt');
-                    if (item.hasSteungeld && steungeld > 0) statuses.push(`Soutien au projet: €${steungeld.toFixed(2)}`);
+                    if (item.betaald) statuses.push('<span style="color: #27ae60; font-weight: bold;">Payé</span>'); 
+                    else statuses.push('<span style="color: #d97706;">Non payé</span>');
+                    if (item.pret) statuses.push('<span style="color: #8e44ad; font-weight: bold;">Prêt</span>');
+                    if (item.hasSteungeld && steungeld > 0) statuses.push(`<span style="color: #6b46c1;">Soutien: €${steungeld.toFixed(2)}</span>`);
+
                     pdfHtml += `
-                        <tr>
-                            <td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>${escapeHTML(item.naam)}</strong>${item.adres ? '<br><span style="color:#666;">' + escapeHTML(item.adres) + '</span>' : ''}</td>
-                            <td style="padding: 6px; border-bottom: 1px solid #eee;">${escapeHTML(item.text)}</td>
-                            <td style="padding: 6px; border-bottom: 1px solid #eee;">${item.aantal || 1} x €${parseFloat(item.prijs || 0).toFixed(2)}</td>
-                            <td style="padding: 6px; border-bottom: 1px solid #eee; font-weight: bold; color: #27ae60;">€${total}</td>
-                            <td style="padding: 6px; border-bottom: 1px solid #eee;">${statuses.join(', ')}</td>
+                        <tr style="background-color: ${bgRow}; border-bottom: 1px solid #edf2f7;">
+                            <td style="padding: 8px 10px;"><strong>${escapeHTML(item.naam)}</strong>${item.adres ? '<br><span style="color:#718096; font-size: 10px;">' + escapeHTML(item.adres) + '</span>' : ''}</td>
+                            <td style="padding: 8px 10px; color: #2d3748;">${escapeHTML(item.text)}</td>
+                            <td style="padding: 8px 10px; color: #4a5568;">${item.aantal || 1} x €${parseFloat(item.prijs || 0).toFixed(2)}</td>
+                            <td style="padding: 8px 10px; font-weight: bold; color: #27ae60;">€${total}</td>
+                            <td style="padding: 8px 10px;">${statuses.join(' • ')}</td>
                         </tr>
                     `;
                 });
-                pdfHtml += `</tbody></table>`;
+                pdfHtml += `</tbody></table></div>`;
             }
 
             if (normals.length > 0) {
                 pdfHtml += `
-                    <h3 style="background-color: #4a5568; color: white; padding: 6px 10px; font-size: 13px; border-radius: 4px; margin-bottom: 8px;">🛍️ Commandes Normales (${normals.length})</h3>
-                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px;">
-                        <thead>
-                            <tr style="background-color: #edf2f7; color: #2d3748; text-align: left;">
-                                <th style="padding: 6px; border-bottom: 2px solid #ddd;">Client / Adresse</th>
-                                <th style="padding: 6px; border-bottom: 2px solid #ddd;">Produit</th>
-                                <th style="padding: 6px; border-bottom: 2px solid #ddd;">Qté & Prix</th>
-                                <th style="padding: 6px; border-bottom: 2px solid #ddd;">Total</th>
-                                <th style="padding: 6px; border-bottom: 2px solid #ddd;">Statut</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                    <div style="margin-bottom: 25px;">
+                        <h3 style="background: linear-gradient(135deg, #4a5568, #2d3748); color: white; padding: 8px 14px; font-size: 12px; font-weight: bold; border-radius: 6px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">🛍️ Commandes Normales (${normals.length})</h3>
+                        <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                            <thead>
+                                <tr style="background-color: #f7fafc; color: #4a5568; text-align: left; border-bottom: 2px solid #e2e8f0;">
+                                    <th style="padding: 8px 10px;">Client & Adresse</th>
+                                    <th style="padding: 8px 10px;">Produit</th>
+                                    <th style="padding: 8px 10px;">Qté & Prix</th>
+                                    <th style="padding: 8px 10px;">Total</th>
+                                    <th style="padding: 8px 10px;">Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
                 `;
-                normals.forEach(item => {
+                normals.forEach((item, index) => {
+                    const bgRow = index % 2 === 0 ? '#ffffff' : '#f7fafc';
                     const productTotal = ((item.aantal || 1) * (item.prijs || 0));
                     const steungeld = item.hasSteungeld ? (parseFloat(item.steungeldBedrag) || 0) : 0;
                     const total = (productTotal + steungeld).toFixed(2);
                     let statuses = [];
-                    if (item.betaald) statuses.push('Payé'); else statuses.push('Non Payé');
-                    if (item.pret) statuses.push('Prêt');
-                    if (item.hasSteungeld && steungeld > 0) statuses.push(`Soutien au projet: €${steungeld.toFixed(2)}`);
+                    if (item.betaald) statuses.push('<span style="color: #27ae60; font-weight: bold;">Payé</span>'); 
+                    else statuses.push('<span style="color: #d97706;">Non payé</span>');
+                    if (item.pret) statuses.push('<span style="color: #8e44ad; font-weight: bold;">Prêt</span>');
+                    if (item.hasSteungeld && steungeld > 0) statuses.push(`<span style="color: #6b46c1;">Soutien: €${steungeld.toFixed(2)}</span>`);
+
                     pdfHtml += `
-                        <tr>
-                            <td style="padding: 6px; border-bottom: 1px solid #eee;"><strong>${escapeHTML(item.naam)}</strong>${item.adres ? '<br><span style="color:#666;">' + escapeHTML(item.adres) + '</span>' : ''}</td>
-                            <td style="padding: 6px; border-bottom: 1px solid #eee;">${escapeHTML(item.text)}</td>
-                            <td style="padding: 6px; border-bottom: 1px solid #eee;">${item.aantal || 1} x €${parseFloat(item.prijs || 0).toFixed(2)}</td>
-                            <td style="padding: 6px; border-bottom: 1px solid #eee; font-weight: bold; color: #27ae60;">€${total}</td>
-                            <td style="padding: 6px; border-bottom: 1px solid #eee;">${statuses.join(', ')}</td>
+                        <tr style="background-color: ${bgRow}; border-bottom: 1px solid #edf2f7;">
+                            <td style="padding: 8px 10px;"><strong>${escapeHTML(item.naam)}</strong>${item.adres ? '<br><span style="color:#718096; font-size: 10px;">' + escapeHTML(item.adres) + '</span>' : ''}</td>
+                            <td style="padding: 8px 10px; color: #2d3748;">${escapeHTML(item.text)}</td>
+                            <td style="padding: 8px 10px; color: #4a5568;">${item.aantal || 1} x €${parseFloat(item.prijs || 0).toFixed(2)}</td>
+                            <td style="padding: 8px 10px; font-weight: bold; color: #27ae60;">€${total}</td>
+                            <td style="padding: 8px 10px;">${statuses.join(' • ')}</td>
                         </tr>
                     `;
                 });
-                pdfHtml += `</tbody></table>`;
+                pdfHtml += `</tbody></table></div>`;
             }
 
             if (filteredOrders.length === 0) {
-                pdfHtml += `<p style="text-align: center; color: #666; padding: 20px;">Aucune commande trouvée.</p>`;
+                pdfHtml += `<p style="text-align: center; color: #718096; padding: 30px; font-size: 12px;">Aucune commande trouvée.</p>`;
             }
 
             pdfHtml += `</div>`;
@@ -1259,7 +1303,7 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-2 flex-wrap">
-                        ${item.hasSteungeld && steungeld > 0 ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-[#8e44ad]">Soutien au projet: €${steungeld.toFixed(2)}</span>` : ''}
+                        ${item.hasSteungeld && steungeld > 0 ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-[#8e44ad]">💰 Steungeld: €${steungeld.toFixed(2)}</span>` : ''}
                         <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${item.betaald ? 'bg-emerald-500/20 text-emerald-600' : 'bg-amber-500/20 text-amber-600'}">
                             ${item.betaald ? 'Payé' : 'Non payé'}
                         </span>
@@ -1359,9 +1403,11 @@
             }
         });
 
-        // Idées & notes avec photo
+        // Idées & notes met foto
         const ideasRef = ref(db, 'ideas');
         let selectedIdeaImage = '';
+        let modalSelectedIdeaImage = '';
+
         const ideaPhotoInput = document.getElementById('ideaPhoto');
         if (ideaPhotoInput) {
             ideaPhotoInput.addEventListener('change', async () => {
@@ -1381,6 +1427,22 @@
                 } catch (err) { console.error(err); showToast('Impossible de lire cette image.'); }
             });
         }
+
+        const modalIdeaPhotoInput = document.getElementById('modalIdeaPhoto');
+        if (modalIdeaPhotoInput) {
+            modalIdeaPhotoInput.addEventListener('change', async () => {
+                const file = modalIdeaPhotoInput.files && modalIdeaPhotoInput.files[0];
+                if (!file) return;
+                if (!file.type.startsWith('image/')) { showToast('Veuillez choisir une image.'); modalIdeaPhotoInput.value = ''; return; }
+                try {
+                    modalSelectedIdeaImage = await compressIdeaImage(file);
+                    const preview = document.getElementById('modalIdeaPhotoPreview');
+                    preview.src = modalSelectedIdeaImage;
+                    preview.classList.remove('hidden');
+                } catch (err) { console.error(err); showToast('Impossible de lire cette image.'); }
+            });
+        }
+
         function compressIdeaImage(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -1398,6 +1460,7 @@
                 reader.readAsDataURL(file);
             });
         }
+
         document.getElementById('ideaForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const titre = document.getElementById('ideaTitre').value.trim();
@@ -1414,20 +1477,94 @@
             } catch (err) { console.error(err); showToast('Erreur lors de l’enregistrement.'); }
             finally { btn.disabled = false; }
         });
+
         onValue(ideasRef, (snapshot) => {
             const container = document.getElementById('ideasContainer');
-            const ideas = snapshot.val() || {};
-            const entries = Object.entries(ideas).sort((a,b) => (b[1].createdAt || 0) - (a[1].createdAt || 0));
+            allIdeas = snapshot.val() || {};
+            const entries = Object.entries(allIdeas).sort((a,b) => (b[1].createdAt || 0) - (a[1].createdAt || 0));
             if (!entries.length) { container.innerHTML = '<p class="text-center py-6 opacity-60 text-sm">Aucune idée enregistrée.</p>'; return; }
             container.innerHTML = '';
             entries.forEach(([id, idea]) => {
-                const card = document.createElement('article'); card.className = 'glass-card p-4 rounded-xl';
+                const card = document.createElement('article'); card.className = 'glass-card p-4 rounded-xl space-y-2';
                 const title = document.createElement('h4'); title.className = 'font-bold text-sm text-[#8e44ad]'; title.textContent = idea.titre || 'Sans titre'; card.appendChild(title);
-                if (idea.description) { const desc = document.createElement('p'); desc.className = 'text-xs opacity-80 mt-2 whitespace-pre-wrap'; desc.textContent = idea.description; card.appendChild(desc); }
-                if (idea.image) { const img = document.createElement('img'); img.src = idea.image; img.alt = idea.titre || 'Photo idée'; img.className = 'mt-3 max-h-56 rounded-xl object-contain cursor-zoom-in'; img.addEventListener('click', () => { document.getElementById('lightboxImage').src = idea.image; document.getElementById('lightboxModal').classList.remove('hidden'); }); card.appendChild(img); }
-                const del = document.createElement('button'); del.type = 'button'; del.className = 'mt-3 px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-bold'; del.textContent = 'Supprimer'; del.addEventListener('click', async () => { if (confirm('Supprimer cette idée ?')) { try { await remove(ref(db, `ideas/${id}`)); showToast('Idée supprimée.'); logActivity(`Idée supprimée : ${idea.titre}`); } catch(err) { showToast('Suppression impossible.'); } } }); card.appendChild(del);
+                if (idea.description) { const desc = document.createElement('p'); desc.className = 'text-xs opacity-80 whitespace-pre-wrap'; desc.textContent = idea.description; card.appendChild(desc); }
+                if (idea.image) { 
+                    const img = document.createElement('img'); img.src = idea.image; img.alt = idea.titre || 'Photo idée'; 
+                    img.className = 'max-h-48 rounded-xl object-contain cursor-zoom-in'; 
+                    img.addEventListener('click', () => { document.getElementById('lightboxImage').src = idea.image; document.getElementById('lightboxModal').classList.remove('hidden'); }); 
+                    card.appendChild(img); 
+                }
+                const btnContainer = document.createElement('div'); btnContainer.className = 'flex gap-2 pt-2';
+                
+                const editBtn = document.createElement('button'); editBtn.type = 'button'; 
+                editBtn.className = 'px-3 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-600 text-white text-xs font-bold cursor-pointer'; 
+                editBtn.innerHTML = '<i class="fa-solid fa-pen mr-1"></i> Modifier'; 
+                editBtn.addEventListener('click', () => openEditIdeaModal(id));
+                btnContainer.appendChild(editBtn);
+
+                const del = document.createElement('button'); del.type = 'button'; 
+                del.className = 'px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer'; 
+                del.innerHTML = '<i class="fa-solid fa-trash mr-1"></i> Supprimer'; 
+                del.addEventListener('click', async () => { 
+                    if (confirm('Supprimer cette idée ?')) { 
+                        try { 
+                            await remove(ref(db, `ideas/${id}`)); 
+                            showToast('Idée supprimée.'); 
+                            logActivity(`Idée supprimée : ${idea.titre}`); 
+                        } catch(err) { showToast('Suppression impossible.'); } 
+                    } 
+                }); 
+                btnContainer.appendChild(del);
+
+                card.appendChild(btnContainer);
                 container.appendChild(card);
             });
+        });
+
+        window.openEditIdeaModal = function(id) {
+            const idea = allIdeas[id];
+            if (idea) {
+                document.getElementById('modalEditIdeaId').value = id;
+                document.getElementById('modalIdeaTitre').value = idea.titre || '';
+                document.getElementById('modalIdeaDescription').value = idea.description || '';
+                modalSelectedIdeaImage = idea.image || '';
+                
+                const preview = document.getElementById('modalIdeaPhotoPreview');
+                if (modalSelectedIdeaImage) {
+                    preview.src = modalSelectedIdeaImage;
+                    preview.classList.remove('hidden');
+                } else {
+                    preview.src = '';
+                    preview.classList.add('hidden');
+                }
+                document.getElementById('modalIdeaPhoto').value = '';
+                document.getElementById('editIdeaModal').classList.remove('hidden');
+            }
+        };
+
+        document.getElementById('editIdeaForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('modalEditIdeaId').value;
+            const titre = document.getElementById('modalIdeaTitre').value.trim();
+            const description = document.getElementById('modalIdeaDescription').value.trim();
+            const currentIdea = allIdeas[id] || {};
+
+            const updatedData = {
+                titre,
+                description,
+                image: modalSelectedIdeaImage !== undefined ? modalSelectedIdeaImage : (currentIdea.image || ''),
+                createdAt: currentIdea.createdAt || Date.now()
+            };
+
+            try {
+                await update(ref(db, `ideas/${id}`), updatedData);
+                showToast("Idée mise à jour avec succès !");
+                logActivity(`Idée modifiée : ${titre}`);
+                document.getElementById('editIdeaModal').classList.add('hidden');
+            } catch (err) {
+                console.error(err);
+                showToast("Erreur lors de la mise à jour.");
+            }
         });
 
         window.toggleDarkMode = function() {
