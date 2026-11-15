@@ -61,7 +61,6 @@
             color: var(--text-color);
         }
 
-        /* VASTE WITTE ACHTERGROND VOOR ALLE MODALS (VENSTERS) */
         .modal-white-card {
             background: #ffffff !important;
             backdrop-filter: none !important;
@@ -181,27 +180,27 @@
             </div>
 
             <nav class="mt-6 flex flex-col gap-2">
-                <button onclick="showSection('order-section')" id="nav-order-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all bg-[#8e44ad]/15 text-[#8e44ad] shadow-sm cursor-pointer">
+                <button type="button" onclick="showSection('order-section')" id="nav-order-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all bg-[#8e44ad]/15 text-[#8e44ad] shadow-sm cursor-pointer">
                     <i class="fa-solid fa-cart-plus text-lg w-6"></i>
                     <span>Commander</span>
                 </button>
-                <button onclick="showSection('list-section')" id="nav-list-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm opacity-80 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
+                <button type="button" onclick="showSection('list-section')" id="nav-list-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm opacity-80 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
                     <i class="fa-solid fa-list-check text-lg w-6"></i>
                     <span>Liste Commandes</span>
                 </button>
-                <button onclick="showSection('pdf-section')" id="nav-pdf-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm opacity-80 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
+                <button type="button" onclick="showSection('pdf-section')" id="nav-pdf-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm opacity-80 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
                     <i class="fa-solid fa-boxes-stacked text-lg w-6"></i>
                     <span>Liste Produits</span>
                 </button>
-                <button onclick="showSection('notebook-section')" id="nav-notebook-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm opacity-80 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
+                <button type="button" onclick="showSection('notebook-section')" id="nav-notebook-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm opacity-80 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
                     <i class="fa-solid fa-book text-lg w-6"></i>
                     <span>Mes Idées & Notes</span>
                 </button>
-                <button onclick="showSection('settings-section')" id="nav-settings-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm opacity-80 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
+                <button type="button" onclick="showSection('settings-section')" id="nav-settings-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm opacity-80 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
                     <i class="fa-solid fa-sliders text-lg w-6"></i>
                     <span>Réglages Style</span>
                 </button>
-                <button onclick="showSection('info-section')" id="nav-info-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm opacity-80 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
+                <button type="button" onclick="showSection('info-section')" id="nav-info-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm opacity-80 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
                     <i class="fa-solid fa-circle-info text-lg w-6"></i>
                     <span>Information</span>
                 </button>
@@ -248,12 +247,12 @@
                         <h3 id="formSectionTitle" class="font-bold uppercase tracking-wider text-sm text-[#8e44ad] flex items-center gap-2">
                             <i class="fa-solid fa-plus-circle"></i> Nouvelle Commande
                         </h3>
-                        <button onclick="clearFormDraft()" class="text-xs text-red-500 hover:text-red-700 flex items-center gap-1 font-semibold cursor-pointer">
+                        <button type="button" onclick="clearFormDraft()" class="text-xs text-red-500 hover:text-red-700 flex items-center gap-1 font-semibold cursor-pointer">
                             <i class="fa-solid fa-trash"></i> Annuler / Effacer
                         </button>
                     </div>
 
-                    <form id="orderForm" class="space-y-4">
+                    <form id="orderForm" class="space-y-4" onsubmit="handleOrderSubmit(event)">
                         <input type="hidden" id="editOrderId" value="">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
@@ -266,26 +265,17 @@
                             </div>
                         </div>
 
-                        <div>
-                            <div class="flex justify-between items-center mb-1">
-                                <label class="block text-xs font-semibold opacity-80">Choisir un produit *</label>
-                                <button type="button" onclick="showSection('pdf-section')" class="text-xs text-[#8e44ad] underline font-medium hover:text-[#6c3483] cursor-pointer">
-                                    + Voir / Gérer produits dans Liste Produits
+                        <!-- DYNAMISCHE PRODUCTEN LIJST -->
+                        <div class="space-y-3 pt-2">
+                            <div class="flex justify-between items-center">
+                                <label class="block text-xs font-semibold opacity-80">Produits commandés *</label>
+                                <button type="button" onclick="addProductRow()" class="px-3 py-1.5 rounded-lg bg-[#8e44ad]/15 text-[#8e44ad] hover:bg-[#8e44ad]/25 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5">
+                                    <i class="fa-solid fa-plus"></i> + Ajouter un produit
                                 </button>
                             </div>
-                            <select id="text" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm cursor-pointer" required onchange="updateDefaultPrice()">
-                                <option value="" data-price="">-- Chargement des produits... --</option>
-                            </select>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-semibold opacity-80 mb-1">Quantité *</label>
-                                <input type="number" id="aantal" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm" value="1" min="1" required oninput="calculateTotal()">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold opacity-80 mb-1">Prix unitaire (€) *</label>
-                                <input type="number" step="0.01" id="prijs" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm" placeholder="0.00" required oninput="calculateTotal()">
+                            
+                            <div id="orderProductRowsContainer" class="space-y-3">
+                                <!-- Dynamische rijen komen hier -->
                             </div>
                         </div>
 
@@ -336,7 +326,7 @@
                         <ul class="space-y-3 text-xs opacity-80">
                             <li class="flex items-start gap-2">
                                 <i class="fa-solid fa-check text-emerald-500 mt-0.5"></i>
-                                <span>Cochez "📦 Pré-commande" pour séparer automatiquement vos préventes dans l'onglet Liste.</span>
+                                <span>Cliquez sur "+ Ajouter un produit" pour commander plusieurs articles différents en une seule fois.</span>
                             </li>
                         </ul>
                     </div>
@@ -356,14 +346,14 @@
                     </div>
                     <!-- BACKUP, IMPORT & PDF KNOPPEN -->
                     <div class="flex items-center gap-2 flex-wrap">
-                        <button onclick="downloadBackup()" class="px-3 py-2 rounded-xl glass-card text-xs font-semibold text-[#8e44ad] border border-[#8e44ad]/30 shadow-sm hover:bg-white/50 cursor-pointer flex items-center gap-1.5" title="Télécharger une sauvegarde (Backup)">
+                        <button type="button" onclick="downloadBackup()" class="px-3 py-2 rounded-xl glass-card text-xs font-semibold text-[#8e44ad] border border-[#8e44ad]/30 shadow-sm hover:bg-white/50 cursor-pointer flex items-center gap-1.5" title="Télécharger une sauvegarde (Backup)">
                             <i class="fa-solid fa-download"></i> Backup
                         </button>
-                        <button onclick="document.getElementById('importFile').click()" class="px-3 py-2 rounded-xl glass-card text-xs font-semibold text-[#8e44ad] border border-[#8e44ad]/30 shadow-sm hover:bg-white/50 cursor-pointer flex items-center gap-1.5" title="Importer une sauvegarde">
+                        <button type="button" onclick="document.getElementById('importFile').click()" class="px-3 py-2 rounded-xl glass-card text-xs font-semibold text-[#8e44ad] border border-[#8e44ad]/30 shadow-sm hover:bg-white/50 cursor-pointer flex items-center gap-1.5" title="Importer une sauvegarde">
                             <i class="fa-solid fa-upload"></i> Import
                         </button>
                         <input type="file" id="importFile" style="display: none;" accept=".json" onchange="importBackup(event)">
-                        <button onclick="exportToPDF()" class="px-3 py-2 rounded-xl bg-[#8e44ad] text-xs font-semibold text-white shadow-sm hover:bg-[#7d3c98] cursor-pointer flex items-center gap-1.5" title="Exporter en PDF">
+                        <button type="button" onclick="exportToPDF()" class="px-3 py-2 rounded-xl bg-[#8e44ad] text-xs font-semibold text-white shadow-sm hover:bg-[#7d3c98] cursor-pointer flex items-center gap-1.5" title="Exporter en PDF">
                             <i class="fa-solid fa-file-pdf"></i> PDF
                         </button>
                     </div>
@@ -394,7 +384,7 @@
                         <i class="fa-solid fa-circle-info text-[#8e44ad]"></i> Action sur la liste :
                     </div>
                     <div class="flex items-center gap-3">
-                        <button onclick="window.print()" class="px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-xs font-bold text-white transition-all flex items-center gap-2 shadow-sm cursor-pointer">
+                        <button type="button" onclick="window.print()" class="px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-xs font-bold text-white transition-all flex items-center gap-2 shadow-sm cursor-pointer">
                             <i class="fa-solid fa-print"></i> Imprimer la liste
                         </button>
                     </div>
@@ -410,7 +400,7 @@
                         <h3 class="font-bold text-lg text-[#8e44ad] flex items-center gap-2"><i class="fa-solid fa-boxes-stacked"></i> Liste des Produits & Stock</h3>
                         <p class="text-xs opacity-70 mt-1">Cliquez sur un produit pour le modifier ou gérez vos produits directement ici.</p>
                     </div>
-                    <button onclick="openAddProductModal()" class="px-4 py-2 rounded-xl bg-[#8e44ad] hover:bg-[#7d3c98] text-white text-xs font-bold shadow-md cursor-pointer flex items-center gap-2">
+                    <button type="button" onclick="openAddProductModal()" class="px-4 py-2 rounded-xl bg-[#8e44ad] hover:bg-[#7d3c98] text-white text-xs font-bold shadow-md cursor-pointer flex items-center gap-2">
                         <i class="fa-solid fa-plus"></i> Ajouter un produit
                     </button>
                 </div>
@@ -440,7 +430,7 @@
                     <h3 class="font-bold uppercase tracking-wider text-sm text-[#8e44ad] mb-4 pb-2 border-b border-purple-900/10">
                         Nouvelle Idée
                     </h3>
-                    <form id="ideaForm" class="space-y-4">
+                    <form id="ideaForm" class="space-y-4" onsubmit="handleIdeaSubmit(event)">
                         <div>
                             <label class="block text-xs font-semibold opacity-80 mb-1">Titre de l'idée *</label>
                             <input type="text" id="ideaTitre" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm" placeholder="ex: Nouveau mug" required>
@@ -486,7 +476,7 @@
                                 <p class="text-[11px] opacity-75">Basculer entre l'apparence claire et sombre</p>
                             </div>
                         </div>
-                        <button onclick="toggleDarkMode()" id="darkModeBtn" class="px-4 py-2 rounded-xl bg-[#8e44ad] text-white text-xs font-bold shadow-md cursor-pointer transition-all">
+                        <button type="button" onclick="toggleDarkMode()" id="darkModeBtn" class="px-4 py-2 rounded-xl bg-[#8e44ad] text-white text-xs font-bold shadow-md cursor-pointer transition-all">
                             Activer Sombre
                         </button>
                     </div>
@@ -513,7 +503,7 @@
                     </div>
 
                     <div class="pt-4 border-t border-purple-900/10 space-y-3">
-                        <button onclick="removeCustomBackground()" class="w-full py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-xs font-bold text-white shadow-md cursor-pointer">
+                        <button type="button" onclick="removeCustomBackground()" class="w-full py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-xs font-bold text-white shadow-md cursor-pointer">
                             Réinitialiser l'arrière-plan
                         </button>
                     </div>
@@ -540,7 +530,7 @@
                     <h3 class="font-bold text-sm text-[#8e44ad] flex items-center gap-2">
                         <i class="fa-solid fa-clock-rotate-left"></i> Historique des Activités
                     </h3>
-                    <button onclick="clearActivityLog()" class="px-3 py-1 bg-red-500/15 text-red-600 hover:bg-red-500/25 rounded-lg text-xs font-semibold transition-all cursor-pointer">
+                    <button type="button" onclick="clearActivityLog()" class="px-3 py-1 bg-red-500/15 text-red-600 hover:bg-red-500/25 rounded-lg text-xs font-semibold transition-all cursor-pointer">
                         Tout marquer comme lu et effacer
                     </button>
                 </div>
@@ -554,19 +544,19 @@
 
     <!-- ================= MOBIELE NAVIGATIE BALK (ONDERAN) ================= -->
     <nav class="fixed bottom-0 left-0 right-0 glass-card m-2 p-2 flex justify-around items-center z-30 md:hidden shadow-lg border no-print">
-        <button onclick="showSection('order-section')" id="mob-nav-order-section" class="mob-nav-btn flex flex-col items-center p-2 text-[#8e44ad] text-xs font-semibold cursor-pointer">
+        <button type="button" onclick="showSection('order-section')" id="mob-nav-order-section" class="mob-nav-btn flex flex-col items-center p-2 text-[#8e44ad] text-xs font-semibold cursor-pointer">
             <i class="fa-solid fa-cart-plus text-base"></i>
             <span class="text-[10px]">Commander</span>
         </button>
-        <button onclick="showSection('list-section')" id="mob-nav-list-section" class="mob-nav-btn flex flex-col items-center p-2 opacity-70 text-xs font-semibold cursor-pointer">
+        <button type="button" onclick="showSection('list-section')" id="mob-nav-list-section" class="mob-nav-btn flex flex-col items-center p-2 opacity-70 text-xs font-semibold cursor-pointer">
             <i class="fa-solid fa-list-check text-base"></i>
             <span class="text-[10px]">Listes</span>
         </button>
-        <button onclick="showSection('pdf-section')" id="mob-nav-pdf-section" class="mob-nav-btn flex flex-col items-center p-2 opacity-70 text-xs font-semibold cursor-pointer">
+        <button type="button" onclick="showSection('pdf-section')" id="mob-nav-pdf-section" class="mob-nav-btn flex flex-col items-center p-2 opacity-70 text-xs font-semibold cursor-pointer">
             <i class="fa-solid fa-boxes-stacked text-base"></i>
             <span class="text-[10px]">Produits</span>
         </button>
-        <button onclick="showSection('notebook-section')" id="mob-nav-notebook-section" class="mob-nav-btn flex flex-col items-center p-2 opacity-70 text-xs font-semibold cursor-pointer">
+        <button type="button" onclick="showSection('notebook-section')" id="mob-nav-notebook-section" class="mob-nav-btn flex flex-col items-center p-2 opacity-70 text-xs font-semibold cursor-pointer">
             <i class="fa-solid fa-book text-base"></i>
             <span class="text-[10px]">Notes</span>
         </button>
@@ -577,9 +567,9 @@
         <div class="modal-white-card p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto space-y-4">
             <div class="flex justify-between items-center pb-3 border-b border-purple-900/10">
                 <h3 class="font-bold text-[#8e44ad] text-sm">Modifier la commande</h3>
-                <button onclick="document.getElementById('editModal').classList.add('hidden')" class="text-xl font-bold opacity-60 hover:opacity-100">&times;</button>
+                <button type="button" onclick="document.getElementById('editModal').classList.add('hidden')" class="text-xl font-bold opacity-60 hover:opacity-100">&times;</button>
             </div>
-            <form id="editForm" class="space-y-4">
+            <form id="editForm" class="space-y-4" onsubmit="handleEditSubmit(event)">
                 <input type="hidden" id="modalEditId">
                 <div>
                     <label class="block text-xs font-semibold opacity-80 mb-1">Nom du client</label>
@@ -590,16 +580,16 @@
                     <input type="text" id="modalAdres" class="w-full glass-input rounded-xl px-3 py-2 text-sm">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold opacity-80 mb-1">Produit</label>
+                    <label class="block text-xs font-semibold opacity-80 mb-1">Produit & Détails</label>
                     <input type="text" id="modalText" class="w-full glass-input rounded-xl px-3 py-2 text-sm" required>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold opacity-80 mb-1">Quantité</label>
+                        <label class="block text-xs font-semibold opacity-80 mb-1">Quantité totale</label>
                         <input type="number" id="modalAantal" class="w-full glass-input rounded-xl px-3 py-2 text-sm" required min="1">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold opacity-80 mb-1">Prix (€)</label>
+                        <label class="block text-xs font-semibold opacity-80 mb-1">Prix total (€)</label>
                         <input type="number" step="0.01" id="modalPrijs" class="w-full glass-input rounded-xl px-3 py-2 text-sm" required>
                     </div>
                 </div>
@@ -636,14 +626,14 @@
         </div>
     </div>
 
-    <!-- MODAL PRODUCT TOEVOEGEN / BEWERKEN (MET PRÉ-COMMANDE OPTIE) -->
+    <!-- MODAL PRODUCT TOEVOEGEN / BEWERKEN -->
     <div id="editProductModal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="modal-white-card p-6 max-w-md w-full space-y-4">
             <div class="flex justify-between items-center pb-3 border-b border-purple-900/10">
                 <h3 id="productModalTitle" class="font-bold text-[#8e44ad] text-sm"><i class="fa-solid fa-boxes-stacked mr-1"></i> Gestion Produit</h3>
-                <button onclick="document.getElementById('editProductModal').classList.add('hidden')" class="text-xl font-bold opacity-60 hover:opacity-100">&times;</button>
+                <button type="button" onclick="document.getElementById('editProductModal').classList.add('hidden')" class="text-xl font-bold opacity-60 hover:opacity-100">&times;</button>
             </div>
-            <form id="editProductForm" class="space-y-4">
+            <form id="editProductForm" class="space-y-4" onsubmit="handleProductSubmit(event)">
                 <input type="hidden" id="modalEditProductId">
                 <div>
                     <label class="block text-xs font-semibold opacity-80 mb-1">Catégorie *</label>
@@ -689,9 +679,9 @@
         <div class="modal-white-card p-6 max-w-lg w-full space-y-4">
             <div class="flex justify-between items-center pb-3 border-b border-purple-900/10">
                 <h3 class="font-bold text-[#8e44ad] text-sm"><i class="fa-solid fa-pen-to-square mr-1"></i> Modifier l'idée</h3>
-                <button onclick="document.getElementById('editIdeaModal').classList.add('hidden')" class="text-xl font-bold opacity-60 hover:opacity-100">&times;</button>
+                <button type="button" onclick="document.getElementById('editIdeaModal').classList.add('hidden')" class="text-xl font-bold opacity-60 hover:opacity-100">&times;</button>
             </div>
-            <form id="editIdeaForm" class="space-y-4">
+            <form id="editIdeaForm" class="space-y-4" onsubmit="handleIdeaSubmit(event)">
                 <input type="hidden" id="modalEditIdeaId">
                 <div>
                     <label class="block text-xs font-semibold opacity-80 mb-1">Titre de l'idée *</label>
@@ -928,8 +918,7 @@
                             <thead>
                                 <tr style="background-color: #f7fafc; color: #4a5568; text-align: left; border-bottom: 2px solid #e2e8f0;">
                                     <th style="padding: 8px 10px;">Client & Adresse</th>
-                                    <th style="padding: 8px 10px;">Produit</th>
-                                    <th style="padding: 8px 10px;">Qté & Prix</th>
+                                    <th style="padding: 8px 10px;">Produits</th>
                                     <th style="padding: 8px 10px;">Total</th>
                                     <th style="padding: 8px 10px;">Statut</th>
                                 </tr>
@@ -938,9 +927,8 @@
                 `;
                 preorders.forEach((item, index) => {
                     const bgRow = index % 2 === 0 ? '#ffffff' : '#faf5ff';
-                    const productTotal = ((item.aantal || 1) * (item.prijs || 0));
                     const steungeld = item.hasSteungeld ? (parseFloat(item.steungeldBedrag) || 0) : 0;
-                    const total = (productTotal + steungeld).toFixed(2);
+                    const total = (parseFloat(item.prijs || 0)).toFixed(2);
                     let statuses = [];
                     if (item.betaald) statuses.push('<span style="color: #27ae60; font-weight: bold;">Payé</span>'); 
                     else statuses.push('<span style="color: #d97706;">Non payé</span>');
@@ -951,7 +939,6 @@
                         <tr style="background-color: ${bgRow}; border-bottom: 1px solid #edf2f7;">
                             <td style="padding: 8px 10px;"><strong>${escapeHTML(item.naam)}</strong>${item.adres ? '<br><span style="color:#718096; font-size: 10px;">' + escapeHTML(item.adres) + '</span>' : ''}</td>
                             <td style="padding: 8px 10px; color: #2d3748;">${escapeHTML(item.text)}</td>
-                            <td style="padding: 8px 10px; color: #4a5568;">${item.aantal || 1} x €${parseFloat(item.prijs || 0).toFixed(2)}</td>
                             <td style="padding: 8px 10px; font-weight: bold; color: #27ae60;">€${total}</td>
                             <td style="padding: 8px 10px;">${statuses.join(' • ')}</td>
                         </tr>
@@ -968,8 +955,7 @@
                             <thead>
                                 <tr style="background-color: #f7fafc; color: #4a5568; text-align: left; border-bottom: 2px solid #e2e8f0;">
                                     <th style="padding: 8px 10px;">Client & Adresse</th>
-                                    <th style="padding: 8px 10px;">Produit</th>
-                                    <th style="padding: 8px 10px;">Qté & Prix</th>
+                                    <th style="padding: 8px 10px;">Produits</th>
                                     <th style="padding: 8px 10px;">Total</th>
                                     <th style="padding: 8px 10px;">Statut</th>
                                 </tr>
@@ -978,9 +964,8 @@
                 `;
                 normals.forEach((item, index) => {
                     const bgRow = index % 2 === 0 ? '#ffffff' : '#f7fafc';
-                    const productTotal = ((item.aantal || 1) * (item.prijs || 0));
                     const steungeld = item.hasSteungeld ? (parseFloat(item.steungeldBedrag) || 0) : 0;
-                    const total = (productTotal + steungeld).toFixed(2);
+                    const total = (parseFloat(item.prijs || 0)).toFixed(2);
                     let statuses = [];
                     if (item.betaald) statuses.push('<span style="color: #27ae60; font-weight: bold;">Payé</span>'); 
                     else statuses.push('<span style="color: #d97706;">Non payé</span>');
@@ -991,7 +976,6 @@
                         <tr style="background-color: ${bgRow}; border-bottom: 1px solid #edf2f7;">
                             <td style="padding: 8px 10px;"><strong>${escapeHTML(item.naam)}</strong>${item.adres ? '<br><span style="color:#718096; font-size: 10px;">' + escapeHTML(item.adres) + '</span>' : ''}</td>
                             <td style="padding: 8px 10px; color: #2d3748;">${escapeHTML(item.text)}</td>
-                            <td style="padding: 8px 10px; color: #4a5568;">${item.aantal || 1} x €${parseFloat(item.prijs || 0).toFixed(2)}</td>
                             <td style="padding: 8px 10px; font-weight: bold; color: #27ae60;">€${total}</td>
                             <td style="padding: 8px 10px;">${statuses.join(' • ')}</td>
                         </tr>
@@ -1045,6 +1029,9 @@
             updateBrightness(savedBrightness);
 
             document.getElementById("datum").value = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+            
+            // Start met 1 lege productrij in het formulier
+            addProductRow();
         });
 
         const itemsRef = ref(db, 'items');
@@ -1053,9 +1040,7 @@
             allOrders = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })).reverse() : [];
             document.getElementById("statTotalOrders").textContent = allOrders.length;
             const totalRevenue = allOrders.reduce((sum, item) => {
-                const prodTotal = ((item.aantal || 1) * (item.prijs || 0));
-                const steungeld = item.hasSteungeld ? (parseFloat(item.steungeldBedrag) || 0) : 0;
-                return sum + prodTotal + steungeld;
+                return sum + (parseFloat(item.prijs) || 0);
             }, 0);
             document.getElementById("statTotalRevenue").textContent = "€ " + totalRevenue.toFixed(2);
             filterItems();
@@ -1066,26 +1051,117 @@
         onValue(productsRef, (snapshot) => {
             const data = snapshot.val();
             allProducts = data || {};
-            renderProductDropdown();
             renderProductsTable();
+            updateAllProductDropdowns();
         });
 
-        window.renderProductDropdown = function() {
-            const select = document.getElementById("text");
-            select.innerHTML = '<option value="" data-price="">-- Choisir un produit --</option>';
+        window.updateAllProductDropdowns = function() {
+            const selects = document.querySelectorAll(".product-select");
+            selects.forEach(select => {
+                const currentValue = select.value;
+                select.innerHTML = '<option value="" data-price="">-- Choisir un produit --</option>';
+                for (const [id, prod] of Object.entries(allProducts)) {
+                    const opt = document.createElement("option");
+                    opt.value = prod.naam;
+                    opt.setAttribute("data-price", prod.prijs);
+                    const preTag = prod.isPreorder ? " [Pré-commande]" : "";
+                    opt.textContent = `${prod.naam}${preTag} (${prod.categorie}) - € ${parseFloat(prod.prijs).toFixed(2)}`;
+                    select.appendChild(opt);
+                }
+                select.value = currentValue;
+            });
+        };
+
+        window.addProductRow = function(selectedProduct = "", quantity = 1, unitPrice = "") {
+            const container = document.getElementById("orderProductRowsContainer");
+            const rowId = 'prod_row_' + Date.now() + Math.random().toString(36).substr(2, 5);
             
-            for (const [id, prod] of Object.entries(allProducts)) {
-                const opt = document.createElement("option");
-                opt.value = prod.naam;
-                opt.setAttribute("data-price", prod.prijs);
-                const preTag = prod.isPreorder ? " [Pré-commande]" : "";
-                opt.textContent = `${prod.naam}${preTag} (${prod.categorie}) - € ${parseFloat(prod.prijs).toFixed(2)}`;
-                select.appendChild(opt);
+            const div = document.createElement('div');
+            div.className = "glass-card p-3 rounded-xl border border-purple-900/10 space-y-2 relative product-row";
+            div.id = rowId;
+            
+            div.innerHTML = `
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 items-end">
+                    <div class="sm:col-span-6">
+                        <label class="block text-[11px] font-semibold opacity-80 mb-1">Produit *</label>
+                        <select class="w-full glass-input rounded-xl px-3 py-2 text-xs cursor-pointer product-select" required onchange="onProductRowChange('${rowId}')">
+                            <option value="" data-price="">-- Choisir un produit --</option>
+                        </select>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-[11px] font-semibold opacity-80 mb-1">Qté *</label>
+                        <input type="number" class="w-full glass-input rounded-xl px-3 py-2 text-xs row-aantal" value="${quantity}" min="1" required oninput="calculateTotal()">
+                    </div>
+                    <div class="sm:col-span-3">
+                        <label class="block text-[11px] font-semibold opacity-80 mb-1">Prix unitaire (€) *</label>
+                        <input type="number" step="0.01" class="w-full glass-input rounded-xl px-3 py-2 text-xs row-prijs" placeholder="0.00" value="${unitPrice}" required oninput="calculateTotal()">
+                    </div>
+                    <div class="sm:col-span-1 flex justify-end">
+                        <button type="button" onclick="removeProductRow('${rowId}')" class="w-8 h-8 rounded-xl bg-red-500/20 text-red-600 hover:bg-red-500/30 flex items-center justify-center text-xs font-bold cursor-pointer" title="Supprimer la ligne">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(div);
+            updateAllProductDropdowns();
+            
+            if (selectedProduct) {
+                const selectEl = div.querySelector('.product-select');
+                selectEl.value = selectedProduct;
+            }
+            calculateTotal();
+        };
+
+        window.removeProductRow = function(rowId) {
+            const rows = document.querySelectorAll('.product-row');
+            if (rows.length <= 1) {
+                showToast("La commande doit contenir au moins un produit.");
+                return;
+            }
+            const row = document.getElementById(rowId);
+            if (row) {
+                row.remove();
+                calculateTotal();
             }
         };
 
+        window.onProductRowChange = function(rowId) {
+            const row = document.getElementById(rowId);
+            if (!row) return;
+            const select = row.querySelector('.product-select');
+            const selectedOpt = select.options[select.selectedIndex];
+            const price = selectedOpt.getAttribute("data-price");
+            if (price) {
+                row.querySelector('.row-prijs').value = price;
+                calculateTotal();
+            }
+        };
+
+        window.calculateTotal = function() {
+            let productTotal = 0;
+            const rows = document.querySelectorAll('.product-row');
+            rows.forEach(row => {
+                const aantal = parseFloat(row.querySelector('.row-aantal').value) || 0;
+                const prijs = parseFloat(row.querySelector('.row-prijs').value) || 0;
+                productTotal += (aantal * prijs);
+            });
+
+            const hasSteungeld = document.getElementById("hasSteungeld").checked;
+            const steungeldBedrag = hasSteungeld ? (parseFloat(rowSteungeldBedrag()) || 0) : 0;
+            const total = productTotal + steungeldBedrag;
+            document.getElementById("totalAmount").textContent = total.toFixed(2);
+        };
+
+        function rowSteungeldBedrag() {
+            const el = document.getElementById("steungeldBedrag");
+            return el ? el.value : 0;
+        }
+
         window.renderProductsTable = function() {
             const tbody = document.getElementById("productsTableBody");
+            if (!tbody) return;
             tbody.innerHTML = "";
 
             if (Object.keys(allProducts).length === 0) {
@@ -1094,9 +1170,18 @@
             }
 
             for (const [id, prod] of Object.entries(allProducts)) {
-                const orderedCount = allOrders
-                    .filter(order => (order.text || '').toLowerCase() === (prod.naam || '').toLowerCase())
-                    .reduce((sum, order) => sum + (parseInt(order.aantal) || 1), 0);
+                let orderedCount = 0;
+                allOrders.forEach(order => {
+                    if (order.items && Array.isArray(order.items)) {
+                        order.items.forEach(it => {
+                            if ((it.product || '').toLowerCase() === (prod.naam || '').toLowerCase()) {
+                                orderedCount += (parseInt(it.aantal) || 1);
+                            }
+                        });
+                    } else if (order.text && order.text.toLowerCase().includes((prod.naam || '').toLowerCase())) {
+                        orderedCount += (parseInt(order.aantal) || 1);
+                    }
+                });
 
                 const initialStock = parseInt(prod.stock) || 0;
                 const remainingStock = initialStock - orderedCount;
@@ -1120,8 +1205,8 @@
                         <span class="opacity-75 text-[10px]"> (Initial: ${initialStock}, Vendu: ${orderedCount})</span>
                     </td>
                     <td class="p-3 text-right space-x-1" onclick="event.stopPropagation()">
-                        <button onclick="editProduct('${id}')" class="px-2.5 py-1 bg-sky-500 hover:bg-sky-600 text-white rounded-lg text-xs font-bold cursor-pointer" title="Modifier"><i class="fa-solid fa-pen"></i> Modifier</button>
-                        <button onclick="deleteProduct('${id}', '${escapeHTML(prod.naam)}')" class="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold cursor-pointer" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
+                        <button type="button" onclick="editProduct('${id}')" class="px-2.5 py-1 bg-sky-500 hover:bg-sky-600 text-white rounded-lg text-xs font-bold cursor-pointer" title="Modifier"><i class="fa-solid fa-pen"></i> Modifier</button>
+                        <button type="button" onclick="deleteProduct('${id}', '${escapeHTML(prod.naam)}')" class="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold cursor-pointer" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -1153,7 +1238,7 @@
             }
         };
 
-        document.getElementById("editProductForm").addEventListener("submit", (e) => {
+        window.handleProductSubmit = function(e) {
             e.preventDefault();
             const id = document.getElementById("modalEditProductId").value;
             const categorie = document.getElementById("modalProductCategorie").value;
@@ -1167,23 +1252,23 @@
                     showToast("Produit mis à jour avec succès !");
                     logActivity(`Produit modifié : ${naam} (${categorie})`);
                     document.getElementById("editProductModal").classList.add("hidden");
-                });
+                }).catch(err => alert("Erreur: " + err.message));
             } else {
                 const newProdRef = push(ref(db, 'products'));
                 set(newProdRef, { categorie, naam, prijs, stock, isPreorder }).then(() => {
                     showToast("Produit ajouté avec succès !");
                     logActivity(`Produit ajouté : ${naam} (${categorie}, Stock initial: ${stock})`);
                     document.getElementById("editProductModal").classList.add("hidden");
-                });
+                }).catch(err => alert("Erreur: " + err.message));
             }
-        });
+        };
 
         window.deleteProduct = function(id, name) {
             if (confirm("Voulez-vous vraiment supprimer ce produit ?")) {
                 remove(ref(db, `products/${id}`)).then(() => {
                     showToast("Produit supprimé");
                     logActivity(`Produit supprimé : ${name}`);
-                });
+                }).catch(err => alert("Erreur: " + err.message));
             }
         };
 
@@ -1200,55 +1285,97 @@
             }
         };
 
-        window.updateDefaultPrice = function() {
-            const select = document.getElementById("text");
-            const selectedOpt = select.options[select.selectedIndex];
-            const price = selectedOpt.getAttribute("data-price");
-            if (price) {
-                document.getElementById("prijs").value = price;
-                calculateTotal();
-            }
-        };
-
-        window.calculateTotal = function() {
-            const aantal = parseFloat(document.getElementById("aantal").value) || 1;
-            const prijs = parseFloat(document.getElementById("prijs").value) || 0;
-            const hasSteungeld = document.getElementById("hasSteungeld").checked;
-            const steungeld = hasSteungeld ? (parseFloat(document.getElementById("steungeldBedrag").value) || 0) : 0;
-            const total = (aantal * prijs) + steungeld;
-            document.getElementById("totalAmount").textContent = total.toFixed(2);
-        };
-
-        document.getElementById("orderForm").addEventListener("submit", (e) => {
+        // EXPLICITE HANDLER VOOR BESTELLINGEN OPSLAAN (Gecorrigeerd)
+        window.handleOrderSubmit = function(e) {
             e.preventDefault();
             const editId = document.getElementById("editOrderId").value;
-            const naam = document.getElementById("naam").value;
-            const adres = document.getElementById("adres").value;
-            const text = document.getElementById("text").value;
-            const aantal = parseInt(document.getElementById("aantal").value);
-            const prijs = parseFloat(document.getElementById("prijs").value);
-            const hasSteungeld = document.getElementById("hasSteungeld").checked;
-            const steungeldBedrag = hasSteungeld ? (parseFloat(document.getElementById("steungeldBedrag").value) || 0) : 0;
+            const naam = document.getElementById("naam").value.trim();
+            const adres = document.getElementById("adres").value.trim();
             const datum = document.getElementById("datum").value;
             const betaald = document.getElementById("betaald").checked;
             const preorder = document.getElementById("preorder").checked;
+            const hasSteungeld = document.getElementById("hasSteungeld").checked;
+            const steungeldBedrag = hasSteungeld ? (parseFloat(document.getElementById("steungeldBedrag").value) || 0) : 0;
 
-            const orderData = { naam, adres, text, aantal, prijs, hasSteungeld, steungeldBedrag, datum, betaald, preorder };
+            let items = [];
+            let textSummaryParts = [];
+            let productsTotal = 0;
+
+            document.querySelectorAll('.product-row').forEach(row => {
+                const productSelect = row.querySelector('.product-select');
+                const product = productSelect ? productSelect.value : "";
+                const aantal = parseInt(row.querySelector('.row-aantal').value) || 1;
+                const prijs = parseFloat(row.querySelector('.row-prijs').value) || 0;
+                if (product) {
+                    items.push({ product, aantal, prijs });
+                    textSummaryParts.push(`${product} (x${aantal})`);
+                    productsTotal += (aantal * prijs);
+                }
+            });
+
+            if (items.length === 0) {
+                alert("Veuillez sélectionner au moins un produit dans la commande.");
+                return;
+            }
+
+            const text = textSummaryParts.join(', ');
+            const totalPrijs = productsTotal + steungeldBedrag;
+
+            const orderData = { 
+                naam, 
+                adres, 
+                text, 
+                items, 
+                aantal: items.reduce((s, i) => s + i.aantal, 0),
+                prijs: totalPrijs, 
+                hasSteungeld, 
+                steungeldBedrag, 
+                datum, 
+                betaald, 
+                preorder 
+            };
 
             if (editId) {
                 update(ref(db, `items/${editId}`), orderData).then(() => {
-                    showToast("Commande mise à jour !");
+                    showToast("Commande mise à jour avec succès !");
                     logActivity(`Commande modifiée pour : ${naam}`);
                     clearFormDraft();
+                }).catch(err => {
+                    alert("Erreur lors de la mise à jour dans Firebase : " + err.message);
                 });
             } else {
                 push(ref(db, 'items'), orderData).then(() => {
                     showToast("Commande enregistrée avec succès !");
                     logActivity(`Nouvelle commande enregistrée pour : ${naam}`);
                     clearFormDraft();
+                }).catch(err => {
+                    alert("Erreur lors de l'enregistrement dans Firebase : " + err.message);
                 });
             }
-        });
+        };
+
+        window.handleEditSubmit = function(e) {
+            e.preventDefault();
+            const id = document.getElementById("modalEditId").value;
+            const naam = document.getElementById("modalNaam").value;
+            const adres = document.getElementById("modalAdres").value;
+            const text = document.getElementById("modalText").value;
+            const aantal = parseInt(document.getElementById("modalAantal").value);
+            const prijs = parseFloat(document.getElementById("modalPrijs").value);
+            const hasSteungeld = document.getElementById("modalHasSteungeld").checked;
+            const steungeldBedrag = hasSteungeld ? (parseFloat(document.getElementById("modalSteungeldBedrag").value) || 0) : 0;
+            const datum = document.getElementById("modalDatum").value;
+            const betaald = document.getElementById("modalBetaald").checked;
+            const preorder = document.getElementById("modalPreorder").checked;
+
+            const updatedData = { naam, adres, text, aantal, prijs, hasSteungeld, steungeldBedrag, datum, betaald, preorder };
+
+            update(ref(db, `items/${id}`), updatedData).then(() => {
+                showToast("Commande mise à jour !");
+                logActivity(`Commande modifiée pour : ${naam}`);
+                document.getElementById('editModal').classList.add('hidden');
+            }).catch(err => alert("Erreur: " + err.message));
+        };
 
         window.clearFormDraft = function() {
             document.getElementById("orderForm").reset();
@@ -1256,6 +1383,12 @@
             document.getElementById("formSectionTitle").innerHTML = '<i class="fa-solid fa-plus-circle"></i> Nouvelle Commande';
             document.getElementById("steungeldWrapper").style.display = "none";
             document.getElementById("datum").value = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+            
+            const container = document.getElementById("orderProductRowsContainer");
+            if (container) {
+                container.innerHTML = "";
+                addProductRow();
+            }
             calculateTotal();
         };
 
@@ -1276,6 +1409,8 @@
 
             const preorderList = document.getElementById("preorderList");
             const normalList = document.getElementById("normalList");
+            if (!preorderList || !normalList) return;
+
             preorderList.innerHTML = "";
             normalList.innerHTML = "";
 
@@ -1284,9 +1419,8 @@
 
             filtered.forEach(item => {
                 const isReady = !!item.pret;
-                const productTotal = (parseInt(item.aantal) || 1) * (parseFloat(item.prijs) || 0);
+                const total = parseFloat(item.prijs) || 0;
                 const steungeld = item.hasSteungeld ? (parseFloat(item.steungeldBedrag) || 0) : 0;
-                const total = productTotal + steungeld;
 
                 const li = document.createElement("li");
                 li.className = "glass-card p-4 flex flex-wrap justify-between items-center gap-3 text-xs";
@@ -1294,7 +1428,7 @@
                     <div class="flex items-center gap-3">
                         <input type="checkbox" class="order-checkbox w-4 h-4 accent-[#8e44ad] rounded cursor-pointer" data-id="${item.id}">
                         <div>
-                            <strong>${escapeHTML(item.naam)}</strong> (${escapeHTML(item.text)} x${item.aantal}) - € ${total.toFixed(2)}
+                            <strong>${escapeHTML(item.naam)}</strong> — <span class="text-[#8e44ad] font-medium">${escapeHTML(item.text)}</span> — € ${total.toFixed(2)}
                             <br><span class="opacity-75">📅 ${escapeHTML(item.datum)} | 📍 ${escapeHTML(item.adres || 'Aucune adresse')}</span>
                         </div>
                     </div>
@@ -1306,11 +1440,11 @@
                         <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${isReady ? 'bg-emerald-600 text-white shadow-sm' : 'bg-gray-500/20 text-gray-600'}">
                             ${isReady ? '✅ Prêt' : '⏳ En cours'}
                         </span>
-                        <button onclick="toggleReadyStatus('${item.id}', ${isReady})" class="px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-semibold cursor-pointer text-[11px]" title="Basculer statut prêt">
+                        <button type="button" onclick="toggleReadyStatus('${item.id}', ${isReady})" class="px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-semibold cursor-pointer text-[11px]" title="Basculer statut prêt">
                             <i class="fa-solid fa-check"></i> ${isReady ? 'Annuler prêt' : 'Prêt'}
                         </button>
-                        <button onclick="editOrder('${item.id}')" class="p-1.5 bg-sky-500/20 text-sky-600 rounded-lg cursor-pointer" title="Modifier"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteSingleOrder('${item.id}', '${escapeHTML(item.naam)}')" class="p-1.5 bg-red-500/20 text-red-600 rounded-lg cursor-pointer" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
+                        <button type="button" onclick="editOrder('${item.id}')" class="p-1.5 bg-sky-500/20 text-sky-600 rounded-lg cursor-pointer" title="Modifier"><i class="fa-solid fa-pen"></i></button>
+                        <button type="button" onclick="deleteSingleOrder('${item.id}', '${escapeHTML(item.naam)}')" class="p-1.5 bg-red-500/20 text-red-600 rounded-lg cursor-pointer" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 `;
 
@@ -1353,35 +1487,12 @@
             }
         };
 
-        document.getElementById("editForm").addEventListener("submit", (e) => {
-            e.preventDefault();
-            const id = document.getElementById("modalEditId").value;
-            const naam = document.getElementById("modalNaam").value;
-            const adres = document.getElementById("modalAdres").value;
-            const text = document.getElementById("modalText").value;
-            const aantal = parseInt(document.getElementById("modalAantal").value);
-            const prijs = parseFloat(document.getElementById("modalPrijs").value);
-            const hasSteungeld = document.getElementById("modalHasSteungeld").checked;
-            const steungeldBedrag = hasSteungeld ? (parseFloat(document.getElementById("modalSteungeldBedrag").value) || 0) : 0;
-            const datum = document.getElementById("modalDatum").value;
-            const betaald = document.getElementById("modalBetaald").checked;
-            const preorder = document.getElementById("modalPreorder").checked;
-
-            const updatedData = { naam, adres, text, aantal, prijs, hasSteungeld, steungeldBedrag, datum, betaald, preorder };
-
-            update(ref(db, `items/${id}`), updatedData).then(() => {
-                showToast("Commande mise à jour !");
-                logActivity(`Commande modifiée pour : ${naam}`);
-                document.getElementById("editModal").classList.add("hidden");
-            });
-        });
-
         window.deleteSingleOrder = function(id, clientName) {
             if (confirm("Supprimer cette commande ?")) {
                 remove(ref(db, `items/${id}`)).then(() => {
                     showToast("Commande supprimée");
                     logActivity(`Commande supprimée pour : ${clientName || 'Client'}`);
-                });
+                }).catch(err => alert("Erreur: " + err.message));
             }
         };
 
@@ -1456,25 +1567,25 @@
             });
         }
 
-        document.getElementById('ideaForm').addEventListener('submit', async (e) => {
+        window.handleIdeaSubmit = function(e) {
             e.preventDefault();
             const titre = document.getElementById('ideaTitre').value.trim();
             const description = document.getElementById('ideaDescription').value.trim();
             if (!titre) return;
             const btn = e.currentTarget.querySelector('button[type="submit"]'); btn.disabled = true;
-            try {
-                const newRef = push(ideasRef);
-                await set(newRef, { titre, description, image: selectedIdeaImage || '', createdAt: Date.now() });
+            
+            const newRef = push(ideasRef);
+            set(newRef, { titre, description, image: selectedIdeaImage || '', createdAt: Date.now() }).then(() => {
                 e.currentTarget.reset(); selectedIdeaImage = '';
                 const preview = document.getElementById('ideaPhotoPreview'); if (preview) { preview.src = ''; preview.classList.add('hidden'); }
                 showToast('Idée enregistrée !');
                 logActivity(`Idée enregistrée : ${titre}`);
-            } catch (err) { console.error(err); showToast('Erreur lors de l’enregistrement.'); }
-            finally { btn.disabled = false; }
-        });
+            }).catch(err => alert("Erreur: " + err.message)).finally(() => { btn.disabled = false; });
+        };
 
         onValue(ideasRef, (snapshot) => {
             const container = document.getElementById('ideasContainer');
+            if (!container) return;
             allIdeas = snapshot.val() || {};
             const entries = Object.entries(allIdeas).sort((a,b) => (b[1].createdAt || 0) - (a[1].createdAt || 0));
             if (!entries.length) { container.innerHTML = '<p class="text-center py-6 opacity-60 text-sm">Aucune idée enregistrée.</p>'; return; }
