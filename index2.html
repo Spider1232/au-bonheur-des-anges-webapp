@@ -61,6 +61,29 @@
             color: var(--text-color);
         }
 
+        /* VASTE WITTE ACHTERGROND VOOR ALLE MODALS (VENSTERS) */
+        .modal-white-card {
+            background: #949294 !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            border: 1px solid rgba(142, 68, 173, 0.2);
+            border-radius: 1rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            color: #202124 !important;
+        }
+
+        body.dark-mode .modal-white-card {
+            background: #1e1e24 !important;
+            color: #ffffff !important;
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        body.dark-mode .modal-white-card .glass-input {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
         .glass-input {
             background: rgba(255, 255, 255, 0.5);
             border: 1px solid var(--glass-border);
@@ -117,7 +140,6 @@
             color: #ffffff;
         }
 
-        /* Activiteitenlog lijststijl */
         .activity-item {
             background: rgba(255, 255, 255, 0.4);
             border-left: 3px solid #8e44ad;
@@ -168,16 +190,12 @@
                     <span>Liste Commandes</span>
                 </button>
                 <button onclick="showSection('pdf-section')" id="nav-pdf-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm opacity-80 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
-                    <i class="fa-solid fa-file-pdf text-lg w-6"></i>
-                    <span>Liste PDF</span>
+                    <i class="fa-solid fa-boxes-stacked text-lg w-6"></i>
+                    <span>Liste Produits</span>
                 </button>
                 <button onclick="showSection('notebook-section')" id="nav-notebook-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm opacity-80 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
                     <i class="fa-solid fa-book text-lg w-6"></i>
                     <span>Mes Idées & Notes</span>
-                </button>
-                <button onclick="showSection('products-section')" id="nav-products-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm opacity-80 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
-                    <i class="fa-solid fa-boxes-stacked text-lg w-6"></i>
-                    <span>Gérer Produits</span>
                 </button>
                 <button onclick="showSection('settings-section')" id="nav-settings-section" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm opacity-80 hover:bg-white/30 hover:text-[#8e44ad] transition-all cursor-pointer">
                     <i class="fa-solid fa-sliders text-lg w-6"></i>
@@ -251,8 +269,8 @@
                         <div>
                             <div class="flex justify-between items-center mb-1">
                                 <label class="block text-xs font-semibold opacity-80">Choisir un produit *</label>
-                                <button type="button" onclick="showSection('products-section')" class="text-xs text-[#8e44ad] underline font-medium hover:text-[#6c3483] cursor-pointer">
-                                    + Gérer / Ajouter produits
+                                <button type="button" onclick="showSection('pdf-section')" class="text-xs text-[#8e44ad] underline font-medium hover:text-[#6c3483] cursor-pointer">
+                                    + Voir / Gérer produits dans Liste Produits
                                 </button>
                             </div>
                             <select id="text" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm cursor-pointer" required onchange="updateDefaultPrice()">
@@ -271,7 +289,6 @@
                             </div>
                         </div>
 
-                        <!-- STEUNGELD / SOUTIEN AU PROJET / BLAUWE KRUIS -->
                         <div class="glass-card p-4 rounded-xl border border-dashed border-[#8e44ad]/30 bg-purple-900/5 space-y-3">
                             <div class="flex items-center gap-3">
                                 <input type="checkbox" id="hasSteungeld" class="w-5 h-5 accent-[#8e44ad] rounded cursor-pointer" onchange="toggleSteungeldInput(); calculateTotal();">
@@ -385,16 +402,33 @@
             </div>
         </section>
 
-        <!-- SECTIE 3: LISTE PDF VIEWER -->
+        <!-- SECTIE 3: LISTE PRODUITS & GÉRER PRODUITS -->
         <section id="pdf-section" class="dashboard-section space-y-6 hidden">
-            <div class="glass-card p-6 h-[75vh] flex flex-col">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold uppercase tracking-wider text-sm text-[#8e44ad]">Tarifs & Prix Boutique PDF</h3>
-                    <a href="" download class="px-4 py-1.5 rounded-xl bg-[#8e44ad] text-xs font-bold text-white hover:bg-[#7d3c98]">Télécharger</a>
+            <div class="glass-card p-6">
+                <div class="flex flex-wrap justify-between items-center gap-3 mb-5 pb-4 border-b border-purple-900/10">
+                    <div>
+                        <h3 class="font-bold text-lg text-[#8e44ad] flex items-center gap-2"><i class="fa-solid fa-boxes-stacked"></i> Liste des Produits & Stock</h3>
+                        <p class="text-xs opacity-70 mt-1">Cliquez sur un produit pour le modifier ou gérez vos produits directement ici.</p>
+                    </div>
+                    <button onclick="openAddProductModal()" class="px-4 py-2 rounded-xl bg-[#8e44ad] hover:bg-[#7d3c98] text-white text-xs font-bold shadow-md cursor-pointer flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Ajouter un produit
+                    </button>
                 </div>
-                <div class="flex-1 rounded-xl overflow-hidden glass-card">
-                    <h1 class="p-4 text-center font-bold text-lg">La liste PDF est à jour. La commande de la liste est en ordre.</h1>
-                    <embed src="" type="application/pdf" class="w-full h-full">
+                <div class="overflow-x-auto rounded-xl border border-purple-900/10">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-purple-900/5 text-[#8e44ad] border-b border-purple-900/10 font-bold">
+                            <tr>
+                                <th class="p-3">Catégorie</th>
+                                <th class="p-3">Nom du Produit</th>
+                                <th class="p-3">Prix</th>
+                                <th class="p-3">Stock Actuel / Restant</th>
+                                <th class="p-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTableBody" class="divide-y divide-purple-900/10">
+                            <tr><td colspan="5" class="p-4 text-center opacity-60">Chargement...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </section>
@@ -487,7 +521,7 @@
             </div>
         </section>
 
-        <!-- SECTIE 6: INFO (Met Historiek van Activiteiten) -->
+        <!-- SECTIE 6: INFO -->
         <section id="info-section" class="dashboard-section space-y-6 hidden">
             <div class="glass-card p-6 max-w-2xl mx-auto space-y-6 text-center">
                 <img src="logo.jpg" alt="Logo" class="w-24 h-24 rounded-full mx-auto border-2 border-white/60 shadow-lg object-cover" onerror="this.src='https://via.placeholder.com/96'">
@@ -501,7 +535,6 @@
                 </div>
             </div>
 
-            <!-- HISTORIQUE DES ACTIVITÉS INFORMATIE -->
             <div class="glass-card p-6 max-w-2xl mx-auto space-y-4 text-left">
                 <div class="flex justify-between items-center pb-2 border-b border-purple-900/10">
                     <h3 class="font-bold text-sm text-[#8e44ad] flex items-center gap-2">
@@ -513,65 +546,6 @@
                 </div>
                 <div id="activityLogContainer" class="max-h-64 overflow-y-auto space-y-2 pr-1">
                     <p class="text-center text-xs opacity-60 py-4">Chargement des activités...</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- SECTIE 7: GÉRER PRODUITS & STOCK -->
-        <section id="products-section" class="dashboard-section space-y-6 hidden">
-            <div class="glass-card p-6">
-                <div class="flex flex-wrap justify-between items-center gap-3 mb-5 pb-4 border-b border-purple-900/10">
-                    <div>
-                        <h3 class="font-bold text-lg text-[#8e44ad] flex items-center gap-2"><i class="fa-solid fa-boxes-stacked"></i> Gestion des Produits & Stock</h3>
-                        <p class="text-xs opacity-70 mt-1">Ajoutez, consultez, modifiez et supprimez vos produits.</p>
-                    </div>
-                    <button onclick="showSection('order-section')" class="px-3 py-2 rounded-xl glass-card text-xs font-semibold cursor-pointer"><i class="fa-solid fa-arrow-left mr-1"></i> Retour</button>
-                </div>
-                <form id="productForm" class="space-y-4 mb-6 glass-card p-4 rounded-xl border shadow-sm">
-                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
-                        <div>
-                            <label class="block text-xs font-semibold mb-1 opacity-80">Catégorie *</label>
-                            <select id="categorieSelect" class="w-full glass-input rounded-xl px-3 py-2 text-xs cursor-pointer" required>
-                                <option value="Sublimation">Sublimation</option>
-                                <option value="Créations 3D">Créations 3D</option>
-                                <option value="Déco pour Noël">Déco pour Noël</option>
-                                <option value="Photo Design">Photo Design</option>
-                                <option value="Autre">Autre</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold mb-1 opacity-80">Nom du produit *</label>
-                            <input type="text" id="productNaam" class="w-full glass-input rounded-xl px-3 py-2 text-xs" placeholder="ex: Mug photo" required>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold mb-1 opacity-80">Prix (€) *</label>
-                            <input type="number" min="0" step="0.01" id="productPrijs" class="w-full glass-input rounded-xl px-3 py-2 text-xs" placeholder="0.00" required>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold mb-1 opacity-80">Stock initial *</label>
-                            <input type="number" min="0" id="productStock" class="w-full glass-input rounded-xl px-3 py-2 text-xs" value="10" required>
-                        </div>
-                    </div>
-                    <div class="flex justify-end gap-2 pt-2">
-                        <button type="button" onclick="addNewCategoryPrompt()" class="px-3 py-1.5 rounded-lg glass-card text-xs font-semibold border cursor-pointer">+ Nouvelle Catégorie</button>
-                        <button type="submit" class="px-4 py-1.5 rounded-lg bg-[#8e44ad] hover:bg-[#7d3c98] text-xs font-bold text-white shadow-md cursor-pointer">Enregistrer</button>
-                    </div>
-                </form>
-                <div class="overflow-x-auto rounded-xl border border-purple-900/10">
-                    <table class="w-full text-left text-xs">
-                        <thead class="bg-purple-900/5 text-[#8e44ad] border-b border-purple-900/10 font-bold">
-                            <tr>
-                                <th class="p-3">Catégorie</th>
-                                <th class="p-3">Nom</th>
-                                <th class="p-3">Prix</th>
-                                <th class="p-3">Stock Actuel / Restant</th>
-                                <th class="p-3 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="productsTableBody" class="divide-y divide-purple-900/10">
-                            <tr><td colspan="5" class="p-4 text-center opacity-60">Chargement...</td></tr>
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </section>
@@ -589,22 +563,18 @@
             <span class="text-[10px]">Listes</span>
         </button>
         <button onclick="showSection('pdf-section')" id="mob-nav-pdf-section" class="mob-nav-btn flex flex-col items-center p-2 opacity-70 text-xs font-semibold cursor-pointer">
-            <i class="fa-solid fa-file-pdf text-base"></i>
-            <span class="text-[10px]">PDF</span>
+            <i class="fa-solid fa-boxes-stacked text-base"></i>
+            <span class="text-[10px]">Produits</span>
         </button>
         <button onclick="showSection('notebook-section')" id="mob-nav-notebook-section" class="mob-nav-btn flex flex-col items-center p-2 opacity-70 text-xs font-semibold cursor-pointer">
             <i class="fa-solid fa-book text-base"></i>
             <span class="text-[10px]">Notes</span>
         </button>
-        <button onclick="showSection('products-section')" id="mob-nav-products-section" class="mob-nav-btn flex flex-col items-center p-2 opacity-70 text-xs font-semibold cursor-pointer" title="Produits">
-            <i class="fa-solid fa-boxes-stacked text-base"></i>
-            <span class="text-[10px]">Produits</span>
-        </button>
     </nav>
 
     <!-- MODAL EDIT/BEWERK BESTELLING -->
     <div id="editModal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="glass-card p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto space-y-4">
+        <div class="modal-white-card p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto space-y-4">
             <div class="flex justify-between items-center pb-3 border-b border-purple-900/10">
                 <h3 class="font-bold text-[#8e44ad] text-sm">Modifier la commande</h3>
                 <button onclick="document.getElementById('editModal').classList.add('hidden')" class="text-xl font-bold opacity-60 hover:opacity-100">&times;</button>
@@ -634,7 +604,6 @@
                     </div>
                 </div>
 
-                <!-- EDIT STEUNGELD -->
                 <div class="glass-card p-3 rounded-xl border border-dashed border-[#8e44ad]/30 space-y-2">
                     <div class="flex items-center gap-2">
                         <input type="checkbox" id="modalHasSteungeld" class="w-4 h-4 accent-[#8e44ad] rounded cursor-pointer" onchange="toggleModalSteungeldInput()">
@@ -667,36 +636,45 @@
         </div>
     </div>
 
-    <!-- MODAL EDIT/BEWERK PRODUCT -->
+    <!-- MODAL PRODUCT TOEVOEGEN / BEWERKEN (MET VASTE WITTE ACHTERGROND) -->
     <div id="editProductModal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="glass-card p-6 max-w-md w-full space-y-4">
+        <div class="modal-white-card p-6 max-w-md w-full space-y-4">
             <div class="flex justify-between items-center pb-3 border-b border-purple-900/10">
-                <h3 class="font-bold text-[#8e44ad] text-sm"><i class="fa-solid fa-pen-to-square mr-1"></i> Modifier le produit</h3>
+                <h3 id="productModalTitle" class="font-bold text-[#8e44ad] text-sm"><i class="fa-solid fa-boxes-stacked mr-1"></i> Gestion Produit</h3>
                 <button onclick="document.getElementById('editProductModal').classList.add('hidden')" class="text-xl font-bold opacity-60 hover:opacity-100">&times;</button>
             </div>
             <form id="editProductForm" class="space-y-4">
                 <input type="hidden" id="modalEditProductId">
                 <div>
-                    <label class="block text-xs font-semibold opacity-80 mb-1">Catégorie</label>
-                    <input type="text" id="modalProductCategorie" class="w-full glass-input rounded-xl px-3 py-2 text-sm" required>
+                    <label class="block text-xs font-semibold opacity-80 mb-1">Catégorie *</label>
+                    <div class="flex gap-2">
+                        <select id="modalProductCategorie" class="w-full glass-input rounded-xl px-3 py-2 text-xs cursor-pointer" required>
+                            <option value="Sublimation">Sublimation</option>
+                            <option value="Créations 3D">Créations 3D</option>
+                            <option value="Déco pour Noël">Déco pour Noël</option>
+                            <option value="Photo Design">Photo Design</option>
+                            <option value="Autre">Autre</option>
+                        </select>
+                        <button type="button" onclick="addNewCategoryPromptModal()" class="px-3 py-2 rounded-xl glass-card text-xs font-semibold border cursor-pointer whitespace-nowrap">+ Autre</button>
+                    </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold opacity-80 mb-1">Nom du produit</label>
+                    <label class="block text-xs font-semibold opacity-80 mb-1">Nom du produit *</label>
                     <input type="text" id="modalProductNaam" class="w-full glass-input rounded-xl px-3 py-2 text-sm" required>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold opacity-80 mb-1">Prix (€)</label>
+                        <label class="block text-xs font-semibold opacity-80 mb-1">Prix (€) *</label>
                         <input type="number" step="0.01" min="0" id="modalProductPrijs" class="w-full glass-input rounded-xl px-3 py-2 text-sm" required>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold opacity-80 mb-1">Stock initial</label>
+                        <label class="block text-xs font-semibold opacity-80 mb-1">Stock initial *</label>
                         <input type="number" min="0" id="modalProductStock" class="w-full glass-input rounded-xl px-3 py-2 text-sm" required>
                     </div>
                 </div>
                 <div class="flex justify-end gap-2 pt-2">
                     <button type="button" onclick="document.getElementById('editProductModal').classList.add('hidden')" class="px-4 py-2 rounded-xl glass-card text-xs font-semibold cursor-pointer">Annuler</button>
-                    <button type="submit" class="px-4 py-2 rounded-xl bg-[#8e44ad] text-white text-xs font-bold cursor-pointer">Mettre à jour</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl bg-[#8e44ad] text-white text-xs font-bold cursor-pointer">Enregistrer</button>
                 </div>
             </form>
         </div>
@@ -704,7 +682,7 @@
 
     <!-- MODAL EDIT/BEWERK IDÉE -->
     <div id="editIdeaModal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="glass-card p-6 max-w-lg w-full space-y-4">
+        <div class="modal-white-card p-6 max-w-lg w-full space-y-4">
             <div class="flex justify-between items-center pb-3 border-b border-purple-900/10">
                 <h3 class="font-bold text-[#8e44ad] text-sm"><i class="fa-solid fa-pen-to-square mr-1"></i> Modifier l'idée</h3>
                 <button onclick="document.getElementById('editIdeaModal').classList.add('hidden')" class="text-xl font-bold opacity-60 hover:opacity-100">&times;</button>
@@ -1088,23 +1066,6 @@
             renderProductsTable();
         });
 
-        document.getElementById("productForm").addEventListener("submit", (e) => {
-            e.preventDefault();
-            const categorie = document.getElementById("categorieSelect").value;
-            const naam = document.getElementById("productNaam").value;
-            const prijs = parseFloat(document.getElementById("productPrijs").value);
-            const stock = parseInt(document.getElementById("productStock").value) || 0;
-
-            const newProdRef = push(ref(db, 'products'));
-            set(newProdRef, { categorie, naam, prijs, stock }).then(() => {
-                showToast("Produit et stock ajoutés avec succès !");
-                logActivity(`Produit ajouté : ${naam} (${categorie}, Stock initial: ${stock})`);
-                document.getElementById("productNaam").value = "";
-                document.getElementById("productPrijs").value = "";
-                document.getElementById("productStock").value = "10";
-            });
-        });
-
         window.renderProductDropdown = function() {
             const select = document.getElementById("text");
             select.innerHTML = '<option value="" data-price="">-- Choisir un produit --</option>';
@@ -1136,9 +1097,11 @@
                 const remainingStock = initialStock - orderedCount;
 
                 const tr = document.createElement("tr");
+                tr.className = "hover:bg-purple-900/5 transition-all cursor-pointer";
+                tr.onclick = () => editProduct(id);
                 tr.innerHTML = `
                     <td class="p-3">${escapeHTML(prod.categorie || '')}</td>
-                    <td class="p-3 font-semibold">${escapeHTML(prod.naam || '')}</td>
+                    <td class="p-3 font-semibold text-[#8e44ad]">${escapeHTML(prod.naam || '')} <i class="fa-solid fa-pen text-[10px] opacity-50 ml-1"></i></td>
                     <td class="p-3">€ ${parseFloat(prod.prijs || 0).toFixed(2)}</td>
                     <td class="p-3">
                         <span class="font-bold ${remainingStock <= 0 ? 'text-red-500' : 'text-emerald-500'}">
@@ -1146,7 +1109,7 @@
                         </span> 
                         <span class="opacity-75 text-[10px]"> (Initial: ${initialStock}, Vendu: ${orderedCount})</span>
                     </td>
-                    <td class="p-3 text-right space-x-1">
+                    <td class="p-3 text-right space-x-1" onclick="event.stopPropagation()">
                         <button onclick="editProduct('${id}')" class="px-2.5 py-1 bg-sky-500 hover:bg-sky-600 text-white rounded-lg text-xs font-bold cursor-pointer" title="Modifier"><i class="fa-solid fa-pen"></i> Modifier</button>
                         <button onclick="deleteProduct('${id}', '${escapeHTML(prod.naam)}')" class="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold cursor-pointer" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
                     </td>
@@ -1155,14 +1118,25 @@
             }
         };
 
+        window.openAddProductModal = function() {
+            document.getElementById("modalEditProductId").value = "";
+            document.getElementById("modalProductCategorie").value = "Sublimation";
+            document.getElementById("modalProductNaam").value = "";
+            document.getElementById("modalProductPrijs").value = "";
+            document.getElementById("modalProductStock").value = "10";
+            document.getElementById("productModalTitle").innerHTML = '<i class="fa-solid fa-plus-circle mr-1"></i> Ajouter un produit';
+            document.getElementById("editProductModal").classList.remove("hidden");
+        };
+
         window.editProduct = function(id) {
             const prod = allProducts[id];
             if (prod) {
                 document.getElementById("modalEditProductId").value = id;
-                document.getElementById("modalProductCategorie").value = prod.categorie || "";
+                document.getElementById("modalProductCategorie").value = prod.categorie || "Sublimation";
                 document.getElementById("modalProductNaam").value = prod.naam || "";
                 document.getElementById("modalProductPrijs").value = prod.prijs || 0;
                 document.getElementById("modalProductStock").value = prod.stock || 0;
+                document.getElementById("productModalTitle").innerHTML = '<i class="fa-solid fa-pen-to-square mr-1"></i> Modifier le produit';
                 document.getElementById("editProductModal").classList.remove("hidden");
             }
         };
@@ -1175,11 +1149,20 @@
             const prijs = parseFloat(document.getElementById("modalProductPrijs").value);
             const stock = parseInt(document.getElementById("modalProductStock").value) || 0;
 
-            update(ref(db, `products/${id}`), { categorie, naam, prijs, stock }).then(() => {
-                showToast("Produit mis à jour avec succès !");
-                logActivity(`Produit modifié : ${naam} (${categorie})`);
-                document.getElementById("editProductModal").classList.add("hidden");
-            });
+            if (id) {
+                update(ref(db, `products/${id}`), { categorie, naam, prijs, stock }).then(() => {
+                    showToast("Produit mis à jour avec succès !");
+                    logActivity(`Produit modifié : ${naam} (${categorie})`);
+                    document.getElementById("editProductModal").classList.add("hidden");
+                });
+            } else {
+                const newProdRef = push(ref(db, 'products'));
+                set(newProdRef, { categorie, naam, prijs, stock }).then(() => {
+                    showToast("Produit ajouté avec succès !");
+                    logActivity(`Produit ajouté : ${naam} (${categorie}, Stock initial: ${stock})`);
+                    document.getElementById("editProductModal").classList.add("hidden");
+                });
+            }
         });
 
         window.deleteProduct = function(id, name) {
@@ -1191,10 +1174,10 @@
             }
         };
 
-        window.addNewCategoryPrompt = function() {
+        window.addNewCategoryPromptModal = function() {
             const cat = prompt("Nom de la nouvelle catégorie :");
             if (cat && cat.trim() !== "") {
-                const select = document.getElementById("categorieSelect");
+                const select = document.getElementById("modalProductCategorie");
                 const opt = document.createElement("option");
                 opt.value = cat.trim();
                 opt.textContent = cat.trim();
@@ -1403,7 +1386,6 @@
             }
         });
 
-        // Idées & notes met foto
         const ideasRef = ref(db, 'ideas');
         let selectedIdeaImage = '';
         let modalSelectedIdeaImage = '';
