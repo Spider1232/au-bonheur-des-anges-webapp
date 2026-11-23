@@ -282,10 +282,10 @@
                         <div class="glass-card p-4 rounded-xl border border-dashed border-[#8e44ad]/30 bg-purple-900/5 space-y-3">
                             <div class="flex items-center gap-3">
                                 <input type="checkbox" id="hasSteungeld" class="w-5 h-5 accent-[#8e44ad] rounded cursor-pointer" onchange="toggleSteungeldInput(); calculateTotal();">
-                                <label for="hasSteungeld" class="text-sm font-semibold cursor-pointer opacity-90">💰 Soutien au projet / Blauwe kruis (Steungeld)</label>
+                                <label for="hasSteungeld" class="text-sm font-semibold cursor-pointer opacity-90">Soutien au projet / Blauwe kruis</label>
                             </div>
                             <div id="steungeldWrapper" style="display: none;">
-                                <label class="block text-xs font-semibold opacity-80 mb-1">Montant du soutien / steungeld (€)</label>
+                                <label class="block text-xs font-semibold opacity-80 mb-1">Montant du soutien (€)</label>
                                 <input type="number" step="0.01" id="steungeldBedrag" class="w-full glass-input rounded-xl px-4 py-2 text-sm" value="0.00" min="0" oninput="calculateTotal()">
                             </div>
                         </div>
@@ -302,7 +302,7 @@
                                 </div>
                                 <div class="flex items-center gap-3">
                                     <input type="checkbox" id="preorder" class="w-5 h-5 accent-[#8e44ad] rounded cursor-pointer">
-                                    <label for="preorder" class="text-sm font-semibold cursor-pointer opacity-90">📦 Pré-commande</label>
+                                    <label for="preorder" class="text-sm font-semibold cursor-pointer opacity-90">Pré-commande</label>
                                 </div>
                             </div>
                         </div>
@@ -364,14 +364,14 @@
 
                     <div id="preorderSection" style="display:none;" class="space-y-3">
                         <div class="text-xs font-bold uppercase tracking-wider text-[#8e44ad] pb-1 border-b border-[#8e44ad]/30 flex items-center gap-2">
-                            <span>📦 Pré-commandes</span> (<span id="preorderCount">0</span>)
+                            <span>Pré-commandes</span> (<span id="preorderCount">0</span>)
                         </div>
                         <ul id="preorderList" class="space-y-3"></ul>
                     </div>
 
                     <div id="normalSection" style="display:none;" class="space-y-3">
                         <div class="text-xs font-bold uppercase tracking-wider text-[#8e44ad] pb-1 border-b border-[#8e44ad]/30 flex items-center gap-2">
-                            <span>🛍️ Commandes Normales</span> (<span id="normalCount">0</span>)
+                            <span>Commandes Normales</span> (<span id="normalCount">0</span>)
                         </div>
                         <ul id="normalList" class="space-y-3"></ul>
                     </div>
@@ -615,7 +615,7 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <input type="checkbox" id="modalPreorder" class="w-4 h-4 accent-[#8e44ad] rounded cursor-pointer">
-                        <label for="modalPreorder" class="text-xs font-semibold cursor-pointer">📦 Pré-commande</label>
+                        <label for="modalPreorder" class="text-xs font-semibold cursor-pointer">Pré-commande</label>
                     </div>
                 </div>
                 <div class="flex justify-end gap-2 pt-2">
@@ -664,7 +664,7 @@
                 </div>
                 <div class="flex items-center gap-3 pt-2">
                     <input type="checkbox" id="modalProductPreorder" class="w-5 h-5 accent-[#8e44ad] rounded cursor-pointer">
-                    <label for="modalProductPreorder" class="text-xs font-semibold cursor-pointer opacity-90">📦 Produit en Pré-commande (Prévente)</label>
+                    <label for="modalProductPreorder" class="text-xs font-semibold cursor-pointer opacity-90">Produit en Pré-commande (Prévente)</label>
                 </div>
                 <div class="flex justify-end gap-2 pt-2">
                     <button type="button" onclick="document.getElementById('editProductModal').classList.add('hidden')" class="px-4 py-2 rounded-xl glass-card text-xs font-semibold cursor-pointer">Annuler</button>
@@ -780,7 +780,7 @@
                 activities.slice(0, 30).forEach(act => {
                     const div = document.createElement('div');
                     div.className = 'activity-item';
-                    div.innerHTML = `<div class="activity-time">🕒 ${escapeHTML(act.time)}</div><div>${escapeHTML(act.text)}</div>`;
+                    div.innerHTML = `<div class="activity-time">${escapeHTML(act.time)}</div><div>${escapeHTML(act.text)}</div>`;
                     container.appendChild(div);
                 });
             } else {
@@ -913,7 +913,7 @@
             if (preorders.length > 0) {
                 pdfHtml += `
                     <div style="margin-bottom: 25px;">
-                        <h3 style="background: linear-gradient(135deg, #9b51e0, #8e44ad); color: white; padding: 8px 14px; font-size: 12px; font-weight: bold; border-radius: 6px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">📦 Pré-commandes (${preorders.length})</h3>
+                        <h3 style="background: linear-gradient(135deg, #9b51e0, #8e44ad); color: white; padding: 8px 14px; font-size: 12px; font-weight: bold; border-radius: 6px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">Pré-commandes (${preorders.length})</h3>
                         <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
                             <thead>
                                 <tr style="background-color: #f7fafc; color: #4a5568; text-align: left; border-bottom: 2px solid #e2e8f0;">
@@ -950,7 +950,7 @@
             if (normals.length > 0) {
                 pdfHtml += `
                     <div style="margin-bottom: 25px;">
-                        <h3 style="background: linear-gradient(135deg, #4a5568, #2d3748); color: white; padding: 8px 14px; font-size: 12px; font-weight: bold; border-radius: 6px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">🛍️ Commandes Normales (${normals.length})</h3>
+                        <h3 style="background: linear-gradient(135deg, #4a5568, #2d3748); color: white; padding: 8px 14px; font-size: 12px; font-weight: bold; border-radius: 6px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">Commandes Normales (${normals.length})</h3>
                         <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
                             <thead>
                                 <tr style="background-color: #f7fafc; color: #4a5568; text-align: left; border-bottom: 2px solid #e2e8f0;">
@@ -1030,7 +1030,6 @@
 
             document.getElementById("datum").value = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
             
-            // Start met 1 lege productrij in het formulier
             addProductRow();
         });
 
@@ -1194,7 +1193,7 @@
                     <td class="p-3">${escapeHTML(prod.categorie || '')}</td>
                     <td class="p-3 font-semibold text-[#8e44ad]">
                         ${escapeHTML(prod.naam || '')} 
-                        ${isPreorder ? '<span class="ml-1 px-2 py-0.5 rounded-full text-[10px] bg-purple-500/20 text-[#8e44ad] font-bold">📦 Pré-commande</span>' : ''}
+                        ${isPreorder ? '<span class="ml-1 px-2 py-0.5 rounded-full text-[10px] bg-purple-500/20 text-[#8e44ad] font-bold">Pré-commande</span>' : ''}
                         <i class="fa-solid fa-pen text-[10px] opacity-50 ml-1"></i>
                     </td>
                     <td class="p-3">€ ${parseFloat(prod.prijs || 0).toFixed(2)}</td>
@@ -1285,7 +1284,6 @@
             }
         };
 
-        // EXPLICITE HANDLER VOOR BESTELLINGEN OPSLAAN (Gecorrigeerd)
         window.handleOrderSubmit = function(e) {
             e.preventDefault();
             const editId = document.getElementById("editOrderId").value;
@@ -1429,16 +1427,16 @@
                         <input type="checkbox" class="order-checkbox w-4 h-4 accent-[#8e44ad] rounded cursor-pointer" data-id="${item.id}">
                         <div>
                             <strong>${escapeHTML(item.naam)}</strong> — <span class="text-[#8e44ad] font-medium">${escapeHTML(item.text)}</span> — € ${total.toFixed(2)}
-                            <br><span class="opacity-75">📅 ${escapeHTML(item.datum)} | 📍 ${escapeHTML(item.adres || 'Aucune adresse')}</span>
+                            <br><span class="opacity-75">${escapeHTML(item.datum)} | ${escapeHTML(item.adres || 'Aucune adresse')}</span>
                         </div>
                     </div>
                     <div class="flex items-center gap-2 flex-wrap">
-                        ${item.hasSteungeld && steungeld > 0 ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-[#8e44ad]">💰 Steungeld: €${steungeld.toFixed(2)}</span>` : ''}
+                        ${item.hasSteungeld && steungeld > 0 ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-[#8e44ad]">Soutien: €${steungeld.toFixed(2)}</span>` : ''}
                         <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${item.betaald ? 'bg-emerald-500/20 text-emerald-600' : 'bg-amber-500/20 text-amber-600'}">
                             ${item.betaald ? 'Payé' : 'Non payé'}
                         </span>
                         <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${isReady ? 'bg-emerald-600 text-white shadow-sm' : 'bg-gray-500/20 text-gray-600'}">
-                            ${isReady ? '✅ Prêt' : '⏳ En cours'}
+                            ${isReady ? 'Prêt' : 'En cours'}
                         </span>
                         <button type="button" onclick="toggleReadyStatus('${item.id}', ${isReady})" class="px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-semibold cursor-pointer text-[11px]" title="Basculer statut prêt">
                             <i class="fa-solid fa-check"></i> ${isReady ? 'Annuler prêt' : 'Prêt'}
@@ -1677,6 +1675,8 @@
             const isDark = document.body.classList.toggle("dark-mode");
             localStorage.setItem("appDarkMode", isDark);
             document.getElementById("darkModeBtn").textContent = isDark ? "Désactiver Sombre" : "Activer Sombre";
+            const currentOpacity = document.getElementById("opacitySlider").value;
+            updateOpacity(currentOpacity);
             showToast(isDark ? "Mode sombre activé" : "Mode clair activé");
         };
 
