@@ -233,7 +233,7 @@
                     <span id="statTotalOrders" class="font-bold text-[#8e44ad] ml-1">0</span>
                 </div>
                 <div class="glass-card px-3 py-2 rounded-xl shadow-sm">
-                    <span class="opacity-75">CA:</span>
+                    <span class="opacity-75">CA (avec soutien):</span>
                     <span id="statTotalRevenue" class="font-bold text-emerald-500 ml-1">€ 0.00</span>
                 </div>
             </div>
@@ -307,9 +307,19 @@
                             </div>
                         </div>
 
-                        <div class="glass-card p-4 rounded-xl flex justify-between items-center mt-4 shadow-sm">
-                            <span class="text-sm font-medium opacity-80">Total Calculé:</span>
-                            <span class="text-2xl font-extrabold text-[#8e44ad]">€ <span id="totalAmount">0.00</span></span>
+                        <div class="glass-card p-4 rounded-xl space-y-1.5 mt-4 shadow-sm">
+                            <div class="flex justify-between items-center text-xs opacity-75">
+                                <span>Sous-total produits:</span>
+                                <span>€ <span id="subtotalProductsAmount">0.00</span></span>
+                            </div>
+                            <div id="subtotalSoutienRow" class="flex justify-between items-center text-xs text-[#8e44ad] font-medium" style="display: none;">
+                                <span>Soutien inclus:</span>
+                                <span>+ € <span id="subtotalSoutienAmount">0.00</span></span>
+                            </div>
+                            <div class="flex justify-between items-center pt-1.5 border-t border-purple-900/10">
+                                <span class="text-sm font-bold opacity-90">Total Calculé:</span>
+                                <span class="text-2xl font-extrabold text-[#8e44ad]">€ <span id="totalAmount">0.00</span></span>
+                            </div>
                         </div>
 
                         <button type="submit" id="submitBtn" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#9b51e0] to-[#8e44ad] hover:from-[#a55eea] hover:to-[#7d3c98] font-bold text-white shadow-lg transition-all cursor-pointer">
@@ -327,6 +337,10 @@
                             <li class="flex items-start gap-2">
                                 <i class="fa-solid fa-check text-emerald-500 mt-0.5"></i>
                                 <span>Cliquez sur "+ Ajouter un produit" pour commander plusieurs articles différents en une seule fois.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-emerald-500 mt-0.5"></i>
+                                <span>Le montant de <strong>Soutien</strong> est automatiquement additionné au total de la commande.</span>
                             </li>
                         </ul>
                     </div>
@@ -571,6 +585,7 @@
             </div>
             <form id="editForm" class="space-y-4" onsubmit="handleEditSubmit(event)">
                 <input type="hidden" id="modalEditId">
+                <input type="hidden" id="modalBaseProductsPrijs" value="0">
                 <div>
                     <label class="block text-xs font-semibold opacity-80 mb-1">Nom du client</label>
                     <input type="text" id="modalNaam" class="w-full glass-input rounded-xl px-3 py-2 text-sm" required>
@@ -589,18 +604,19 @@
                         <input type="number" id="modalAantal" class="w-full glass-input rounded-xl px-3 py-2 text-sm" required min="1">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold opacity-80 mb-1">Prix total (€)</label>
-                        <input type="number" step="0.01" id="modalPrijs" class="w-full glass-input rounded-xl px-3 py-2 text-sm" required>
+                        <label class="block text-xs font-semibold opacity-80 mb-1">Total avec soutien (€)</label>
+                        <input type="number" step="0.01" id="modalPrijs" class="w-full glass-input rounded-xl px-3 py-2 text-sm font-bold text-[#8e44ad]" required oninput="syncModalBasePrice()">
                     </div>
                 </div>
 
                 <div class="glass-card p-3 rounded-xl border border-dashed border-[#8e44ad]/30 space-y-2">
                     <div class="flex items-center gap-2">
-                        <input type="checkbox" id="modalHasSteungeld" class="w-4 h-4 accent-[#8e44ad] rounded cursor-pointer" onchange="toggleModalSteungeldInput()">
+                        <input type="checkbox" id="modalHasSteungeld" class="w-4 h-4 accent-[#8e44ad] rounded cursor-pointer" onchange="toggleModalSteungeldInput(); recalculateModalTotal();">
                         <label for="modalHasSteungeld" class="text-xs font-semibold cursor-pointer">Soutien</label>
                     </div>
                     <div id="modalSteungeldWrapper" style="display: none;">
-                        <input type="number" step="0.01" id="modalSteungeldBedrag" class="w-full glass-input rounded-xl px-3 py-1.5 text-xs" value="0.00" min="0">
+                        <label class="block text-[11px] opacity-75 mb-1">Montant du soutien (€)</label>
+                        <input type="number" step="0.01" id="modalSteungeldBedrag" class="w-full glass-input rounded-xl px-3 py-1.5 text-xs" value="0.00" min="0" oninput="recalculateModalTotal()">
                     </div>
                 </div>
 
@@ -736,6 +752,21 @@
         let allIdeas = {};
         let globalDatabaseSnapshot = null;
 
+        // Helper om het exacte totaal van een bestelling (inclusief soutien) te berekenen
+        function getOrderGrandTotal(item) {
+            const soutien = item.hasSteungeld ? (parseFloat(item.steungeldBedrag) || 0) : 0;
+            if (item.items && Array.isArray(item.items) && item.items.length > 0) {
+                const prodSum = item.items.reduce((acc, it) => acc + ((parseFloat(it.aantal) || 1) * (parseFloat(it.prijs) || 0)), 0);
+                // Als prijs al gelijk is aan prodSum + soutien (of manueel aangepast), gebruik prijs; anders tel soutien erbij
+                const storedPrijs = parseFloat(item.prijs) || 0;
+                if (Math.abs(storedPrijs - prodSum) < 0.01 && soutien > 0) {
+                    return prodSum + soutien;
+                }
+                return storedPrijs > 0 ? storedPrijs : (prodSum + soutien);
+            }
+            return parseFloat(item.prijs) || 0;
+        }
+
         window.toggleSteungeldInput = function() {
             const checkbox = document.getElementById("hasSteungeld");
             const wrapper = document.getElementById("steungeldWrapper");
@@ -752,6 +783,20 @@
             if (!checkbox.checked) {
                 document.getElementById("modalSteungeldBedrag").value = "0.00";
             }
+        };
+
+        window.syncModalBasePrice = function() {
+            const totalVal = parseFloat(document.getElementById("modalPrijs").value) || 0;
+            const hasSt = document.getElementById("modalHasSteungeld").checked;
+            const stVal = hasSt ? (parseFloat(document.getElementById("modalSteungeldBedrag").value) || 0) : 0;
+            document.getElementById("modalBaseProductsPrijs").value = Math.max(0, totalVal - stVal).toFixed(2);
+        };
+
+        window.recalculateModalTotal = function() {
+            const baseVal = parseFloat(document.getElementById("modalBaseProductsPrijs").value) || 0;
+            const hasSt = document.getElementById("modalHasSteungeld").checked;
+            const stVal = hasSt ? (parseFloat(document.getElementById("modalSteungeldBedrag").value) || 0) : 0;
+            document.getElementById("modalPrijs").value = (baseVal + stVal).toFixed(2);
         };
 
         async function logActivity(actionDescription) {
@@ -894,6 +939,15 @@
             const preorders = filteredOrders.filter(i => i.preorder);
             const normals = filteredOrders.filter(i => !i.preorder);
 
+            let grandTotalAll = 0;
+            let grandTotalSoutien = 0;
+
+            filteredOrders.forEach(item => {
+                const st = item.hasSteungeld ? (parseFloat(item.steungeldBedrag) || 0) : 0;
+                grandTotalSoutien += st;
+                grandTotalAll += getOrderGrandTotal(item);
+            });
+
             const logoBase64 = await getLogoBase64();
             const logoHtml = logoBase64 ? `
                 <div style="text-align: center; margin-bottom: 15px;">
@@ -919,7 +973,7 @@
                                 <tr style="background-color: #f7fafc; color: #4a5568; text-align: left; border-bottom: 2px solid #e2e8f0;">
                                     <th style="padding: 8px 10px;">Client & Adresse</th>
                                     <th style="padding: 8px 10px;">Produits</th>
-                                    <th style="padding: 8px 10px;">Total</th>
+                                    <th style="padding: 8px 10px;">Total (avec soutien)</th>
                                     <th style="padding: 8px 10px;">Statut</th>
                                 </tr>
                             </thead>
@@ -927,13 +981,13 @@
                 `;
                 preorders.forEach((item, index) => {
                     const bgRow = index % 2 === 0 ? '#ffffff' : '#faf5ff';
-                    const steungeld = item.hasSteungeld ? (parseFloat(item.steungeldBedrag) || 0) : 0;
-                    const total = (parseFloat(item.prijs || 0)).toFixed(2);
+                    const soutien = item.hasSteungeld ? (parseFloat(item.steungeldBedrag) || 0) : 0;
+                    const total = getOrderGrandTotal(item).toFixed(2);
                     let statuses = [];
                     if (item.betaald) statuses.push('<span style="color: #27ae60; font-weight: bold;">Payé</span>'); 
                     else statuses.push('<span style="color: #d97706;">Non payé</span>');
                     if (item.pret) statuses.push('<span style="color: #8e44ad; font-weight: bold;">Prêt</span>');
-                    if (item.hasSteungeld && steungeld > 0) statuses.push(`<span style="color: #6b46c1;">Soutien: €${steungeld.toFixed(2)}</span>`);
+                    if (item.hasSteungeld && soutien > 0) statuses.push(`<span style="color: #6b46c1;">Soutien: €${soutien.toFixed(2)}</span>`);
 
                     pdfHtml += `
                         <tr style="background-color: ${bgRow}; border-bottom: 1px solid #edf2f7;">
@@ -956,7 +1010,7 @@
                                 <tr style="background-color: #f7fafc; color: #4a5568; text-align: left; border-bottom: 2px solid #e2e8f0;">
                                     <th style="padding: 8px 10px;">Client & Adresse</th>
                                     <th style="padding: 8px 10px;">Produits</th>
-                                    <th style="padding: 8px 10px;">Total</th>
+                                    <th style="padding: 8px 10px;">Total (avec soutien)</th>
                                     <th style="padding: 8px 10px;">Statut</th>
                                 </tr>
                             </thead>
@@ -964,13 +1018,13 @@
                 `;
                 normals.forEach((item, index) => {
                     const bgRow = index % 2 === 0 ? '#ffffff' : '#f7fafc';
-                    const steungeld = item.hasSteungeld ? (parseFloat(item.steungeldBedrag) || 0) : 0;
-                    const total = (parseFloat(item.prijs || 0)).toFixed(2);
+                    const soutien = item.hasSteungeld ? (parseFloat(item.steungeldBedrag) || 0) : 0;
+                    const total = getOrderGrandTotal(item).toFixed(2);
                     let statuses = [];
                     if (item.betaald) statuses.push('<span style="color: #27ae60; font-weight: bold;">Payé</span>'); 
                     else statuses.push('<span style="color: #d97706;">Non payé</span>');
                     if (item.pret) statuses.push('<span style="color: #8e44ad; font-weight: bold;">Prêt</span>');
-                    if (item.hasSteungeld && steungeld > 0) statuses.push(`<span style="color: #6b46c1;">Soutien: €${steungeld.toFixed(2)}</span>`);
+                    if (item.hasSteungeld && soutien > 0) statuses.push(`<span style="color: #6b46c1;">Soutien: €${soutien.toFixed(2)}</span>`);
 
                     pdfHtml += `
                         <tr style="background-color: ${bgRow}; border-bottom: 1px solid #edf2f7;">
@@ -984,7 +1038,14 @@
                 pdfHtml += `</tbody></table></div>`;
             }
 
-            if (filteredOrders.length === 0) {
+            if (filteredOrders.length > 0) {
+                pdfHtml += `
+                    <div style="margin-top: 20px; padding: 14px; background-color: #faf5ff; border: 1px solid #e9d8fd; border-radius: 8px; text-align: right; font-size: 12px;">
+                        <div style="color: #6b46c1; margin-bottom: 4px;">Dont Total Soutien : <strong>€${grandTotalSoutien.toFixed(2)}</strong></div>
+                        <div style="font-size: 15px; color: #8e44ad; font-weight: 800;">Total Général : €${grandTotalAll.toFixed(2)}</div>
+                    </div>
+                `;
+            } else {
                 pdfHtml += `<p style="text-align: center; color: #718096; padding: 30px; font-size: 12px;">Aucune commande trouvée.</p>`;
             }
 
@@ -1039,7 +1100,7 @@
             allOrders = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })).reverse() : [];
             document.getElementById("statTotalOrders").textContent = allOrders.length;
             const totalRevenue = allOrders.reduce((sum, item) => {
-                return sum + (parseFloat(item.prijs) || 0);
+                return sum + getOrderGrandTotal(item);
             }, 0);
             document.getElementById("statTotalRevenue").textContent = "€ " + totalRevenue.toFixed(2);
             filterItems();
@@ -1150,6 +1211,16 @@
             const hasSteungeld = document.getElementById("hasSteungeld").checked;
             const steungeldBedrag = hasSteungeld ? (parseFloat(rowSteungeldBedrag()) || 0) : 0;
             const total = productTotal + steungeldBedrag;
+
+            document.getElementById("subtotalProductsAmount").textContent = productTotal.toFixed(2);
+            const soutienRow = document.getElementById("subtotalSoutienRow");
+            if (hasSteungeld && steungeldBedrag > 0) {
+                soutienRow.style.display = "flex";
+                document.getElementById("subtotalSoutienAmount").textContent = steungeldBedrag.toFixed(2);
+            } else {
+                soutienRow.style.display = "none";
+            }
+
             document.getElementById("totalAmount").textContent = total.toFixed(2);
         };
 
@@ -1359,9 +1430,9 @@
             const adres = document.getElementById("modalAdres").value;
             const text = document.getElementById("modalText").value;
             const aantal = parseInt(document.getElementById("modalAantal").value);
-            const prijs = parseFloat(document.getElementById("modalPrijs").value);
             const hasSteungeld = document.getElementById("modalHasSteungeld").checked;
             const steungeldBedrag = hasSteungeld ? (parseFloat(document.getElementById("modalSteungeldBedrag").value) || 0) : 0;
+            const prijs = parseFloat(document.getElementById("modalPrijs").value) || 0;
             const datum = document.getElementById("modalDatum").value;
             const betaald = document.getElementById("modalBetaald").checked;
             const preorder = document.getElementById("modalPreorder").checked;
@@ -1417,8 +1488,8 @@
 
             filtered.forEach(item => {
                 const isReady = !!item.pret;
-                const total = parseFloat(item.prijs) || 0;
-                const steungeld = item.hasSteungeld ? (parseFloat(item.steungeldBedrag) || 0) : 0;
+                const total = getOrderGrandTotal(item);
+                const soutien = item.hasSteungeld ? (parseFloat(item.steungeldBedrag) || 0) : 0;
 
                 const li = document.createElement("li");
                 li.className = "glass-card p-4 flex flex-wrap justify-between items-center gap-3 text-xs";
@@ -1426,12 +1497,12 @@
                     <div class="flex items-center gap-3">
                         <input type="checkbox" class="order-checkbox w-4 h-4 accent-[#8e44ad] rounded cursor-pointer" data-id="${item.id}">
                         <div>
-                            <strong>${escapeHTML(item.naam)}</strong> — <span class="text-[#8e44ad] font-medium">${escapeHTML(item.text)}</span> — € ${total.toFixed(2)}
+                            <strong>${escapeHTML(item.naam)}</strong> — <span class="text-[#8e44ad] font-medium">${escapeHTML(item.text)}</span> — <strong>€ ${total.toFixed(2)}</strong>
                             <br><span class="opacity-75">${escapeHTML(item.datum)} | ${escapeHTML(item.adres || 'Aucune adresse')}</span>
                         </div>
                     </div>
                     <div class="flex items-center gap-2 flex-wrap">
-                        ${item.hasSteungeld && steungeld > 0 ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-[#8e44ad]">Soutien: €${steungeld.toFixed(2)}</span>` : ''}
+                        ${item.hasSteungeld && soutien > 0 ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-[#8e44ad]">Soutien: €${soutien.toFixed(2)}</span>` : ''}
                         <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${item.betaald ? 'bg-emerald-500/20 text-emerald-600' : 'bg-amber-500/20 text-amber-600'}">
                             ${item.betaald ? 'Payé' : 'Non payé'}
                         </span>
@@ -1466,19 +1537,24 @@
         window.editOrder = function(id) {
             const item = allOrders.find(o => o.id === id);
             if (item) {
+                const hasSt = !!item.hasSteungeld;
+                const stAmount = hasSt ? (parseFloat(item.steungeldBedrag) || 0) : 0;
+                const grandTotal = getOrderGrandTotal(item);
+                const baseProductsAmount = Math.max(0, grandTotal - stAmount);
+
                 document.getElementById("modalEditId").value = item.id;
                 document.getElementById("modalNaam").value = item.naam || "";
                 document.getElementById("modalAdres").value = item.adres || "";
                 document.getElementById("modalText").value = item.text || "";
                 document.getElementById("modalAantal").value = item.aantal || 1;
-                document.getElementById("modalPrijs").value = item.prijs || 0;
+                document.getElementById("modalBaseProductsPrijs").value = baseProductsAmount.toFixed(2);
+                document.getElementById("modalPrijs").value = grandTotal.toFixed(2);
                 document.getElementById("modalDatum").value = item.datum || new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
                 document.getElementById("modalBetaald").checked = !!item.betaald;
                 document.getElementById("modalPreorder").checked = !!item.preorder;
 
-                const hasSt = !!item.hasSteungeld;
                 document.getElementById("modalHasSteungeld").checked = hasSt;
-                document.getElementById("modalSteungeldBedrag").value = item.steungeldBedrag || 0.00;
+                document.getElementById("modalSteungeldBedrag").value = stAmount.toFixed(2);
                 document.getElementById("modalSteungeldWrapper").style.display = hasSt ? "block" : "none";
 
                 document.getElementById("editModal").classList.remove("hidden");
