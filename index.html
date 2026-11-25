@@ -733,15 +733,16 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getDatabase, ref, push, set, onValue, update, remove, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-        const firebaseConfig = {
-            apiKey: "JOUW_API_KEY", 
-            authDomain: "cloudstockage-b1580.firebaseapp.com",
-            databaseURL: "https://cloudstockage-b1580-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "cloudstockage-b1580",
-            storageBucket: "cloudstockage-b1580.appspot.com",
-            messagingSenderId: "524333606775",
-            appId: "JOUW_APP_ID"
-        };
+const firebaseConfig = {
+    apiKey: "AIzaSyAEH1mlBpf3wRKo6JB_vdVaC1Fz8je_TKk",
+    authDomain: "cloudstockage-b1580.firebaseapp.com",
+    databaseURL: "https://cloudstockage-b1580-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "cloudstockage-b1580",
+    storageBucket: "cloudstockage-b1580.firebasestorage.app",
+    messagingSenderId: "524333606775",
+    appId: "1:524333606775:web:1cf8d68cc363f6314b6372",
+    measurementId: "G-99NH19MZ57"
+};
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
