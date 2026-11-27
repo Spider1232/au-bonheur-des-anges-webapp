@@ -169,7 +169,7 @@
     <aside class="w-64 glass-card m-4 mr-0 flex flex-col justify-between p-5 z-20 shrink-0 hidden md:flex no-print">
         <div>
             <div class="flex items-center gap-3 pb-6 border-b border-purple-900/10">
-                <img src="logo.jpg" alt="Logo" class="w-12 h-12 rounded-full object-cover border-2 border-white/60 shadow-md" onerror="this.src='https://via.placeholder.com/48?text=ABDA'">
+                <img src="logo.jpg" alt="Logo" class="w-12 h-12 rounded-full object-cover border-2 border-white/60 shadow-md" onerror="this.style.display='none'">
                 <div>
                     <h1 class="font-bold text-sm leading-tight text-[#8e44ad]">Au Bonheur Des Anges</h1>
                     <div class="flex items-center gap-2 mt-1">
@@ -213,7 +213,7 @@
 
         <header class="glass-card p-4 mb-6 flex flex-wrap justify-between items-center gap-4 no-print">
             <div class="flex items-center gap-3">
-                <img src="logo.jpg" alt="Logo" class="w-10 h-10 rounded-full object-cover border-2 border-white/60 shadow-md md:hidden" onerror="this.src='https://via.placeholder.com/40?text=ABDA'">
+                <img src="logo.jpg" alt="Logo" class="w-10 h-10 rounded-full object-cover border-2 border-white/60 shadow-md md:hidden" onerror="this.style.display='none'">
                 <div>
                     <h2 class="text-xl font-bold text-[#8e44ad]">Au Bonheur Des Anges - Photo Design Estelle</h2>
                     <p class="text-xs opacity-75">le Commande de 2026</p>
@@ -528,7 +528,7 @@
         <!-- SECTIE 6: INFO -->
         <section id="info-section" class="dashboard-section space-y-6 hidden">
             <div class="glass-card p-6 max-w-2xl mx-auto space-y-6 text-center">
-                <img src="logo.jpg" alt="Logo" class="w-24 h-24 rounded-full mx-auto border-2 border-white/60 shadow-lg object-cover" onerror="this.src='https://via.placeholder.com/96'">
+                <img src="logo.jpg" alt="Logo" class="w-24 h-24 rounded-full mx-auto border-2 border-white/60 shadow-lg object-cover" onerror="this.style.display='none'">
                 <h2 class="text-xl font-bold text-[#8e44ad]">Au bonheur des Anges</h2>
                 <span class="inline-block bg-[#8e44ad]/15 text-[#8e44ad] border border-[#8e44ad]/30 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider">Application Responsive</span>
                 <p class="text-sm opacity-80">Gestion centralisée des commandes et produits avec synchronisation Firebase Cloud.</p>
@@ -697,7 +697,7 @@
                 <h3 class="font-bold text-[#8e44ad] text-sm"><i class="fa-solid fa-pen-to-square mr-1"></i> Modifier l'idée</h3>
                 <button type="button" onclick="document.getElementById('editIdeaModal').classList.add('hidden')" class="text-xl font-bold opacity-60 hover:opacity-100">&times;</button>
             </div>
-            <form id="editIdeaForm" class="space-y-4" onsubmit="handleIdeaSubmit(event)">
+            <form id="editIdeaForm" class="space-y-4">
                 <input type="hidden" id="modalEditIdeaId">
                 <div>
                     <label class="block text-xs font-semibold opacity-80 mb-1">Titre de l'idée *</label>
@@ -755,17 +755,13 @@ const firebaseConfig = {
 
         // Helper om het exacte totaal van een bestelling (inclusief soutien) te berekenen
         function getOrderGrandTotal(item) {
+            const storedPrijs = parseFloat(item.prijs);
+            if (storedPrijs > 0) return storedPrijs;
+            // Fallback voor oude bestellingen zonder opgeslagen totaal
             const soutien = item.hasSteungeld ? (parseFloat(item.steungeldBedrag) || 0) : 0;
-            if (item.items && Array.isArray(item.items) && item.items.length > 0) {
-                const prodSum = item.items.reduce((acc, it) => acc + ((parseFloat(it.aantal) || 1) * (parseFloat(it.prijs) || 0)), 0);
-                // Als prijs al gelijk is aan prodSum + soutien (of manueel aangepast), gebruik prijs; anders tel soutien erbij
-                const storedPrijs = parseFloat(item.prijs) || 0;
-                if (Math.abs(storedPrijs - prodSum) < 0.01 && soutien > 0) {
-                    return prodSum + soutien;
-                }
-                return storedPrijs > 0 ? storedPrijs : (prodSum + soutien);
-            }
-            return parseFloat(item.prijs) || 0;
+            const prodSum = (item.items || []).reduce(
+                (acc, it) => acc + ((parseFloat(it.aantal) || 1) * (parseFloat(it.prijs) || 0)), 0);
+            return prodSum + soutien;
         }
 
         window.toggleSteungeldInput = function() {
@@ -899,6 +895,16 @@ const firebaseConfig = {
             reader.onload = async function(e) {
                 try {
                     const importedData = JSON.parse(e.target.result);
+                    if (!importedData || typeof importedData !== 'object' || Array.isArray(importedData)) {
+                        throw new Error("Le fichier ne contient pas une sauvegarde valide.");
+                    }
+                    const resume = Object.keys(importedData)
+                        .map(k => `${k} : ${Object.keys(importedData[k] || {}).length} élément(s)`)
+                        .join('\n');
+                    if (!confirm(`Ce fichier contient :\n${resume}\n\nLes données actuelles seront REMPLACÉES. Continuer ?`)) {
+                        return;
+                    }
+                    await downloadBackup(); // sauvegarde de sécurité avant l'import
                     await set(ref(db), importedData);
                     await logActivity("Restauration (Import) de la base de données effectuée");
                     showToast("Données importées avec succès !");
@@ -1758,7 +1764,9 @@ const firebaseConfig = {
         };
 
         window.updateOpacity = function(val) {
-            document.documentElement.style.setProperty('--glass-bg', isDarkTheme() ? `rgba(30, 30, 40, ${val})` : `rgba(255, 255, 255, ${val})`);
+            document.body.style.setProperty('--glass-bg', isDarkTheme()
+                ? `rgba(30, 30, 40, ${val})`
+                : `rgba(255, 255, 255, ${val})`);
             document.getElementById('opacityVal').textContent = Math.round(val * 100) + "%";
             localStorage.setItem("appGlassOpacity", val);
         };
